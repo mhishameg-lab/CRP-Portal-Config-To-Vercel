@@ -96,22 +96,28 @@
   };
 
   // Build a dynamic proxy so any property access returns a callable
-  function makeRunProxy() {
-    const proxy = new RunProxy();
+function makeRunProxy() {
+    let _success = null;
+    let _failure = null;
 
-    return new Proxy(proxy, {
-      get(target, prop) {
-        // Return the fluent setters as-is
-        if (prop in target) return target[prop].bind(target);
-
-        // Any other property access = GAS function call
-        return function (...args) {
-          _rpc(prop, args, target._success, target._failure);
-          // GAS run calls return undefined synchronously
-        };
-      },
+    const proxy = new Proxy({}, {
+        get(target, prop) {
+            if (prop === 'withSuccessHandler') {
+                return function(fn) { _success = fn; return proxy; };
+            }
+            if (prop === 'withFailureHandler') {
+                return function(fn) { _failure = fn; return proxy; };
+            }
+            if (prop === 'withUserObject') {
+                return function() { return proxy; };
+            }
+            return function(...args) {
+                _rpc(prop, args, _success, _failure);
+            };
+        }
     });
-  }
+    return proxy;
+}
 
   // ── google.script.url (stub) ─────────────────────────────────────────────────
 
@@ -125,12 +131,12 @@
 
   window.google = window.google || {};
   window.google.script = {
-    run: makeRunProxy(),
-    url: _url,
-    host: {
-      close : function () { console.warn('google.script.host.close() — no-op in Next.js'); },
-      editor: {},
-    },
+      get run() { return makeRunProxy(); },
+      url : _url,
+      host: {
+          close : function () { console.warn('google.script.host.close() — no-op'); },
+          editor: {},
+      },
   };
 
   console.log('[gscript-shim] google.script.run → /api/rpc active');
