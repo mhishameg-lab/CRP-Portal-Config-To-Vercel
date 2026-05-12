@@ -12,14 +12,14 @@ import { logActivity } from './auth.js';
 
 async function _getSourceData() {
   const KEY = 'src_data_v3';
-  const hit = cache.get(KEY);
+  const hit = await cache.get(KEY);
   if (hit) return hit;
 
-  const ss    = getSourceSpreadsheet();
+  const ss      = getSourceSpreadsheet();
   const allRows = await ss.getValues(CONFIG.SOURCE_SHEET_NAME);
   if (allRows.length <= 1) return [];
   const data = allRows.slice(1).filter(r => r.some(c => c !== ''));
-  cache.set(KEY, data, CONFIG.CACHE_TTL_SEC);
+  await cache.set(KEY, data, CONFIG.CACHE_TTL_SEC);
   return data;
 }
 
@@ -29,14 +29,14 @@ function _invalidateSourceCache() {
 
 async function _getPcpSourceData() {
   const KEY = 'pcp_data_v1';
-  const hit = cache.get(KEY);
+  const hit = await cache.get(KEY);
   if (hit) return hit;
 
   const ss      = getSourceSpreadsheet();
   const allRows = await ss.getValues(PCP_SOURCE_SHEET_NAME);
   if (allRows.length <= 1) return [];
   const data = allRows.slice(1).filter(r => r.some(c => c !== ''));
-  cache.set(KEY, data, CONFIG.CACHE_TTL_SEC);
+  await cache.set(KEY, data, CONFIG.CACHE_TTL_SEC);
   return data;
 }
 
