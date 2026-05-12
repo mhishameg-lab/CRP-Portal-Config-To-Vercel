@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@upstash/redis": "^1.38.0",
     "@vercel/speed-insights": "^2.0.0",
     "googleapis": "^140.0.0",
     "jose": "^5.0.0",
