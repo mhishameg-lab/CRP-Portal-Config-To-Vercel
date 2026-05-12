@@ -79,6 +79,7 @@ const REGISTRY = {
   chatDeleteMessage      : (args) => chatDeleteMessage(...args),
   chatUploadImage        : (args) => chatUploadImage(...args),
   getNewChatUnread       : (args) => getNewChatUnread(...args),
+  pollChatUnread         : (args) => getNewChatUnread(...args),  // ← add this
 };
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
