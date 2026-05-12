@@ -48,29 +48,28 @@ function _rowToChatMsg(row) {
 
 async function _getChatMsgRows() {
   const key = 'chat_msgs_rows';
-  const hit = cache.get(key);
+  const hit = await cache.get(key);   // ← add await
   if (hit) return hit;
   const sheet = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
   const rows  = await sheet.getValues();
-  cache.set(key, rows, 5); // cache 5 seconds
+  await cache.set(key, rows, 5);      // ← add await
   return rows;
 }
 
 async function _getChatRingRows() {
   const key = 'chat_ring_rows';
-  const hit = cache.get(key);
+  const hit = await cache.get(key);   // ← add await
   if (hit) return hit;
   const sheet = await getCrmSheet(SHEETS.CHAT_RING);
   const rows  = await sheet.getValues();
-  cache.set(key, rows, 5);
+  await cache.set(key, rows, 5);      // ← add await
   return rows;
 }
 
 function _invalidateChatCache() {
-  cache.remove('chat_msgs_rows');
+  cache.remove('chat_msgs_rows');     // fire and forget, no await needed
   cache.remove('chat_ring_rows');
 }
-
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function chatGetIdentity(token) {
