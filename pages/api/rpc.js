@@ -80,6 +80,20 @@ const REGISTRY = {
   chatUploadImage        : (args) => chatUploadImage(...args),
   getNewChatUnread       : (args) => getNewChatUnread(...args),
   pollChatUnread         : (args) => getNewChatUnread(...args),  // ← add this
+// Chat aliases
+  getChatCenters         : (args) => chatGetCenters(...args),
+  getChatMessages        : (args) => chatGetMessages(...args),
+  getChatUnread          : (args) => getNewChatUnread(...args),
+  pollChatUnread         : (args) => getNewChatUnread(...args),
+  sendChatMessage        : (args) => chatSendMessage(...args),
+  markChatRead           : (args) => Promise.resolve({ success: true }),
+
+  // Incentives (stubs — returns empty so app loads without crashing)
+  getIncentives          : (args) => Promise.resolve({ success: true, data: [] }),
+  getActiveIncentive     : (args) => Promise.resolve({ success: true, data: null }),
+  createIncentive        : (args) => Promise.resolve({ success: true }),
+  updateIncentiveStatus  : (args) => Promise.resolve({ success: true }),
+  deleteIncentive        : (args) => Promise.resolve({ success: true }),
 };
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
