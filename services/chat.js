@@ -191,7 +191,7 @@ export async function chatSendRing(token) {
 export async function chatCheckRing(token) {
   const id = await _chatId(token);
   if (!id || !id.isCloser) return { pending: false };
-  const allRows = await _getChatMsgRows();
+  const allRows = await _getChatRingRows();
   if (allRows.length <= 1) return { pending: false };
   for (const row of allRows.slice(1)) {
     if (row[3] !== true && row[3] !== 'TRUE')
@@ -283,10 +283,10 @@ export async function chatDeleteMessage(token, msgId) {
   for (let i = allRows.length - 1; i >= 1; i--) {
     if (Number(allRows[i][0]) === msgId) {
       await sheet.deleteRow(i + 1);
+    _invalidateChatCache(); // Invalidate cached rows
       return { success: true };
     }
   }
-  _invalidateChatCache(); // Invalidate cached rows
   return { success: false, error: 'Message not found.' };
 }
 
@@ -325,8 +325,7 @@ export async function chatUploadImage(token, toTeam, base64Data, mimeType, filen
 export async function getNewChatUnread(token) {
   try {
     const sess  = await _reqAuth(token);
-    const sheet = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
-    const allRows = await sheet.getValues();
+    const allRows = await _getChatMsgRows();
     if (allRows.length <= 1) return { success: true, unread: 0 };
 
     const fiveMinAgo = Date.now() - 5 * 60 * 1000;
