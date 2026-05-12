@@ -6,6 +6,7 @@ import { requireAuth as _reqAuth, requireAdmin as _reqAdmin } from '../lib/auth.
 import { now } from '../lib/utils.js';
 import { SHEETS } from '../lib/config.js';
 import { uploadImageToDrive } from '../lib/drive.js';
+import { cache } from '../lib/cache.js';
 
 const CHAT_MSG_COLS = 11;
 
@@ -43,6 +44,33 @@ function _rowToChatMsg(row) {
   };
 }
 
+// ─── Cached sheet readers ─────────────────────────────────────────────────────
+
+async function _getChatMsgRows() {
+  const key = 'chat_msgs_rows';
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const sheet = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
+  const rows  = await sheet.getValues();
+  cache.set(key, rows, 5); // cache 5 seconds
+  return rows;
+}
+
+async function _getChatRingRows() {
+  const key = 'chat_ring_rows';
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const sheet = await getCrmSheet(SHEETS.CHAT_RING);
+  const rows  = await sheet.getValues();
+  cache.set(key, rows, 5);
+  return rows;
+}
+
+function _invalidateChatCache() {
+  cache.remove('chat_msgs_rows');
+  cache.remove('chat_ring_rows');
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function chatGetIdentity(token) {
@@ -77,6 +105,7 @@ export async function chatSendMessage(token, toTeam, message, replyTo) {
   const sheet    = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
   const lastRow  = await sheet.getLastRow();
   await sheet.appendRow([lastRow, new Date().toISOString(), id.team, actualTo, message, replyTo || '', false, '', 'message', false, '']);
+  _invalidateChatCache(); // Invalidate cached rows
   return { success: true, id: lastRow };
 }
 
@@ -88,6 +117,7 @@ export async function chatBroadcast(token, message) {
   const sheet   = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
   const lastRow = await sheet.getLastRow();
   await sheet.appendRow([lastRow, new Date().toISOString(), 'ADMIN', 'ALL', message, '', false, '', 'broadcast', false, '']);
+  _invalidateChatCache(); // Invalidate cached rows
   return { success: true, id: lastRow };
 }
 
@@ -96,8 +126,8 @@ export async function chatGetMessages(token, convTeam, afterId) {
   if (!id) return { success: false, error: 'Not authorised.', messages: [] };
   afterId = Number(afterId) || 0;
 
-  const sheet   = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
-  const allRows = await sheet.getValues();
+  const allRows = await _getChatMsgRows();
+
   if (allRows.length <= 1) return { success: true, messages: [] };
 
   const data = allRows.slice(1);
@@ -137,8 +167,7 @@ export async function chatGetMessages(token, convTeam, afterId) {
 export async function chatGetPinned(token) {
   const id = await _chatId(token);
   if (!id) return { success: false, messages: [] };
-  const sheet   = await getCrmSheet(SHEETS.CHAT_MSGS_V2);
-  const allRows = await sheet.getValues();
+  const allRows = await _getChatMsgRows();
   if (allRows.length <= 1) return { success: true, messages: [] };
   const pinned = allRows.slice(1)
     .filter(r => r[9] === true || r[9] === 'TRUE')
@@ -156,14 +185,14 @@ export async function chatSendRing(token) {
   const sheet   = await getCrmSheet(SHEETS.CHAT_RING);
   const lastRow = await sheet.getLastRow();
   await sheet.appendRow([lastRow, id.team, new Date().toISOString(), false]);
+  _invalidateChatCache(); // Invalidate cached rows
   return { success: true };
 }
 
 export async function chatCheckRing(token) {
   const id = await _chatId(token);
   if (!id || !id.isCloser) return { pending: false };
-  const sheet   = await getCrmSheet(SHEETS.CHAT_RING);
-  const allRows = await sheet.getValues();
+  const allRows = await _getChatMsgRows();
   if (allRows.length <= 1) return { pending: false };
   for (const row of allRows.slice(1)) {
     if (row[3] !== true && row[3] !== 'TRUE')
@@ -186,6 +215,7 @@ export async function chatClearRing(token) {
     }
   }
   await Promise.all(updates);
+  _invalidateChatCache(); // Invalidate cached rows
   return { success: true };
 }
 
@@ -257,6 +287,7 @@ export async function chatDeleteMessage(token, msgId) {
       return { success: true };
     }
   }
+  _invalidateChatCache(); // Invalidate cached rows
   return { success: false, error: 'Message not found.' };
 }
 
