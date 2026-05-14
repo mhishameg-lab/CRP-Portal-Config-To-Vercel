@@ -1247,6 +1247,9 @@ input, select, textarea { font-family: inherit; }
             <span class="card-title">Lead Records</span>
             <span id="table-count" style="font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace;"></span>
           </div>
+          <div style="padding:0 18px 12px;color:var(--text-muted);font-size:12px;">
+            Yellow statuses need center follow-up. Red statuses mean In-Call teams are not working on them.
+          </div>
           <div class="table-wrap">
             <table class="data-table">
               <thead>
@@ -1254,15 +1257,16 @@ input, select, textarea { font-family: inherit; }
                   <th>Date</th>
                   <th>Patient Name</th>
                   <th>Phone</th>
-                  <th>Lead Status</th>
-                  <th>Chaser Status</th>
-                  <th>Processing</th>
-                  <th class="admin-only hidden">Center</th>
                   <th>Lead Type</th>
+                  <th>Requested Braces</th>
+                  <th>Closing Status</th>
+                  <th>Chasing Status</th>
+                  <th>Processing Status</th>
+                  <th>Payment Alert</th>
                 </tr>
               </thead>
               <tbody id="leads-tbody">
-                <tr><td colspan="8"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
+                <tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -3746,7 +3750,7 @@ function loadLeads(page) {
   APP.leads.page    = page;
 
   var tbody = document.getElementById('leads-tbody');
-  tbody.innerHTML = '<tr><td colspan="8"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
 
   google.script.run
     .withSuccessHandler(function(r) {
@@ -3761,7 +3765,7 @@ function loadLeads(page) {
     .withFailureHandler(function() {
       APP.leads.loading = false;
       toast('Connection error loading leads.', 'error');
-      tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load leads</p></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load leads</p></div></td></tr>';
     })
     .getLeads(APP.token, { page: page, search: APP.leads.search, filters: APP.leads.filters });
 }
@@ -3772,7 +3776,7 @@ function renderLeadsTable(leads) {
   var count   = document.getElementById('table-count');
 
   if (!leads || leads.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No leads found matching your criteria</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No leads found matching your criteria</p></div></td></tr>';
     count.textContent = '';
     return;
   }
@@ -3780,23 +3784,22 @@ function renderLeadsTable(leads) {
   count.textContent = leads.length + ' record' + (leads.length !== 1 ? 's' : '') + ' on this page';
 
   var rows = leads.map(function(l) {
-    var processingTooltip = String(l.closingNotes || l.chaserNote || '').trim();
     return '<tr onclick="openLead(\'' + esc(l.leadId) + '\')">' +
       '<td>' + esc(l.date) + '</td>' +
-      '<td class="name-cell">' + esc(l.fullName || '—') + '</td>' +
-      '<td class="phone-cell">' + esc(l.phone || '—') + '</td>' +
-      '<td>' + leadStatusBadge(l.leadStatus) + '</td>' +
-      '<td>' + chaserStatusBadge(l.chaserStatus, processingTooltip) + '</td>' +
+      '<td class="name-cell">' + esc(l.fullName || '-') + '</td>' +
+      '<td class="phone-cell">' + esc(l.phone || '-') + '</td>' +
+      '<td>' + (l.leadType ? '<span class="badge badge-info">' + esc(l.leadType) + '</span>' : '-') + '</td>' +
+      '<td>' + esc(l.requestedProducts || '-') + '</td>' +
+      '<td>' + leadStatusBadge(l.leadStatus, l.closingNotes) + '</td>' +
+      '<td>' + chaserStatusBadge(l.chaserStatus, l.chaserNote) + '</td>' +
       '<td>' + processingStatusBadge(l.processingStatusCenters) + '</td>' +
-      (isAdmin ? '<td class="mono" style="font-size:12px;">' + esc(l.centerCode || '—') + '</td>' : '') +
-      '<td>' + (l.leadType ? '<span class="badge badge-info">' + esc(l.leadType) + '</span>' : '—') + '</td>' +
+      '<td>' + paymentStatusControl(l, isAdmin) + '</td>' +
       '</tr>';
   });
 
   tbody.innerHTML = rows.join('');
 }
-
-// ── Pagination ─────────────────────────────────────────────
+// -- Pagination ─────────────────────────────────────────────
 function renderPagination(page, totalPages, total, pageLen) {
   var info  = document.getElementById('pagination-info');
   var btns  = document.getElementById('pagination-btns');
@@ -5052,40 +5055,69 @@ function toast(msg, type) {
 }
 
 // ── Production-aware Badge System ─────────────────────────
-function leadStatusBadge(val) {
+function leadStatusBadge(val, tooltip) {
   if (!val || !String(val).trim()) return '';
   var v = String(val).trim();
-  if (PROD_LEAD.indexOf(v) !== -1) {
-    return '<span class="badge badge-production">✓ ' + esc(v) + '</span>';
-  }
-  return '<span class="badge badge-trash">' + esc(v) + '</span>';
+  var n = v.toLowerCase();
+  var t = tooltip && String(tooltip).trim();
+  var titleAttr = t ? ' title="' + esc(t) + '"' : '';
+  var red = ['hmo or ppo','pt not interested','bad sns','senior living','msp','passed away','overage','duplicate in database'];
+  var yellow = ['pending hh','not transferred','home health','no doc','pending','bad state','mbi terminated','line disconnected','call back','wrong info','ppo cb no card'];
+  var green = ['verified med b','verified ppo'];
+  if (green.indexOf(n) !== -1) return '<span class="badge badge-production"' + titleAttr + '>' + esc(v) + '</span>';
+  if (yellow.indexOf(n) !== -1) return '<span class="badge badge-warning"' + titleAttr + '>' + esc(v) + '</span>';
+  if (red.indexOf(n) !== -1) return '<span class="badge badge-danger"' + titleAttr + '>' + esc(v) + '</span>';
+  return '<span class="badge badge-neutral"' + titleAttr + '>' + esc(v) + '</span>';
 }
 
 function chaserStatusBadge(val, tooltip) {
   if (!val || !String(val).trim()) return '';
   var v = String(val).trim();
+  var u = v.toUpperCase();
   var t = tooltip && String(tooltip).trim();
   var titleAttr = t ? ' title="' + esc(t) + '"' : '';
-  if (PROD_CHASER_SIGNED.indexOf(v) !== -1) {
-    return '<span class="badge badge-approved"' + titleAttr + '>✓ ' + esc(v) + '</span>';
-  }
-  if (PROD_CHASER_POTENTIAL.indexOf(v) !== -1) {
-    return '<span class="badge badge-potential"' + titleAttr + '>⏳ ' + esc(v) + '</span>';
-  }
-  return '<span class="badge badge-trash"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u.indexOf('ORDER SIGNED') !== -1) return '<span class="badge badge-approved"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u.indexOf('MISSING') !== -1) return '<span class="badge badge-warning"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u.indexOf('DENIED') !== -1) return '<span class="badge badge-danger"' + titleAttr + '>' + esc(v) + '</span>';
+  return '<span class="badge badge-primary"' + titleAttr + '>' + esc(v) + '</span>';
 }
 
 function processingStatusBadge(val) {
   if (!val || !String(val).trim()) return '';
   var v = String(val).trim();
   var u = v.toUpperCase();
-  if (u === 'APPROVED')     return '<span class="badge badge-approved">💰 ' + esc(v) + '</span>';
-  if (u === 'IN PROCESS')   return '<span class="badge badge-inprocess">⚙ ' + esc(v) + '</span>';
-  if (u === 'DENIED')       return '<span class="badge badge-denied">✗ ' + esc(v) + '</span>';
-  if (u === 'SHIPPED RTS')  return '<span class="badge badge-rts">⚠ ' + esc(v) + '</span>';
+  if (u === 'APPROVED')     return '<span class="badge badge-approved">' + esc(v) + '</span>';
+  if (u === 'IN PROCESS')   return '<span class="badge badge-inprocess">' + esc(v) + '</span>';
+  if (u === 'DENIED')       return '<span class="badge badge-denied">' + esc(v) + '</span>';
+  if (u === 'SHIPPED RTS')  return '<span class="badge badge-rts">' + esc(v) + '</span>';
   return '<span class="badge badge-neutral">' + esc(v) + '</span>';
 }
 
+function paymentStatusControl(lead, isAdmin) {
+  var status = String(lead.paymentStatus || 'Unpaid').trim() || 'Unpaid';
+  if (status.toLowerCase() === 'paid') {
+    return '<span class="badge badge-success">Paid</span>';
+  }
+  if (!isAdmin) {
+    return '<span class="badge badge-danger">Unpaid</span>';
+  }
+  return '<button class="btn btn-ghost btn-sm" onclick="markLeadPaid(event, \'' + esc(lead.leadId) + '\')" title="Mark payment as paid">Unpaid</button>';
+}
+
+function markLeadPaid(event, leadId) {
+  if (event) event.stopPropagation();
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r.success) { toast(r.error || 'Failed to update payment status.', 'error'); return; }
+      (APP.leads.data || []).forEach(function(l) {
+        if (l.leadId === leadId) l.paymentStatus = r.paymentStatus || 'Paid';
+      });
+      renderLeadsTable(APP.leads.data || []);
+      toast('Payment marked as paid.', 'success');
+    })
+    .withFailureHandler(function() { toast('Connection error updating payment status.', 'error'); })
+    .setLeadPaymentStatus(APP.token, leadId, 'Paid');
+}
 function actionBadge(action) {
   var map = {
     'LOGIN':'badge-success','LOGOUT':'badge-neutral','LOGIN_FAILED':'badge-danger',

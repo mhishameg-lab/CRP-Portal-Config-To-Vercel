@@ -1,12 +1,50 @@
 // services/data.js — Port of DataService.gs
 // Leads, PCP, dashboard stats, insights, notifications, change detection, audit log.
 
-import { getCrmSheet, getSourceSpreadsheet } from '../lib/sheets.js';
+import { getCrmSheet, getSourceSpreadsheet, getSpreadsheetById } from '../lib/sheets.js';
 import { requireAuth as _reqAuth, requireAdmin as _reqAdmin } from '../lib/auth.js';
 import { cache } from '../lib/cache.js';
 import { md5, generateId, generateLeadId, now, fmtDate } from '../lib/utils.js';
 import { CONFIG, SHEETS, COL, PCP_COL, PCP_SOURCE_SHEET_NAME, DISPOSITIONS, WATCHED_FIELDS } from '../lib/config.js';
 import { logActivity } from './auth.js';
+
+async function _getPaymentSheet() {
+  const ss = getSpreadsheetById(CONFIG.PAYMENT_STATUS_SHEET_ID);
+  await ss.ensureSheet(CONFIG.PAYMENT_STATUS_SHEET_NAME);
+  return {
+    getValues: () => ss.getValues(CONFIG.PAYMENT_STATUS_SHEET_NAME),
+    appendRow: (values) => ss.appendRow(CONFIG.PAYMENT_STATUS_SHEET_NAME, values),
+    setCell: (row, col, value) => ss.setCell(CONFIG.PAYMENT_STATUS_SHEET_NAME, row, col, value),
+  };
+}
+
+async function _getPaymentStatusRows() {
+  const key = 'payment_status_rows';
+  const hit = await cache.get(key);
+  if (hit) return hit;
+  try {
+    const sheet = await _getPaymentSheet();
+    const rows = await sheet.getValues();
+    await cache.set(key, rows, 60);
+    return rows;
+  } catch (_) {
+    return [];
+  }
+}
+
+async function _getPaymentStatusMap() {
+  const rows = await _getPaymentStatusRows();
+  const map = {};
+  rows.slice(1).forEach(row => {
+    const leadId = String(row[0] || '').trim();
+    if (leadId) map[leadId] = String(row[1] || 'Unpaid').trim() || 'Unpaid';
+  });
+  return map;
+}
+
+function _paymentStatusFor(map, leadId) {
+  return map[leadId] || 'Unpaid';
+}
 
 // ─── Source data (cached in-process) ─────────────────────────────────────────
 
@@ -82,7 +120,7 @@ function _watchValues(rowData) {
 
 // ─── Row → lead object ────────────────────────────────────────────────────────
 
-async function _rowToLead(rowData, sourceRow, idMap) {
+async function _rowToLead(rowData, sourceRow, idMap, paymentMap = {}) {
   const leadId = await _ensureLeadId(sourceRow, rowData, idMap);
   return {
     leadId,
@@ -120,6 +158,7 @@ async function _rowToLead(rowData, sourceRow, idMap) {
     doctorPhone             : String(rowData[COL.DOCTOR_PHONE]              || ''),
     doctorFax               : String(rowData[COL.DOCTOR_FAX]                || ''),
     doctorNpi               : String(rowData[COL.DOCTOR_NPI]                || ''),
+    paymentStatus           : _paymentStatusFor(paymentMap, leadId),
   };
 }
 
@@ -157,6 +196,7 @@ export async function getLeads(token, options) {
 
     const sourceData = await _getSourceData();
     const idMap      = await _getIdMap();
+    const paymentMap = await _getPaymentStatusMap();
     const matched    = [];
 
     sourceData.forEach((row, idx) => {
@@ -168,7 +208,8 @@ export async function getLeads(token, options) {
       if (srch) {
         const haystack = [
           row[COL.FIRST_NAME], row[COL.LAST_NAME], row[COL.PHONE],
-          row[COL.CENTER_CODE], row[COL.LEAD_STATUS], row[COL.CHASER_STATUS], row[COL.LEAD_TYPE],
+          row[COL.CENTER_CODE], row[COL.LEAD_STATUS], row[COL.CHASER_STATUS],
+          row[COL.LEAD_TYPE], row[COL.REQUESTED_PRODUCTS],
         ].join(' ').toLowerCase();
         if (!haystack.includes(srch)) return;
       }
@@ -214,6 +255,8 @@ export async function getLeads(token, options) {
         closingNotes            : String(row[COL.CLOSING_NOTES]             || ''),
         chaserNote              : String(row[COL.CHASER_NOTE]               || ''),
         leadType                : String(row[COL.LEAD_TYPE]                 || ''),
+        requestedProducts       : String(row[COL.REQUESTED_PRODUCTS]        || ''),
+        paymentStatus           : _paymentStatusFor(paymentMap, leadId),
       };
     }));
 
@@ -243,7 +286,8 @@ export async function getLeadDetails(token, leadId) {
     }
     if (!foundRowData) return { success: false, error: 'Lead not found.' };
 
-    const lead  = await _rowToLead(foundRowData, foundSourceRow, idMap);
+    const paymentMap = await _getPaymentStatusMap();
+    const lead  = await _rowToLead(foundRowData, foundSourceRow, idMap, paymentMap);
     const notes = await _getLeadNotes(leadId);
     await logActivity(sess.username, 'VIEW_LEAD', `Lead: ${leadId}`);
     return { success: true, lead, notes };
@@ -274,6 +318,39 @@ export async function addNote(token, leadId, content) {
     await notesSheet.appendRow([now(), leadId, sess.centerCode, content.trim(), sess.username]);
     await logActivity(sess.username, 'ADD_NOTE', `Note on lead: ${leadId}`);
     return { success: true, timestamp: now() };
+  } catch (e) { return { success: false, error: e.message }; }
+}
+
+export async function setLeadPaymentStatus(token, leadId, status = 'Paid') {
+  try {
+    const sess = await _reqAdmin(token);
+    const cleanLeadId = String(leadId || '').trim();
+    const cleanStatus = String(status || 'Paid').trim();
+    if (!cleanLeadId) return { success: false, error: 'Missing lead ID.' };
+    if (!['Paid', 'Unpaid'].includes(cleanStatus)) return { success: false, error: 'Invalid payment status.' };
+
+    const sheet = await _getPaymentSheet();
+    const rows = await sheet.getValues();
+    let targetRow = -1;
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][0] || '').trim() === cleanLeadId) {
+        targetRow = i + 1;
+        break;
+      }
+    }
+
+    const updatedAt = now();
+    if (targetRow > 0) {
+      await sheet.setCell(targetRow, 2, cleanStatus);
+      await sheet.setCell(targetRow, 3, sess.username);
+      await sheet.setCell(targetRow, 4, updatedAt);
+    } else {
+      await sheet.appendRow([cleanLeadId, cleanStatus, sess.username, updatedAt]);
+    }
+
+    await cache.remove('payment_status_rows');
+    await logActivity(sess.username, 'UPDATE_PAYMENT_STATUS', `${cleanLeadId}: ${cleanStatus}`);
+    return { success: true, leadId: cleanLeadId, paymentStatus: cleanStatus };
   } catch (e) { return { success: false, error: e.message }; }
 }
 

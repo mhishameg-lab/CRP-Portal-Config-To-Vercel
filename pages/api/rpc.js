@@ -24,7 +24,7 @@ import {
 // ── Data service ──────────────────────────────────────────────────────────────
 import {
   getDashboardStats, getLeads, getLeadDetails,
-  addNote, getNotifications, markNotificationRead, markAllNotificationsRead,
+  addNote, setLeadPaymentStatus, getNotifications, markNotificationRead, markAllNotificationsRead,
   getFilterOptions, getPcpStats, getPcpLeads, getPcpLeadDetails,
   getInsightsData, runChangeDetection, getAuditLog, getAppConfig,
 } from '../../services/data.js';
@@ -50,6 +50,7 @@ const REGISTRY = {
   getLeads               : (args) => getLeads(...args),
   getLeadDetails         : (args) => getLeadDetails(...args),
   addNote                : (args) => addNote(...args),
+  setLeadPaymentStatus   : (args) => setLeadPaymentStatus(...args),
   getNotifications       : (args) => getNotifications(...args),
   markNotificationRead   : (args) => markNotificationRead(...args),
   markAllNotificationsRead: (args) => markAllNotificationsRead(...args),
