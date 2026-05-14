@@ -25,7 +25,7 @@ import {
 import {
   getDashboardStats, getLeads, getLeadDetails,
   addNote, setLeadPaymentStatus, getNotifications, markNotificationRead, markAllNotificationsRead,
-  getFilterOptions, getPcpStats, getPcpLeads, getPcpLeadDetails,
+  sendAdminNotification, getFilterOptions, getPcpStats, getPcpLeads, getPcpLeadDetails,
   getInsightsData, runChangeDetection, getAuditLog, getAppConfig,
 } from '../../services/data.js';
 
@@ -52,6 +52,7 @@ const REGISTRY = {
   addNote                : (args) => addNote(...args),
   setLeadPaymentStatus   : (args) => setLeadPaymentStatus(...args),
   getNotifications       : (args) => getNotifications(...args),
+  sendAdminNotification  : (args) => sendAdminNotification(...args),
   markNotificationRead   : (args) => markNotificationRead(...args),
   markAllNotificationsRead: (args) => markAllNotificationsRead(...args),
   getFilterOptions       : (args) => getFilterOptions(...args),

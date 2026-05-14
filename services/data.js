@@ -50,6 +50,14 @@ function _pcpPaymentId(sourceRow) {
   return `PCP-ROW-${sourceRow}`;
 }
 
+function _parseNotificationMessage(raw) {
+  try {
+    return typeof raw === 'string' ? JSON.parse(raw) : raw;
+  } catch (_) {
+    return null;
+  }
+}
+
 // ─── Source data (cached in-process) ─────────────────────────────────────────
 
 async function _getSourceData() {
@@ -380,15 +388,34 @@ export async function getNotifications(token) {
     const sheet = await getCrmSheet(SHEETS.NOTIFICATIONS);
     const rows  = await sheet.getValues();
     const notifs = [];
+    const adminBroadcastSeen = new Set();
     for (let i = 1; i < rows.length; i++) {
       const centerCode = String(rows[i][1] || '');
+      const messageRaw = rows[i][3];
+      const parsedMsg = _parseNotificationMessage(messageRaw);
+      if (parsedMsg?.type !== 'broadcast') continue;
+      if (sess.role === 'admin' && parsedMsg?.type === 'broadcast') {
+        const key = `${rows[i][5]}|${messageRaw}`;
+        if (adminBroadcastSeen.has(key)) continue;
+        adminBroadcastSeen.add(key);
+        notifs.push({
+          id        : String(rows[i][0]),
+          centerCode,
+          leadId    : rows[i][2],
+          messageRaw,
+          status    : 'Read',
+          timestamp : rows[i][5],
+          rowIndex  : i + 1,
+        });
+        continue;
+      }
       if (sess.role !== 'admin' &&
           centerCode.trim().toLowerCase() !== String(sess.centerCode || '').trim().toLowerCase()) continue;
       notifs.push({
         id        : String(rows[i][0]),
         centerCode,
         leadId    : rows[i][2],
-        messageRaw: rows[i][3],
+        messageRaw,
         status    : rows[i][4],
         timestamp : rows[i][5],
         rowIndex  : i + 1,
@@ -403,6 +430,55 @@ export async function getNotifications(token) {
   } catch (e) { return { success: false, error: e.message }; }
 }
 
+export async function sendAdminNotification(token, audience, title, body) {
+  try {
+    const sess = await _reqAdmin(token);
+    const cleanAudience = String(audience || 'both').trim().toLowerCase();
+    const cleanTitle = String(title || '').trim();
+    const cleanBody = String(body || '').trim();
+    if (!['closers', 'centers', 'both'].includes(cleanAudience)) {
+      return { success: false, error: 'Invalid audience.' };
+    }
+    if (!cleanTitle && !cleanBody) return { success: false, error: 'Notification message is required.' };
+
+    const usersSheet = await getCrmSheet(SHEETS.USERS);
+    const users = await usersSheet.getValues();
+    const allowedRoles = cleanAudience === 'both' ? ['closer', 'center'] :
+      cleanAudience === 'closers' ? ['closer'] : ['center'];
+    const recipients = [];
+    const seen = new Set();
+
+    for (let i = 1; i < users.length; i++) {
+      const username = String(users[i][0] || '').trim();
+      const role = String(users[i][2] || '').trim().toLowerCase();
+      const status = String(users[i][3] || '').trim().toLowerCase();
+      if (!username || status !== 'active' || !allowedRoles.includes(role)) continue;
+      const key = username.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      recipients.push({ username, role });
+    }
+
+    if (recipients.length === 0) return { success: false, error: 'No active recipients found.' };
+
+    const msgObj = {
+      type: 'broadcast',
+      title: cleanTitle || 'Admin Notification',
+      body: cleanBody,
+      audience: cleanAudience,
+      sentBy: sess.username,
+    };
+    const notifSheet = await getCrmSheet(SHEETS.NOTIFICATIONS);
+    const timestamp = now();
+    await Promise.all(recipients.map(recipient =>
+      notifSheet.appendRow([generateId('N'), recipient.username, '', JSON.stringify(msgObj), 'Unread', timestamp])
+    ));
+
+    await logActivity(sess.username, 'SEND_NOTIFICATION', `${cleanAudience}: ${recipients.length} recipients`);
+    return { success: true, recipients: recipients.length };
+  } catch (e) { return { success: false, error: e.message }; }
+}
+
 export async function markNotificationRead(token, notificationId) {
   try {
     const sess  = await _reqAuth(token);
@@ -410,6 +486,8 @@ export async function markNotificationRead(token, notificationId) {
     const rows  = await sheet.getValues();
     for (let i = 1; i < rows.length; i++) {
       if (String(rows[i][0]) === String(notificationId)) {
+        const parsedMsg = _parseNotificationMessage(rows[i][3]);
+        if (sess.role === 'admin' && parsedMsg?.type === 'broadcast') return { success: true };
         if (sess.role !== 'admin' &&
             String(rows[i][1] || '').trim().toLowerCase() !== String(sess.centerCode || '').trim().toLowerCase())
           return { success: false, error: 'Access denied.' };
@@ -430,6 +508,8 @@ export async function markAllNotificationsRead(token) {
     for (let i = 1; i < rows.length; i++) {
       if (rows[i][4] === 'Unread') {
         const cc = String(rows[i][1] || '');
+        const parsedMsg = _parseNotificationMessage(rows[i][3]);
+        if (sess.role === 'admin' && parsedMsg?.type === 'broadcast') continue;
         if (sess.role === 'admin' || cc.trim().toLowerCase() === String(sess.centerCode || '').trim().toLowerCase()) {
           updates.push(sheet.setCell(i + 1, 5, 'Read'));
         }

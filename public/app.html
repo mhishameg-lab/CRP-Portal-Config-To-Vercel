@@ -692,6 +692,21 @@ input, select, textarea { font-family: inherit; }
 .notif-change-arrow { color: var(--text-muted); font-size: 11px; }
 .notif-change-to   { color: var(--success); font-weight: 600; font-size: 12.5px; }
 .notif-time { font-size: 10.5px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-top: 4px; }
+.notif-compose {
+  display: none;
+  margin: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface2);
+}
+.notif-compose.show { display: block; }
+.notif-compose-title { font-size: 12px; font-weight: 800; color: var(--text-primary); margin-bottom: 10px; }
+.notif-compose-row { display: grid; gap: 8px; margin-bottom: 8px; }
+.notif-compose textarea { min-height: 88px; }
+.notif-broadcast-title { font-size: 13.5px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
+.notif-broadcast-body { font-size: 12.5px; line-height: 1.45; color: var(--text-secondary); white-space: pre-wrap; }
+.notif-broadcast-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 
 /* ══════════════════════════════════════════════════════════════════════════════
    INSIGHTS / CHARTS
@@ -3534,6 +3549,24 @@ function chatScrollBottom() { requestAnimationFrame(function() { var el = docume
       </button>
     </div>
   </div>
+  <div class="notif-compose admin-only hidden" id="notif-compose">
+    <div class="notif-compose-title">
+      <i class="fa-solid fa-paper-plane" style="margin-right:6px;color:var(--accent-primary);"></i>
+      Send Notification
+    </div>
+    <div class="notif-compose-row">
+      <select class="form-select" id="notif-audience">
+        <option value="both">Closers and Centers</option>
+        <option value="closers">Closers Only</option>
+        <option value="centers">Centers Only</option>
+      </select>
+      <input class="form-input" id="notif-title-input" type="text" placeholder="Title">
+      <textarea class="form-textarea" id="notif-body-input" placeholder="Write the notification message..."></textarea>
+    </div>
+    <button class="btn btn-primary btn-sm" id="btn-send-notif" onclick="sendAdminNotif()">
+      <i class="fa-solid fa-paper-plane"></i> Send
+    </button>
+  </div>
   <div class="notif-list" id="notif-list">
     <div class="loading-overlay"><div class="spinner"></div></div>
   </div>
@@ -3855,11 +3888,9 @@ function enterApp() {
   document.getElementById('user-role-display').textContent = APP.role.toUpperCase();
   document.getElementById('user-avatar').textContent = APP.username.charAt(0).toUpperCase();
 
-  if (APP.role === 'admin') {
-    document.querySelectorAll('.admin-only').forEach(function(el) {
-      el.classList.remove('hidden');
-    });
-  }
+  document.querySelectorAll('.admin-only').forEach(function(el) {
+    el.classList.toggle('hidden', APP.role !== 'admin');
+  });
 
   loadFilterOptions();
   showView('dashboard');
@@ -4362,8 +4393,10 @@ function loadNotifications() {
 function renderNotifications(notifs, unreadCount) {
   var dot  = document.getElementById('notif-dot');
   var list = document.getElementById('notif-list');
+  var compose = document.getElementById('notif-compose');
 
   dot.classList.toggle('show', unreadCount > 0);
+  if (compose) compose.classList.toggle('show', APP.role === 'admin');
 
   if (!notifs || notifs.length === 0) {
     list.innerHTML = '<div class="empty-state"><i class="fa-solid fa-bell-slash"></i><p>No notifications</p></div>';
@@ -4372,7 +4405,21 @@ function renderNotifications(notifs, unreadCount) {
 
   var html = notifs.map(function(n) {
     var unread  = n.status === 'Unread';
-    var changes = parseNotifChanges(n.messageRaw);
+    var parsed = parseNotifMessage(n.messageRaw);
+
+    if (parsed.type === 'broadcast') {
+      return '<div class="notif-item ' + (unread ? 'unread' : '') + '" onclick="onNotifClick(\'' + esc(n.id) + '\',\'\')">' +
+        '<div class="notif-lead-id"><i class="fa-solid fa-bullhorn" style="margin-right:4px;"></i>Admin Broadcast</div>' +
+        '<div class="notif-broadcast-title">' + esc(parsed.title || 'Notification') + '</div>' +
+        '<div class="notif-broadcast-body">' + esc(parsed.body || '') + '</div>' +
+        '<div class="notif-broadcast-meta">' +
+          '<span class="badge badge-info">' + esc(audienceLabel(parsed.audience)) + '</span>' +
+          '<span class="notif-time"><i class="fa-regular fa-clock" style="margin-right:3px;"></i>' + fmtTimestamp(n.timestamp) + '</span>' +
+        '</div>' +
+      '</div>';
+    }
+
+    var changes = parsed.changes || [];
 
     var changesHtml = changes.length > 0
       ? '<div class="notif-changes">' + changes.map(function(c) {
@@ -4385,7 +4432,7 @@ function renderNotifications(notifs, unreadCount) {
       : '<div style="font-size:12px;color:var(--text-muted);">Update detected</div>';
 
     return '<div class="notif-item ' + (unread ? 'unread' : '') + '" onclick="onNotifClick(\'' + esc(n.id) + '\',\'' + esc(n.leadId) + '\')">' +
-      '<div class="notif-lead-id"><i class="fa-solid fa-tag" style="margin-right:4px;"></i>' + esc(n.leadId) + '</div>' +
+      '<div class="notif-lead-id"><i class="fa-solid fa-tag" style="margin-right:4px;"></i>' + esc(n.leadId || 'Lead Update') + '</div>' +
       changesHtml +
       '<div class="notif-time"><i class="fa-regular fa-clock" style="margin-right:3px;"></i>' + fmtTimestamp(n.timestamp) + '</div>' +
     '</div>';
@@ -4394,16 +4441,49 @@ function renderNotifications(notifs, unreadCount) {
   list.innerHTML = html;
 }
 
-function parseNotifChanges(rawMsg) {
-  if (!rawMsg) return [];
+function parseNotifMessage(rawMsg) {
+  if (!rawMsg) return {};
   try {
     var parsed = typeof rawMsg === 'string' ? JSON.parse(rawMsg) : rawMsg;
+    if (parsed && parsed.type === 'broadcast') return parsed;
     if (parsed && Array.isArray(parsed.changes)) {
-      return parsed.changes.filter(function(c) { return c.to && c.to.trim(); });
+      parsed.changes = parsed.changes.filter(function(c) { return c.to && c.to.trim(); });
+      return parsed;
     }
   } catch (e) {}
-  // Fallback: return raw message as a single item
-  return [{ field: 'Update', to: String(rawMsg).substring(0, 80) }];
+  return { changes: [{ field: 'Update', to: String(rawMsg).substring(0, 80) }] };
+}
+
+function audienceLabel(audience) {
+  if (audience === 'closers') return 'Closers';
+  if (audience === 'centers') return 'Centers';
+  return 'Closers + Centers';
+}
+
+function sendAdminNotif() {
+  var audience = document.getElementById('notif-audience').value;
+  var title = document.getElementById('notif-title-input').value.trim();
+  var body = document.getElementById('notif-body-input').value.trim();
+  var btn = document.getElementById('btn-send-notif');
+  if (!title && !body) { toast('Write a notification first.', 'warning'); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending';
+  google.script.run
+    .withSuccessHandler(function(r) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send';
+      if (!r.success) { toast(r.error || 'Failed to send notification.', 'error'); return; }
+      document.getElementById('notif-title-input').value = '';
+      document.getElementById('notif-body-input').value = '';
+      toast('Notification sent to ' + r.recipients + ' users.', 'success');
+      loadNotifications();
+    })
+    .withFailureHandler(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send';
+      toast('Connection error sending notification.', 'error');
+    })
+    .sendAdminNotification(APP.token, audience, title, body);
 }
 
 function onNotifClick(notifId, leadId) {
