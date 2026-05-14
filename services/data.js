@@ -46,6 +46,10 @@ function _paymentStatusFor(map, leadId) {
   return map[leadId] || 'Unpaid';
 }
 
+function _pcpPaymentId(sourceRow) {
+  return `PCP-ROW-${sourceRow}`;
+}
+
 // ─── Source data (cached in-process) ─────────────────────────────────────────
 
 async function _getSourceData() {
@@ -491,6 +495,7 @@ export async function getPcpLeads(token, options) {
     const { page = 1, search = '', filters = {} } = options || {};
     const srch = search.trim().toLowerCase();
     const data = await _getPcpSourceData();
+    const paymentMap = await _getPaymentStatusMap();
     const matched = [];
 
     data.forEach((row, idx) => {
@@ -502,7 +507,8 @@ export async function getPcpLeads(token, options) {
         const hay = [
           row[PCP_COL.FIRST_NAME], row[PCP_COL.LAST_NAME],
           row[PCP_COL.PHONE],      row[PCP_COL.CENTER_CODE],
-          row[PCP_COL.LEAD_TYPE],
+          row[PCP_COL.LEAD_TYPE],  row[PCP_COL.REQUESTED_PRODUCTS],
+          row[PCP_COL.DOCa_REVIEW], row[PCP_COL.PROC_STATUS_CENTERS],
         ].join(' ').toLowerCase();
         if (!hay.includes(srch)) return;
       }
@@ -526,14 +532,19 @@ export async function getPcpLeads(token, options) {
     const start      = (page - 1) * CONFIG.PAGE_SIZE;
     const leads      = matched.slice(start, start + CONFIG.PAGE_SIZE).map(({ row, sRow }) => ({
       sRow,
+      paymentId        : _pcpPaymentId(sRow),
       timestamp        : fmtDate(row[PCP_COL.TIMESTAMP], 'MM/dd/yyyy'),
       centerCode       : String(row[PCP_COL.CENTER_CODE]         || ''),
       fullName         : [row[PCP_COL.FIRST_NAME], row[PCP_COL.LAST_NAME]].filter(Boolean).join(' '),
       phone            : String(row[PCP_COL.PHONE]               || ''),
       leadType         : String(row[PCP_COL.LEAD_TYPE]           || ''),
+      requestedProducts: String(row[PCP_COL.REQUESTED_PRODUCTS]  || ''),
+      backendStatus    : String(row[PCP_COL.DOCa_REVIEW]         || ''),
+      backendNote      : String(row[PCP_COL.NOTE]                || ''),
       procStatusCenters: String(row[PCP_COL.PROC_STATUS_CENTERS] || ''),
-      snsResult        : String(row[PCP_COL.SNS_RESULT]          || ''),
-      procStatusAN     : String(row[PCP_COL.PROC_STATUS_AN]      || ''),
+      processingHistory: String(row[PCP_COL.PROCESSING_HISTORY]  || ''),
+      shippedDate      : fmtDate(row[PCP_COL.SHIPPED_DATE], 'MM/dd/yyyy'),
+      paymentStatus    : _paymentStatusFor(paymentMap, _pcpPaymentId(sRow)),
     }));
 
     await logActivity(sess.username, 'VIEW_PCP', `Page ${page} search="${search}"`);
@@ -553,15 +564,18 @@ export async function getPcpLeadDetails(token, sRow) {
           String(sess.centerCode || '').trim().toLowerCase())
         return { success: false, error: 'Access denied.' };
     }
+    const paymentMap = await _getPaymentStatusMap();
     return {
       success: true,
       lead: {
         sRow,
+        paymentId        : _pcpPaymentId(sRow),
         timestamp        : fmtDate(row[PCP_COL.TIMESTAMP], 'yyyy-MM-dd HH:mm'),
         centerCode       : String(row[PCP_COL.CENTER_CODE]         || ''),
         centerName       : String(row[PCP_COL.CENTER_NAME]         || ''),
         closerName       : String(row[PCP_COL.CLOSER_NAME]         || ''),
         procStatusCenters: String(row[PCP_COL.PROC_STATUS_CENTERS] || ''),
+        backendStatus    : String(row[PCP_COL.DOCa_REVIEW]         || ''),
         snsResult        : String(row[PCP_COL.SNS_RESULT]          || ''),
         leadType         : String(row[PCP_COL.LEAD_TYPE]           || ''),
         requestedProducts: String(row[PCP_COL.REQUESTED_PRODUCTS]  || ''),
@@ -588,7 +602,9 @@ export async function getPcpLeadDetails(token, sRow) {
         cnLink           : String(row[PCP_COL.CN_LINK]             || ''),
         recordLink       : String(row[PCP_COL.RECORD_LINK]         || ''),
         note             : String(row[PCP_COL.NOTE]                || ''),
-        procStatusAN     : String(row[PCP_COL.PROC_STATUS_AN]      || ''),
+        processingHistory: String(row[PCP_COL.PROCESSING_HISTORY]  || ''),
+        shippedDate      : fmtDate(row[PCP_COL.SHIPPED_DATE]),
+        paymentStatus    : _paymentStatusFor(paymentMap, _pcpPaymentId(sRow)),
       },
     };
   } catch (e) { return { success: false, error: e.message }; }

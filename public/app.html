@@ -352,6 +352,23 @@ input, select, textarea { font-family: inherit; }
   font-size: 15px; transition: all var(--transition);
 }
 .theme-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+.install-btn {
+  height: 36px; padding: 0 13px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid rgba(37,99,235,.2);
+  color: var(--accent-primary);
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 700;
+  box-shadow: 0 8px 22px rgba(37,99,235,.12);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.install-btn:hover { transform: translateY(-1px); border-color: rgba(37,99,235,.45); box-shadow: 0 12px 28px rgba(37,99,235,.18); }
+[data-theme="dark"] .install-btn {
+  background: linear-gradient(135deg, rgba(37,99,235,.2), rgba(14,165,233,.14));
+  border-color: rgba(96,165,250,.28);
+  color: #bfdbfe;
+}
 
 /* ── View Container ────────────────────────────────────────────────────────── */
 #view-container { flex: 1; overflow-y: auto; padding: 24px; }
@@ -515,8 +532,8 @@ input, select, textarea { font-family: inherit; }
 
 /* In-process = pipeline */
 .badge-inprocess {
-  background: var(--info-bg); color: var(--info);
-  border: 1px solid rgba(8,145,178,.2);
+  background: var(--warning-bg); color: var(--warning);
+  border: 1px solid rgba(245,158,11,.25);
 }
 
 /* Approved = payable */
@@ -527,10 +544,10 @@ input, select, textarea { font-family: inherit; }
 
 /* RTS = red flag */
 .badge-rts {
-  background: #fff7ed; color: #c2410c; border: 1px solid rgba(194,65,12,.3);
+  background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(220,38,38,.2);
   animation: pulse-subtle 3s ease-in-out infinite;
 }
-[data-theme="dark"] .badge-rts { background: rgba(251,146,60,.15); color: #fb923c; }
+[data-theme="dark"] .badge-rts { background: rgba(220,38,38,.2); color: #f87171; }
 
 /* Denied */
 .badge-denied { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(220,38,38,.2); }
@@ -876,6 +893,185 @@ input, select, textarea { font-family: inherit; }
 /* ══════════════════════════════════════════════════════════════════════════════
    KEYFRAMES
    ══════════════════════════════════════════════════════════════════════════════ */
+/* Visual refresh */
+body {
+  background:
+    linear-gradient(135deg, rgba(239,246,255,.95) 0%, rgba(248,250,252,1) 42%, rgba(219,234,254,.72) 100%);
+}
+[data-theme="dark"] body {
+  background:
+    linear-gradient(135deg, #061123 0%, #081933 48%, #0b2447 100%);
+}
+#sidebar {
+  background:
+    linear-gradient(180deg, #071a3d 0%, #0b2a5f 52%, #081b3d 100%);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,.08), 18px 0 42px rgba(15,30,61,.08);
+}
+[data-theme="dark"] #sidebar {
+  background:
+    linear-gradient(180deg, #061126 0%, #0a1c3c 58%, #061126 100%);
+}
+.sidebar-logo { min-height: 74px; background: rgba(255,255,255,.035); }
+.sidebar-logo-icon,
+.user-avatar {
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  box-shadow: 0 12px 26px rgba(37,99,235,.34);
+}
+.nav-item { min-height: 42px; border: 1px solid transparent; }
+.nav-item:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.08);
+  transform: translateX(2px);
+}
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(59,130,246,.96), rgba(14,165,233,.9));
+  box-shadow: 0 14px 30px rgba(37,99,235,.28);
+}
+#main-content {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.46), rgba(255,255,255,0) 260px),
+    var(--bg-base);
+}
+#topbar {
+  min-height: 66px;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 30px rgba(37,99,235,.06);
+}
+[data-theme="dark"] #topbar { background: rgba(13,27,54,.82); }
+.topbar-breadcrumb { font-size: 15px; letter-spacing: 0; }
+#view-container { padding: 28px; }
+.page-title { font-size: 24px; font-weight: 800; letter-spacing: 0; }
+.card,
+.stat-card,
+.filters-bar,
+.chart-card,
+.quality-card {
+  border-color: rgba(148,163,184,.28);
+  box-shadow: 0 18px 50px rgba(37,99,235,.08), 0 1px 0 rgba(255,255,255,.85) inset;
+}
+[data-theme="dark"] .card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .filters-bar,
+[data-theme="dark"] .chart-card,
+[data-theme="dark"] .quality-card {
+  border-color: rgba(96,165,250,.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,.24), 0 1px 0 rgba(255,255,255,.04) inset;
+}
+.card,
+.filters-bar,
+.chart-card {
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(14px);
+}
+[data-theme="dark"] .card,
+[data-theme="dark"] .filters-bar,
+[data-theme="dark"] .chart-card {
+  background: rgba(13,27,54,.86);
+}
+.stat-card {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.96), rgba(239,246,255,.84));
+  min-height: 92px;
+}
+[data-theme="dark"] .stat-card {
+  background:
+    linear-gradient(135deg, rgba(17,31,64,.95), rgba(13,27,54,.86));
+}
+.stat-card:hover,
+.card:hover,
+.chart-card:hover { border-color: rgba(59,130,246,.32); }
+.stat-icon {
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+}
+.stat-value { font-size: 25px; letter-spacing: 0; }
+.card-header {
+  min-height: 58px;
+  background: linear-gradient(180deg, rgba(248,250,252,.9), rgba(255,255,255,.72));
+}
+[data-theme="dark"] .card-header {
+  background: linear-gradient(180deg, rgba(17,31,64,.92), rgba(13,27,54,.72));
+}
+.data-table th {
+  height: 42px;
+  color: #496083;
+  background: rgba(239,246,255,.86);
+  letter-spacing: .06em;
+}
+[data-theme="dark"] .data-table th {
+  color: #9fb8df;
+  background: rgba(17,31,64,.86);
+}
+.data-table td { height: 48px; }
+.data-table tbody tr:hover {
+  background: rgba(219,234,254,.52);
+  box-shadow: inset 3px 0 0 var(--accent-primary);
+}
+[data-theme="dark"] .data-table tbody tr:hover { background: rgba(37,99,235,.12); }
+.btn,
+.page-btn,
+.notif-btn,
+.theme-btn,
+.topbar-toggle,
+.filter-select,
+.filter-date,
+.form-input,
+.form-select,
+.form-textarea,
+.inp,
+.search-wrap { box-shadow: 0 1px 0 rgba(255,255,255,.72) inset; }
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  box-shadow: 0 14px 30px rgba(37,99,235,.24);
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8, #0284c7);
+}
+.btn-ghost,
+.notif-btn,
+.theme-btn,
+.topbar-toggle,
+.page-btn { background: rgba(255,255,255,.68); }
+[data-theme="dark"] .btn-ghost,
+[data-theme="dark"] .notif-btn,
+[data-theme="dark"] .theme-btn,
+[data-theme="dark"] .topbar-toggle,
+[data-theme="dark"] .page-btn { background: rgba(17,31,64,.82); }
+.search-wrap,
+.filter-select,
+.filter-date,
+.form-input,
+.form-select,
+.form-textarea,
+.inp { background: rgba(248,250,252,.88); }
+[data-theme="dark"] .search-wrap,
+[data-theme="dark"] .filter-select,
+[data-theme="dark"] .filter-date,
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea,
+[data-theme="dark"] .inp { background: rgba(17,31,64,.88); }
+.badge {
+  border: 1px solid rgba(148,163,184,.18);
+  box-shadow: 0 1px 0 rgba(255,255,255,.58) inset;
+}
+.modal-overlay {
+  background: rgba(8,20,43,.58);
+  backdrop-filter: blur(10px);
+}
+.modal-box,
+.confirm-modal-box {
+  border-color: rgba(148,163,184,.28);
+  box-shadow: 0 30px 80px rgba(15,30,61,.22);
+}
+.modal-head {
+  background: linear-gradient(180deg, rgba(248,250,252,.92), rgba(255,255,255,.72));
+}
+[data-theme="dark"] .modal-head {
+  background: linear-gradient(180deg, rgba(17,31,64,.92), rgba(13,27,54,.72));
+}
+
 @keyframes fadeIn       { from { opacity: 0; }             to { opacity: 1; } }
 @keyframes fadeUp       { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @keyframes slideUp      { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
@@ -906,6 +1102,8 @@ input, select, textarea { font-family: inherit; }
   .modal-box { border-radius: var(--radius-lg); }
   #notif-panel { width: 100vw; }
   .topbar-actions .btn span { display: none; }
+  .install-btn span { display: none; }
+  .install-btn { width: 36px; padding: 0; justify-content: center; }
   .incentive-banner { flex-direction: column; }
 }
 
@@ -1143,6 +1341,12 @@ input, select, textarea { font-family: inherit; }
         <button class="notif-btn" onclick="toggleNotifPanel()" title="Notifications">
           <i class="fa-solid fa-bell"></i>
           <span class="notif-dot" id="notif-dot"></span>
+        </button>
+
+        <!-- Install App -->
+        <button class="install-btn hidden" id="install-app-btn" onclick="installApp()" title="Install app">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+          <span>Install App</span>
         </button>
 
         <!-- Theme Toggle -->
@@ -3006,6 +3210,7 @@ function chatScrollBottom() { requestAnimationFrame(function() { var el = docume
             <option value="APPROVED">Approved</option>
             <option value="IN PROCESS">In Process</option>
             <option value="DENIED">Denied</option>
+            <option value="SHIPPED RTS">Shipped RTS</option>
           </select>
           <select class="filter-select admin-only hidden" id="pcp-filter-center" onchange="pcpApplyFilters()">
             <option value="">All Centers</option>
@@ -3013,6 +3218,9 @@ function chatScrollBottom() { requestAnimationFrame(function() { var el = docume
           <button class="btn btn-ghost btn-sm" onclick="pcpClearFilters()">
             <i class="fa-solid fa-xmark"></i> Clear
           </button>
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin:-6px 0 14px 2px;">
+          Yellow processing statuses need center follow-up. Red statuses mean In-Call teams are not working on them.
         </div>
 
         <!-- Table -->
@@ -3030,13 +3238,15 @@ function chatScrollBottom() { requestAnimationFrame(function() { var el = docume
                   <th>Patient Name</th>
                   <th>Phone</th>
                   <th>Lead Type</th>
+                  <th>Requested Braces</th>
+                  <th>Backend Status</th>
                   <th>Processing Status</th>
-                  <th>SNS Result</th>
-                  <th class="admin-only hidden">Center</th>
+                  <th>Shipped Date</th>
+                  <th>Payment Alert</th>
                 </tr>
               </thead>
               <tbody id="pcp-tbody">
-                <tr><td colspan="8"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
+                <tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -3229,8 +3439,12 @@ function chatScrollBottom() { requestAnimationFrame(function() { var el = docume
           <div class="detail-field"><div class="detail-label">Lead Type</div><div class="detail-value" id="pd-lead-type">—</div></div>
           <div class="detail-field"><div class="detail-label">Requested Products</div><div class="detail-value" id="pd-products">—</div></div>
           <div class="detail-field"><div class="detail-label">SNS Result</div><div class="detail-value" id="pd-sns">—</div></div>
+          <div class="detail-field"><div class="detail-label">Backend Status</div><div class="detail-value" id="pd-backend-status">—</div></div>
           <div class="detail-field"><div class="detail-label">Processing Status</div><div class="detail-value" id="pd-proc-status">—</div></div>
-          <div class="detail-field" style="grid-column:1/-1;"><div class="detail-label">DO Note (1 month+)</div><div class="detail-value" id="pd-do-note" style="white-space:pre-wrap;">—</div></div>
+          <div class="detail-field"><div class="detail-label">Shipped Date</div><div class="detail-value mono" id="pd-shipped-date">—</div></div>
+          <div class="detail-field"><div class="detail-label">Payment Alert</div><div class="detail-value" id="pd-payment-status">—</div></div>
+          <div class="detail-field" style="grid-column:1/-1;"><div class="detail-label">Processing History</div><div class="detail-value" id="pd-processing-history" style="white-space:pre-wrap;">—</div></div>
+          <div class="detail-field" style="grid-column:1/-1;"><div class="detail-label">Backend Note</div><div class="detail-value" id="pd-do-note" style="white-space:pre-wrap;">—</div></div>
         </div>
       </div>
 
@@ -3377,6 +3591,58 @@ const APP = {
 };
 
 const WEBFORM_URL = 'https://script.google.com/macros/s/AKfycbxecKhXkD7fddhw0YoOleY6DDHYP7gFaqKd65onZjOnr7GqJpcthquXVfO8tqlv01kKPg/exec';
+let deferredInstallPrompt = null;
+
+function isStandaloneApp() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function isIosDevice() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function setInstallButtonVisible(show) {
+  var btn = document.getElementById('install-app-btn');
+  if (btn) btn.classList.toggle('hidden', !show);
+}
+
+function installApp() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(function(choice) {
+      if (choice.outcome === 'accepted') setInstallButtonVisible(false);
+      deferredInstallPrompt = null;
+    });
+    return;
+  }
+  if (isIosDevice()) {
+    toast('On iPhone, tap Share, then Add to Home Screen.', 'info');
+    return;
+  }
+  toast('Install is available from your browser menu.', 'info');
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  setInstallButtonVisible(!isStandaloneApp());
+});
+
+window.addEventListener('appinstalled', function() {
+  deferredInstallPrompt = null;
+  setInstallButtonVisible(false);
+  toast('ICO Portal installed.', 'success');
+});
+
+if (isIosDevice() && !isStandaloneApp()) {
+  setInstallButtonVisible(true);
+}
 
 const CHART_PALETTE = [
   '#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6',
@@ -5089,26 +5355,40 @@ function chaserStatusBadge(val, tooltip) {
   return '<span class="badge badge-primary"' + titleAttr + '>' + esc(v) + '</span>';
 }
 
-function processingStatusBadge(val) {
+function backendStatusBadge(val, tooltip) {
   if (!val || !String(val).trim()) return '';
   var v = String(val).trim();
   var u = v.toUpperCase();
-  if (u === 'APPROVED')     return '<span class="badge badge-approved">' + esc(v) + '</span>';
-  if (u === 'IN PROCESS')   return '<span class="badge badge-inprocess">' + esc(v) + '</span>';
-  if (u === 'DENIED')       return '<span class="badge badge-denied">' + esc(v) + '</span>';
-  if (u === 'SHIPPED RTS')  return '<span class="badge badge-rts">' + esc(v) + '</span>';
-  return '<span class="badge badge-neutral">' + esc(v) + '</span>';
+  var t = tooltip && String(tooltip).trim();
+  var titleAttr = t ? ' title="' + esc(t) + '"' : '';
+  if (u === 'DROPPED BE') return '<span class="badge badge-danger"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u === 'REVIEWED')   return '<span class="badge badge-info"' + titleAttr + '>' + esc(v) + '</span>';
+  return '<span class="badge badge-neutral"' + titleAttr + '>' + esc(v) + '</span>';
+}
+
+function processingStatusBadge(val, tooltip) {
+  if (!val || !String(val).trim()) return '';
+  var v = String(val).trim();
+  var u = v.toUpperCase();
+  var t = tooltip && String(tooltip).trim();
+  var titleAttr = t ? ' title="' + esc(t) + '"' : '';
+  if (u === 'APPROVED')     return '<span class="badge badge-approved"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u === 'IN PROCESS')   return '<span class="badge badge-inprocess"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u === 'DENIED')       return '<span class="badge badge-denied"' + titleAttr + '>' + esc(v) + '</span>';
+  if (u === 'SHIPPED RTS')  return '<span class="badge badge-rts"' + titleAttr + '>' + esc(v) + '</span>';
+  return '<span class="badge badge-neutral"' + titleAttr + '>' + esc(v) + '</span>';
 }
 
 function paymentStatusControl(lead, isAdmin) {
   var status = String(lead.paymentStatus || 'Unpaid').trim() || 'Unpaid';
+  var paymentId = lead.paymentId || lead.leadId;
   if (status.toLowerCase() === 'paid') {
     return '<span class="badge badge-success">Paid</span>';
   }
   if (!isAdmin) {
     return '<span class="badge badge-danger">Unpaid</span>';
   }
-  return '<button class="btn btn-ghost btn-sm" onclick="markLeadPaid(event, \'' + esc(lead.leadId) + '\')" title="Mark payment as paid">Unpaid</button>';
+  return '<button class="btn btn-ghost btn-sm" onclick="markLeadPaid(event, \'' + esc(paymentId) + '\')" title="Mark payment as paid">Unpaid</button>';
 }
 
 function markLeadPaid(event, leadId) {
@@ -5119,7 +5399,12 @@ function markLeadPaid(event, leadId) {
       (APP.leads.data || []).forEach(function(l) {
         if (l.leadId === leadId) l.paymentStatus = r.paymentStatus || 'Paid';
       });
+      (PCP.data || []).forEach(function(l) {
+        if (l.paymentId === leadId) l.paymentStatus = r.paymentStatus || 'Paid';
+      });
       renderLeadsTable(APP.leads.data || []);
+      if (PCP.data && PCP.data.length) pcpRenderTable(PCP.data);
+      if (event && event.target) event.target.outerHTML = '<span class="badge badge-success">Paid</span>';
       toast('Payment marked as paid.', 'success');
     })
     .withFailureHandler(function() { toast('Connection error updating payment status.', 'error'); })
@@ -5173,6 +5458,7 @@ document.addEventListener('keydown', function(e) {
 
 const PCP = {
   page: 1, total: 0, totalPages: 0,
+  data: [],
   loading: false, search: '', filters: {},
   searchDebounce: null,
 };
@@ -5258,7 +5544,7 @@ function pcpLoadLeads(page) {
   PCP.loading = true;
   PCP.page    = page;
   var tbody = document.getElementById('pcp-tbody');
-  tbody.innerHTML = '<tr><td colspan="8"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
 
   google.script.run
     .withSuccessHandler(function(r) {
@@ -5266,13 +5552,14 @@ function pcpLoadLeads(page) {
       PCP.total      = r.total;
       PCP.totalPages = r.totalPages;
       if (!r.success) { toast(r.error || 'Failed to load PCP leads.', 'error'); return; }
+      PCP.data = r.leads || [];
       pcpRenderTable(r.leads);
       pcpRenderPagination(r.page, r.totalPages, r.total);
     })
     .withFailureHandler(function() {
       PCP.loading = false;
       toast('Connection error loading PCP leads.', 'error');
-      tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load</p></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load</p></div></td></tr>';
     })
     .getPcpLeads(APP.token, { page: page, search: PCP.search, filters: PCP.filters });
 }
@@ -5283,23 +5570,23 @@ function pcpRenderTable(leads) {
   var count   = document.getElementById('pcp-table-count');
 
   if (!leads || leads.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No PCP records found</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No PCP records found</p></div></td></tr>';
     count.textContent = '';
     return;
   }
   count.textContent = leads.length + ' record' + (leads.length !== 1 ? 's' : '') + ' on this page';
 
-  tbody.innerHTML = leads.map(function(l, i) {
-    var rowNum = (PCP.page - 1) * 50 + i + 1;
+  tbody.innerHTML = leads.map(function(l) {
     return '<tr onclick="pcpOpenModal(' + l.sRow + ')">' +
-      '<td class="mono" style="font-size:11px;color:var(--text-muted);">' + rowNum + '</td>' +
       '<td>' + esc(l.timestamp) + '</td>' +
       '<td class="name-cell">' + esc(l.fullName || '—') + '</td>' +
       '<td class="phone-cell">' + esc(l.phone || '—') + '</td>' +
       '<td>' + (l.leadType ? '<span class="badge badge-info">' + esc(l.leadType) + '</span>' : '—') + '</td>' +
-      '<td>' + processingStatusBadge(l.procStatusCenters) + '</td>' +
-      '<td>' + (l.snsResult ? '<span class="badge badge-neutral">' + esc(l.snsResult) + '</span>' : '—') + '</td>' +
-      (isAdmin ? '<td class="mono" style="font-size:12px;">' + esc(l.centerCode || '—') + '</td>' : '') +
+      '<td>' + esc(l.requestedProducts || '—') + '</td>' +
+      '<td>' + backendStatusBadge(l.backendStatus, l.backendNote) + '</td>' +
+      '<td>' + processingStatusBadge(l.procStatusCenters, l.processingHistory) + '</td>' +
+      '<td>' + esc(l.shippedDate || '—') + '</td>' +
+      '<td>' + paymentStatusControl(l, isAdmin) + '</td>' +
     '</tr>';
   }).join('');
 }
@@ -5347,7 +5634,7 @@ function pcpOpenModal(sRow) {
 function pcpFillModal(l) {
   document.getElementById('pcp-modal-name').textContent = (l.firstName + ' ' + l.lastName).trim() || '—';
   document.getElementById('pcp-modal-row').textContent  = 'PCP · Row #' + l.sRow;
-  document.getElementById('pcp-modal-badges').innerHTML = processingStatusBadge(l.procStatusCenters);
+  document.getElementById('pcp-modal-badges').innerHTML = processingStatusBadge(l.procStatusCenters, l.processingHistory);
 
   // Overview
   pcpSet('pd-timestamp',  l.timestamp);
@@ -5357,8 +5644,12 @@ function pcpFillModal(l) {
   pcpSet('pd-lead-type',  l.leadType);
   pcpSet('pd-products',   l.requestedProducts);
   pcpSet('pd-sns',        l.snsResult);
-  pcpSetHtml('pd-proc-status', processingStatusBadge(l.procStatusCenters) || '—');
-  pcpSet('pd-do-note',    l.doNote);
+  pcpSetHtml('pd-backend-status', backendStatusBadge(l.backendStatus, l.note) || '—');
+  pcpSetHtml('pd-proc-status', processingStatusBadge(l.procStatusCenters, l.processingHistory) || '—');
+  pcpSet('pd-shipped-date', l.shippedDate);
+  pcpSetHtml('pd-payment-status', paymentStatusControl(l, APP.role === 'admin') || '—');
+  pcpSet('pd-processing-history', l.processingHistory);
+  pcpSet('pd-do-note',    l.note);
   // Patient
   pcpSet('pd-first-name', l.firstName);
   pcpSet('pd-last-name',  l.lastName);
