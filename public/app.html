@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Identity & PWA -->
+  <meta name="application-name"              content="ICO Center Portal">
+  <meta name="description"                   content="Lead management and tracking CRM for ICO centers">
+  <meta name="theme-color"                   content="#0f1e3d">
+  <meta name="apple-mobile-web-app-capable"  content="yes">
+  <meta name="apple-mobile-web-app-title"    content="ICO Portal">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon"     type="image/svg+xml"  href="/favicon.svg">
+  <link rel="manifest"                       href="/manifest.json">
   <title>ICO Center Portal</title>
     <script src="/gscript-shim.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -899,9 +908,77 @@ input, select, textarea { font-family: inherit; }
   .topbar-actions .btn span { display: none; }
   .incentive-banner { flex-direction: column; }
 }
+
+/* â”€â”€ Splash screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0f1e3d;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.38s ease, visibility 0.38s ease;
+}
+#splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash-inner   { text-align: center; }
+.splash-logo    {
+  position: relative; width: 76px; height: 76px;
+  margin: 0 auto 18px;
+}
+.splash-icon    {
+  width: 76px; height: 76px; border-radius: 20px;
+  background: linear-gradient(135deg, #1a3160 0%, #162a55 100%);
+  border: 1px solid rgba(37,99,235,0.35);
+  color: #3b82f6;
+  font-size: 20px; font-weight: 700; letter-spacing: 0.08em;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  box-shadow: 0 0 0 0 rgba(37,99,235,0.4);
+}
+.splash-pulse   {
+  position: absolute; inset: -10px; border-radius: 30px;
+  border: 1.5px solid rgba(37,99,235,0.5);
+  animation: sPulse 1.8s ease-in-out infinite;
+}
+.splash-pulse2  {
+  position: absolute; inset: -20px; border-radius: 40px;
+  border: 1px solid rgba(37,99,235,0.2);
+  animation: sPulse 1.8s ease-in-out 0.4s infinite;
+}
+@keyframes sPulse {
+  0%   { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(1.15); }
+}
+.splash-name    {
+  color: #6b8fc4; font-size: 13px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.splash-dots    { display: flex; gap: 7px; justify-content: center; }
+.splash-dots span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #2563eb; opacity: 0.3;
+  animation: sDot 1.4s ease-in-out infinite;
+}
+.splash-dots span:nth-child(2) { animation-delay: 0.18s; }
+.splash-dots span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes sDot {
+  0%, 100% { opacity: 0.3; transform: translateY(0);    }
+  50%       { opacity: 1;   transform: translateY(-5px); }
+}
 </style>
 </head>
 <body>
+
+<!-- ── Splash screen ── -->
+<div id="splash" aria-hidden="true">
+  <div class="splash-inner">
+    <div class="splash-logo">
+      <div class="splash-icon">IC</div>
+      <div class="splash-pulse"></div>
+      <div class="splash-pulse2"></div>
+    </div>
+    <div class="splash-name">ICO Center Portal</div>
+    <div class="splash-dots"><span></span><span></span><span></span></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════
      LOGIN PAGE
@@ -3393,7 +3470,15 @@ function confirmLogout() {
 }
 
 // ── Login / Logout ─────────────────────────────────────────
+function removeSplash() {
+  var sp = document.getElementById('splash');
+  if (!sp) return;
+  sp.classList.add('fade-out');
+  setTimeout(function () { sp && sp.remove(); }, 420);
+}
+
 function showLogin() {
+  removeSplash();
   document.getElementById('login-page').classList.remove('hidden');
   document.getElementById('app-shell').classList.add('hidden');
   document.getElementById('inp-user').focus();
@@ -3464,6 +3549,7 @@ function openWebform() {
 
 // ── App Entry ──────────────────────────────────────────────
 function enterApp() {
+  removeSplash();
   document.getElementById('login-page').classList.add('hidden');
   document.getElementById('app-shell').classList.remove('hidden');
 

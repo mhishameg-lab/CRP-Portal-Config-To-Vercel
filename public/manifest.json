@@ -1,0 +1,31 @@
+{
+  "name": "ICO Center Portal",
+  "short_name": "ICO Portal",
+  "description": "Lead management and tracking CRM for ICO centers",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f1e3d",
+  "theme_color": "#0f1e3d",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/#dashboard",
+      "description": "Go to the leads dashboard"
+    },
+    {
+      "name": "Leads",
+      "url": "/#leads",
+      "description": "View all leads"
+    }
+  ]
+}
