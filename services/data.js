@@ -4,7 +4,7 @@
 import { getCrmSheet, getSourceSpreadsheet } from '../lib/sheets.js';
 import { requireAuth as _reqAuth, requireAdmin as _reqAdmin } from '../lib/auth.js';
 import { cache } from '../lib/cache.js';
-import { md5, generateId, generateLeadId, now, formatDate as fmtDate } from '../lib/utils.js';
+import { md5, generateId, generateLeadId, now, fmtDate } from '../lib/utils.js';
 import { CONFIG, SHEETS, COL, PCP_COL, PCP_SOURCE_SHEET_NAME, DISPOSITIONS, WATCHED_FIELDS } from '../lib/config.js';
 import { logActivity } from './auth.js';
 

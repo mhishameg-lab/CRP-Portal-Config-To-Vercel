@@ -79,7 +79,6 @@ const REGISTRY = {
   chatDeleteMessage      : (args) => chatDeleteMessage(...args),
   chatUploadImage        : (args) => chatUploadImage(...args),
   getNewChatUnread       : (args) => getNewChatUnread(...args),
-  pollChatUnread         : (args) => getNewChatUnread(...args),  // ← add this
 // Chat aliases
   getChatCenters         : (args) => chatGetCenters(...args),
   getChatMessages        : (args) => chatGetMessages(...args),
@@ -131,7 +130,6 @@ export default async function handler(req, res) {
 
     // Special case: if login succeeded, set httpOnly cookie so browser auto-sends token.
     if (fn === 'login' && result?.success && result.token) {
-      const { setSessionCookie } = await import('../../lib/auth.js');
       setSessionCookie(res, result.token);
     }
 
