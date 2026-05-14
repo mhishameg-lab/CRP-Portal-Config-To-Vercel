@@ -3110,8 +3110,13 @@ function chatScrollBottom() { requestAnimationFrame(function() { var el = docume
           <div class="detail-field"><div class="detail-label">Closer Name</div><div class="detail-value" id="d-chaser-name">—</div></div>
           <div class="detail-field"><div class="detail-label">Chaser Status</div><div class="detail-value" id="d-chaser-status">—</div></div>
           <div class="detail-field"><div class="detail-label">Processing Status</div><div class="detail-value" id="d-proc-centers">—</div></div>
+          <div class="detail-field"><div class="detail-label">Approval Date</div><div class="detail-value mono" id="d-approval-date">—</div></div>
 
           <div class="detail-section-title"><i class="fa-solid fa-file-lines" style="margin-right:6px;"></i>Notes</div>
+          <div class="detail-field" style="grid-column:1/-1;">
+            <div class="detail-label">Processing History</div>
+            <div class="detail-value" id="d-processing-history" style="white-space:pre-wrap;">—</div>
+          </div>
           <div class="detail-field" style="grid-column:1/-1;">
             <div class="detail-label">Processing Notes</div>
             <div class="detail-value" id="d-closing-notes" style="white-space:pre-wrap;">—</div>
@@ -3889,8 +3894,10 @@ function fillLeadModal(lead, notes) {
   setDet('d-sns',           lead.snsResult);
   setDet('d-chaser-name',   lead.chaserName);
   setDetHtml('d-chaser-status', chaserStatusBadge(lead.chaserStatus) || '—');
-  setDetHtml('d-proc-centers',  processingStatusBadge(lead.clientfeedback) || '—');
+  setDetHtml('d-proc-centers',  processingStatusBadge(lead.processingStatusCenters) || '—');
   setDet('d-proc-ico',      lead.processingStatusICO);
+  setDet('d-approval-date', lead.approvalDate);
+  setDet('d-processing-history', lead.processingHistory);
   setDet('d-closing-notes', lead.closingNotes);
   setDet('d-chaser-note',   lead.chaserNote);
 

@@ -158,6 +158,8 @@ async function _rowToLead(rowData, sourceRow, idMap, paymentMap = {}) {
     doctorPhone             : String(rowData[COL.DOCTOR_PHONE]              || ''),
     doctorFax               : String(rowData[COL.DOCTOR_FAX]                || ''),
     doctorNpi               : String(rowData[COL.DOCTOR_NPI]                || ''),
+    processingHistory       : String(rowData[COL.PROCESSING_HISTORY]        || ''),
+    approvalDate            : fmtDate(rowData[COL.APPROVAL_DATE]),
     paymentStatus           : _paymentStatusFor(paymentMap, leadId),
   };
 }
