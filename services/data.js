@@ -733,8 +733,9 @@ export async function getInsightsData(token, dateFrom, dateTo) {
     let approved = 0, inProcess = 0, denied = 0, rts = 0;
     let returnedDOs = 0, rtsFromReturned = 0, approvedFromReturned = 0;
     let verifiedWithin45 = 0, notReturnedWithin45 = 0;
-    let leadsOlderThan45 = 0, orderSignedOlderThan45 = 0;
-
+    let leadsOlderThan45 = 0, orderSignedOlderThan45 = 0;      let verifiedMedB = 0, verifiedPPO = 0;
+      let verifiedOlderThan45 = 0, staleVerifiedCount = 0;
+      const droppedByDisposition = {};
     const cutoff45 = new Date();
     cutoff45.setDate(cutoff45.getDate() - 45);
     cutoff45.setHours(0, 0, 0, 0);
@@ -771,7 +772,14 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       const isRTS      = psU === 'SHIPPED RTS';
       const isApproved = psU === 'APPROVED';
 
-      if (isVerified) verified++; else trash_ls++;
+      if (isVerified) {
+        verified++;
+        if (ls === 'Verified Med b') verifiedMedB++;
+        else if (ls === 'Verified ppo') verifiedPPO++;
+      } else {
+        trash_ls++;
+        if (ls) droppedByDisposition[ls] = (droppedByDisposition[ls] || 0) + 1;
+      }
 
       if (isReturned) {
         orderSigned++; returnedDOs++;
@@ -795,6 +803,10 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       if (rowDate && !isNaN(rowDate) && rowDate < cutoff45) {
         leadsOlderThan45++;
         if (isReturned) orderSignedOlderThan45++;
+        if (isVerified) {
+          verifiedOlderThan45++;
+          if (!isReturned) staleVerifiedCount++;
+        }
       }
       if (rowDate && !isNaN(rowDate)) {
         for (const b of lgWeekBuckets) {
@@ -856,6 +868,9 @@ export async function getInsightsData(token, dateFrom, dateTo) {
         rtsWarning: rtsRate > RTS_WARNING_PCT,
         orderConversionRate,
         leadsOlderThan45, orderSignedOlderThan45,
+        verifiedMedB, verifiedPPO,
+        droppedByDisposition,
+        verifiedOlderThan45, staleVerifiedCount,
         orderTargetLow: ORDER_TARGET_LOW, orderTargetHigh: ORDER_TARGET_HIGH,
         rtsTargetLow: RTS_TARGET_LOW,     rtsTargetHigh: RTS_TARGET_HIGH,
       },

@@ -1448,7 +1448,21 @@ body {
       <div id="view-insights" class="view">
         <div class="page-header">
           <div class="page-title">Performance <span>Intelligence</span></div>
-          <div style="display:flex;gap:10px;align-items:center;">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <!-- Tab Switcher -->
+            <div style="display:flex;border:1.5px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+              <button id="ins-tab-lg"  onclick="insTab('lg')"
+                style="padding:7px 18px;font-size:12px;font-weight:700;border:none;cursor:pointer;
+                       background:var(--accent-primary);color:#fff;transition:all .2s;">
+                📋 LG Leads
+              </button>
+              <button id="ins-tab-pcp" onclick="insTab('pcp')"
+                style="padding:7px 18px;font-size:12px;font-weight:700;border:none;cursor:pointer;
+                       background:var(--bg-surface2);color:var(--text-secondary);transition:all .2s;">
+                🏥 PCP Leads
+              </button>
+            </div>
+            <!-- Date filters -->
             <input class="filter-date" type="date" id="ins-date-from">
             <input class="filter-date" type="date" id="ins-date-to">
             <button class="btn btn-primary btn-sm" onclick="loadInsights()">
@@ -1456,122 +1470,149 @@ body {
             </button>
           </div>
         </div>
- 
+
         <div id="insights-loading" class="loading-overlay"><div class="spinner"></div></div>
- 
+
         <div id="charts-container" class="hidden">
- 
-          <!-- Alert Zone (dynamic) -->
-          <div id="insights-alerts"></div>
- 
-          <!-- ── LG LEADS ───────────────────────────────────────── -->
- 
-          <!-- Quality Metrics Row -->
-          <div class="section-header">
-            <div class="section-title">🎯 LG Leads — Production Scorecard</div>
-            <div class="section-subtitle">Your performance at a glance · 5 key quality signals</div>
-          </div>
-          <div class="quality-row" id="quality-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;"></div>
- 
-          <!-- Weekly Production Tracking — LG -->
-          <div class="section-header">
-            <div class="section-title">📅 LG Leads — Weekly Production</div>
-            <div class="section-subtitle">Last 3 weeks · Minimum target: 10 leads/week</div>
-          </div>
-          <div class="card" style="margin-bottom:20px;">
-            <div class="card-body">
-              <div id="weekly-lg-container"></div>
+
+          <!-- ═══════════════════════════════════════════════════
+               LG LEADS PANEL
+          ════════════════════════════════════════════════════ -->
+          <div id="ins-panel-lg">
+
+            <!-- Alert zone -->
+            <div id="insights-alerts"></div>
+
+            <!-- ── Row 1: Hero stats ────────────────────────── -->
+            <div id="ins-hero-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;"></div>
+
+            <!-- ── Verified Breakdown ──────────────────────── -->
+            <div class="section-header">
+              <div class="section-title">✅ Verified Leads Breakdown</div>
+              <div class="section-subtitle">Med B vs PPO — production split</div>
             </div>
-          </div>
- 
-          <!-- Production Funnel -->
-          <div class="section-header">
-            <div class="section-title">📊 Lead Pipeline Funnel</div>
-            <div class="section-subtitle">From submission to payment — where your leads stand</div>
-          </div>
-          <div class="card" style="margin-bottom:20px;">
-            <div class="card-body">
-              <div class="funnel-container" id="funnel-container"></div>
-            </div>
-          </div>
- 
-          <!-- Charts Grid -->
-          <div class="section-header">
-            <div class="section-title">📈 Detailed Breakdown</div>
-          </div>
-          <div class="charts-grid">
-            <!-- Lead Status -->
-            <div class="chart-card">
-              <div class="chart-title">Lead Status Distribution</div>
-              <div class="chart-subtitle">Production vs. Trash — quality starts here</div>
-              <div class="chart-wrap"><canvas id="chart-lead-status"></canvas></div>
-            </div>
- 
-            <!-- Chaser Status -->
-            <div class="chart-card">
-              <div class="chart-title">Documentation Pipeline</div>
-              <div class="chart-subtitle">Signed orders & high-potential leads in our hands</div>
-              <div class="chart-wrap"><canvas id="chart-chaser-status"></canvas></div>
-            </div>
- 
-            <!-- Processing Status -->
-            <div class="chart-card">
-              <div class="chart-title">Processing Status</div>
-              <div class="chart-subtitle">Approved → your earnings; RTS → a red flag</div>
-              <div class="chart-wrap"><canvas id="chart-processing"></canvas></div>
-            </div>
- 
-            <!-- RTS Gauge -->
-            <div class="chart-card">
-              <div class="chart-title">RTS Rate Monitor</div>
-              <div class="chart-subtitle">From returned DOs — target: below 15%</div>
-              <div class="rts-gauge-wrap" id="rts-gauge-wrap">
-                <canvas id="chart-rts-gauge" width="200" height="120"></canvas>
-                <div class="rts-gauge-label" id="rts-gauge-label"></div>
-                <div class="rts-gauge-zone">
-                  <span class="zone-item"><span class="zone-dot" style="background:var(--success);"></span>0–7% Safe</span>
-                  <span class="zone-item"><span class="zone-dot" style="background:var(--warning);"></span>7–15% Watch</span>
-                  <span class="zone-item"><span class="zone-dot" style="background:var(--danger);"></span>15%+ Critical</span>
-                </div>
+            <div id="ins-verified-card" style="margin-bottom:20px;"></div>
+
+            <!-- ── Dropped Leads by Disposition ───────────── -->
+            <div class="section-header">
+              <div class="section-title">🗑 Dropped Leads — Disposition Breakdown</div>
+              <div class="section-subtitle">
+                <span style="color:#dc2626;font-weight:600;">🔴 Red</span> = In-Call not working on them &nbsp;·&nbsp;
+                <span style="color:#d97706;font-weight:600;">🟡 Yellow</span> = Center needs to follow up
               </div>
             </div>
- 
-            <!-- Centers bar (admin) -->
-            <div class="chart-card admin-only hidden">
-              <div class="chart-title">Leads by Center</div>
-              <div class="chart-subtitle">Volume comparison across all centers</div>
-              <div class="chart-wrap"><canvas id="chart-centers"></canvas></div>
+            <div id="ins-dropped-card" style="margin-bottom:20px;"></div>
+
+            <!-- ── Weekly Production ───────────────────────── -->
+            <div class="section-header">
+              <div class="section-title">📅 Weekly Production</div>
+              <div class="section-subtitle">Last 3 weeks · Minimum target: 10 leads/week</div>
             </div>
- 
-            <!-- Time Line -->
-            <div class="chart-card wide">
-              <div class="chart-title">Leads Over Time</div>
-              <div class="chart-subtitle">Submission volume trend — consistency is king</div>
-              <div class="chart-wrap tall"><canvas id="chart-time"></canvas></div>
+            <div class="card" style="margin-bottom:20px;">
+              <div class="card-body"><div id="weekly-lg-container"></div></div>
             </div>
-          </div>
- 
-          <!-- Order Conversion Detail -->
-          <div class="section-header">
-            <div class="section-title">⏱ 45-Day Order Conversion</div>
-            <div class="section-subtitle">We expect 25%–30% of leads older than 45 days to reach "Order Signed"</div>
-          </div>
-          <div class="card" style="margin-bottom:20px;">
-            <div class="card-body" id="conversion-detail"></div>
-          </div>
- 
-          <!-- ── PCP LEADS ──────────────────────────────────────── -->
- 
-          <div class="section-header" style="margin-top:12px;">
-            <div class="section-title">🏥 PCP Leads — Order Analysis</div>
-            <div class="section-subtitle">Approval, denial & RTS breakdown across all PCP submissions</div>
-          </div>
-          <div class="card" style="margin-bottom:20px;">
-            <div class="card-body">
-              <div id="pcp-section"></div>
+
+            <!-- ── Documentation Pipeline ─────────────────── -->
+            <div class="section-header">
+              <div class="section-title">📂 Documentation Pipeline</div>
+              <div class="section-subtitle">From verified lead → signed order → financial outcome</div>
             </div>
-          </div>
- 
+            <div id="ins-pipeline-card" style="margin-bottom:20px;"></div>
+
+            <!-- ── 45-Day Promise Tracker ──────────────────── -->
+            <div class="section-header">
+              <div class="section-title">⏱ 45-Day Conversion Promise</div>
+              <div class="section-subtitle">We guarantee 20–25% of verified leads convert to signed orders within 45 days</div>
+            </div>
+            <div id="ins-promise-card" style="margin-bottom:20px;"></div>
+
+            <!-- ── Financial Results ───────────────────────── -->
+            <div class="section-header">
+              <div class="section-title">💰 Financial Results</div>
+              <div class="section-subtitle">From signed orders → Approved (real revenue) and RTS (returned product)</div>
+            </div>
+            <div id="ins-financial-card" style="margin-bottom:20px;"></div>
+
+            <!-- ── Charts (existing) ───────────────────────── -->
+            <div class="section-header">
+              <div class="section-title">📈 Detailed Charts</div>
+            </div>
+            <div class="charts-grid">
+              <div class="chart-card">
+                <div class="chart-title">Lead Status Distribution</div>
+                <div class="chart-subtitle">Production vs. Trash</div>
+                <div class="chart-wrap"><canvas id="chart-lead-status"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">Documentation Pipeline</div>
+                <div class="chart-subtitle">Signed orders & high-potential in our hands</div>
+                <div class="chart-wrap"><canvas id="chart-chaser-status"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">Processing Status</div>
+                <div class="chart-subtitle">Approved → revenue · RTS → red flag</div>
+                <div class="chart-wrap"><canvas id="chart-processing"></canvas></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">RTS Rate Monitor</div>
+                <div class="chart-subtitle">Target: below 10%</div>
+                <div class="rts-gauge-wrap" id="rts-gauge-wrap">
+                  <canvas id="chart-rts-gauge" width="200" height="120"></canvas>
+                  <div class="rts-gauge-label" id="rts-gauge-label"></div>
+                  <div class="rts-gauge-zone">
+                    <span class="zone-item"><span class="zone-dot" style="background:var(--success);"></span>0–7% Safe</span>
+                    <span class="zone-item"><span class="zone-dot" style="background:var(--warning);"></span>7–15% Watch</span>
+                    <span class="zone-item"><span class="zone-dot" style="background:var(--danger);"></span>15%+ Critical</span>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-card admin-only hidden">
+                <div class="chart-title">Leads by Center</div>
+                <div class="chart-subtitle">Volume comparison across all centers</div>
+                <div class="chart-wrap"><canvas id="chart-centers"></canvas></div>
+              </div>
+              <div class="chart-card wide">
+                <div class="chart-title">Leads Over Time</div>
+                <div class="chart-subtitle">Submission volume trend</div>
+                <div class="chart-wrap tall"><canvas id="chart-time"></canvas></div>
+              </div>
+            </div>
+
+          </div><!-- /ins-panel-lg -->
+
+          <!-- ═══════════════════════════════════════════════════
+               PCP LEADS PANEL
+          ════════════════════════════════════════════════════ -->
+          <div id="ins-panel-pcp" style="display:none;">
+
+            <!-- ── Alert zone ──────────────────────────────── -->
+            <div id="ins-pcp-alerts"></div>
+
+            <!-- ── PCP Hero stats ──────────────────────────── -->
+            <div class="section-header">
+              <div class="section-title">🏥 PCP Leads — Performance Overview</div>
+              <div class="section-subtitle">You provide the documentation — we process and track every order</div>
+            </div>
+            <div id="ins-pcp-hero" style="margin-bottom:20px;"></div>
+
+            <!-- ── PCP Weekly ──────────────────────────────── -->
+            <div class="section-header">
+              <div class="section-title">📅 Weekly Submissions</div>
+              <div class="section-subtitle">Last 3 weeks · Minimum target: 10 leads/week</div>
+            </div>
+            <div class="card" style="margin-bottom:20px;">
+              <div class="card-body"><div id="weekly-pcp-container"></div></div>
+            </div>
+
+            <!-- ── PCP Financial Results ───────────────────── -->
+            <div class="section-header">
+              <div class="section-title">💰 Processing Outcomes</div>
+              <div class="section-subtitle">Approval rate and RTS rate across all your PCP submissions</div>
+            </div>
+            <div id="ins-pcp-outcomes" style="margin-bottom:20px;"></div>
+
+          </div><!-- /ins-panel-pcp -->
+
         </div><!-- /charts-container -->
       </div><!-- /view-insights -->
  
@@ -2648,9 +2689,20 @@ function renderLeadsTable(leads) {
   count.textContent = leads.length + ' record' + (leads.length !== 1 ? 's' : '') + ' on this page';
 
   var rows = leads.map(function(l) {
-    return '<tr onclick="openLead(\'' + esc(l.leadId) + '\')">' +
-      '<td>' + esc(l.date) + '</td>' +
-      '<td class="name-cell">' + esc(l.fullName || '-') + '</td>' +
+    // Stale flag: verified + >45 days old + no order signed yet
+    var lDate   = l.date ? new Date(l.date) : null;
+    var cutoffD = new Date(); cutoffD.setDate(cutoffD.getDate() - 45);
+    var isVerifiedLead  = LS_GREEN.indexOf(l.leadStatus) !== -1;
+    var isOrderSigned   = l.chaserStatus && l.chaserStatus.toUpperCase().indexOf('ORDER SIGNED') !== -1;
+    var isStale         = isVerifiedLead && lDate && lDate < cutoffD && !isOrderSigned;
+    var staleTag = isStale
+      ? ' <span title="Verified lead — no signed order after 45+ days. Needs attention." style="display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;cursor:help;vertical-align:middle;">⏰ 45d</span>'
+      : '';
+    var rowStyle = isStale ? ' style="background:rgba(245,158,11,0.06);"' : '';
+
+    return '<tr onclick="openLead(\'' + esc(l.leadId) + '\')"' + rowStyle + '>' +
+      '<td style="white-space:nowrap;font-size:12px;color:var(--text-secondary)">' + esc(l.date) + '</td>' +
+      '<td class="name-cell">' + esc(l.fullName || '—') + staleTag + '</td>' +
       '<td class="phone-cell">' + esc(l.phone || '-') + '</td>' +
       '<td>' + (l.leadType ? '<span class="badge badge-info">' + esc(l.leadType) + '</span>' : '-') + '</td>' +
       '<td>' + esc(l.requestedProducts || '-') + '</td>' +
@@ -3063,6 +3115,33 @@ function markAllRead() {
 // INSIGHTS — Enhanced Analytics (LG Leads + PCP Leads)
 // ══════════════════════════════════════════════════════════
 
+var _insActiveTab = 'lg';
+
+function insTab(tab) {
+  _insActiveTab = tab;
+  var lgBtn  = document.getElementById('ins-tab-lg');
+  var pcpBtn = document.getElementById('ins-tab-pcp');
+  var lgPanel  = document.getElementById('ins-panel-lg');
+  var pcpPanel = document.getElementById('ins-panel-pcp');
+  if (!lgBtn || !pcpBtn || !lgPanel || !pcpPanel) return;
+
+  if (tab === 'lg') {
+    lgBtn.style.background  = 'var(--accent-primary)';
+    lgBtn.style.color       = '#fff';
+    pcpBtn.style.background = 'var(--bg-surface2)';
+    pcpBtn.style.color      = 'var(--text-secondary)';
+    lgPanel.style.display   = '';
+    pcpPanel.style.display  = 'none';
+  } else {
+    pcpBtn.style.background = 'var(--accent-primary)';
+    pcpBtn.style.color      = '#fff';
+    lgBtn.style.background  = 'var(--bg-surface2)';
+    lgBtn.style.color       = 'var(--text-secondary)';
+    pcpPanel.style.display  = '';
+    lgPanel.style.display   = 'none';
+  }
+}
+
 function loadInsights() {
   var dateFrom = document.getElementById('ins-date-from').value;
   var dateTo   = document.getElementById('ins-date-to').value;
@@ -3076,16 +3155,21 @@ function loadInsights() {
       if (!r.success) { toast(r.error || 'Failed to load insights.', 'error'); return; }
       document.getElementById('charts-container').classList.remove('hidden');
 
-      // ── LG Leads ──
-      renderInsightsAlerts(r.production, r.totalLeads);
-      renderQualityCards(r.production, r.totalLeads);
-      renderFunnel(r.production, r.totalLeads);
-      renderCharts(r);
-      renderConversionDetail(r.production);
-      renderWeeklyTracking('weekly-lg-container', r.weeklyLG, 'LG Leads Weekly Production');
+      var p  = r.production;
+      var tt = r.totalLeads;
 
-      // ── PCP Leads ──
-      renderPCPSection(r.pcp, r.weeklyPCP);
+      renderInsightsAlerts(p, tt);
+      renderHeroStats(p, tt);
+      renderVerifiedCard(p, tt);
+      renderDroppedCard(p);
+      renderWeeklyTracking('weekly-lg-container', r.weeklyLG, 'LG Leads Weekly Production');
+      renderPipelineCard(p);
+      renderPromiseCard(p);
+      renderFinancialCard(p);
+      renderCharts(r);
+
+      renderPCPPanel(r.pcp, r.weeklyPCP);
+      insTab(_insActiveTab);
     })
     .withFailureHandler(function() {
       document.getElementById('insights-loading').style.display = 'none';
@@ -3102,55 +3186,311 @@ function renderInsightsAlerts(p, total) {
   if (!p) { container.innerHTML = ''; return; }
   var alerts = [];
 
-  // 1. Production Rate alert
   var prodPct = total > 0 ? Math.round((p.verified / total) * 100) : 0;
-  if (prodPct >= 60) {
-    alerts.push({ type: 'success', icon: '✅', msg: '<strong>Strong Production Rate (' + prodPct + '%)</strong> — Over 60% of submitted transfers are verified. Excellent lead quality.' });
-  } else if (prodPct >= 40) {
-    alerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Average Production Rate (' + prodPct + '%)</strong> — Between 40–60% verified. Room to improve submission quality.' });
-  } else {
-    alerts.push({ type: 'danger', icon: '🚨', msg: '<strong>Low Production Rate (' + prodPct + '%)</strong> — Under 40% verified. Review submission quality urgently.' });
-  }
+  if      (prodPct >= 60) alerts.push({ type: 'success', icon: '✅', msg: '<strong>Strong Production Rate (' + prodPct + '%)</strong> — Over 60% of submissions are verified. Excellent quality.' });
+  else if (prodPct >= 40) alerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Average Production Rate (' + prodPct + '%)</strong> — 40–60% verified. Room for improvement.' });
+  else                    alerts.push({ type: 'danger',  icon: '🚨', msg: '<strong>Low Production Rate (' + prodPct + '%)</strong> — Under 40% verified. Review submission quality urgently.' });
 
-  // 2. RTS Rate alert (denominator = returned DOs)
   if (p.returnedDOs > 0) {
     var rtsPct = Math.round((p.rtsFromReturned / p.returnedDOs) * 100);
-    if (rtsPct <= 7) {
-      alerts.push({ type: 'success', icon: '✅', msg: '<strong>Excellent RTS Rate (' + rtsPct + '%)</strong> — Only ' + p.rtsFromReturned + ' of ' + p.returnedDOs + ' returned orders shipped back. Very healthy.' });
-    } else if (rtsPct <= 15) {
-      alerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Watch RTS Rate (' + rtsPct + '%)</strong> — ' + p.rtsFromReturned + ' of ' + p.returnedDOs + ' returned DOs became RTS. Keep below 15%.' });
-    } else {
-      alerts.push({ type: 'danger', icon: '🚨', msg: '<strong>Critical RTS Rate (' + rtsPct + '%)</strong> — ' + p.rtsFromReturned + ' of ' + p.returnedDOs + ' returned DOs shipped and returned. Investigate immediately.' });
-    }
+    if      (rtsPct <= 7)  alerts.push({ type: 'success', icon: '✅', msg: '<strong>Excellent RTS Rate (' + rtsPct + '%)</strong> — ' + p.rtsFromReturned + ' of ' + p.returnedDOs + ' returned orders shipped back. Very healthy.' });
+    else if (rtsPct <= 10) alerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Watch RTS Rate (' + rtsPct + '%)</strong> — ' + p.rtsFromReturned + ' of ' + p.returnedDOs + ' returned orders were RTS. Stay below 10%.' });
+    else                   alerts.push({ type: 'danger',  icon: '🚨', msg: '<strong>Critical RTS Rate (' + rtsPct + '%)</strong> — ' + p.rtsFromReturned + ' of ' + p.returnedDOs + ' returned orders are RTS. Investigate immediately.' });
   }
 
-  // 3. 45-Day Retention alert
   if (p.verifiedWithin45 > 0) {
     var retPct = Math.round((p.notReturnedWithin45 / p.verifiedWithin45) * 100);
-    if (retPct >= 75) {
-      alerts.push({ type: 'success', icon: '🏆', msg: '<strong>Strong 45-Day Retention (' + retPct + '%)</strong> — ' + p.notReturnedWithin45 + ' of ' + p.verifiedWithin45 + ' recent verified leads still active in pipeline.' });
-    } else if (retPct >= 50) {
-      alerts.push({ type: 'info', icon: '📊', msg: '<strong>Moderate 45-Day Retention (' + retPct + '%)</strong> — ' + p.notReturnedWithin45 + ' of ' + p.verifiedWithin45 + ' recent leads still active. Monitor closely.' });
-    } else {
-      alerts.push({ type: 'warning', icon: '📉', msg: '<strong>Low 45-Day Retention (' + retPct + '%)</strong> — Many recent verified leads are being returned. Check follow-up and ICO quality.' });
-    }
+    if      (retPct >= 75) alerts.push({ type: 'success', icon: '🏆', msg: '<strong>Strong 45-Day Retention (' + retPct + '%)</strong> — ' + p.notReturnedWithin45 + ' of ' + p.verifiedWithin45 + ' recent verified leads are still active.' });
+    else if (retPct >= 50) alerts.push({ type: 'info',    icon: '📊', msg: '<strong>Moderate 45-Day Retention (' + retPct + '%)</strong> — ' + p.notReturnedWithin45 + ' of ' + p.verifiedWithin45 + ' recent leads remain active.' });
+    else                   alerts.push({ type: 'warning', icon: '📉', msg: '<strong>Low 45-Day Retention (' + retPct + '%)</strong> — Many recent verified leads are returning. Review follow-up quality.' });
   }
 
-  // 4. Return Rate alert
+  if ((p.staleVerifiedCount || 0) > 0) {
+    alerts.push({ type: 'warning', icon: '⏰', msg: '<strong>' + p.staleVerifiedCount + ' verified lead' + ((p.staleVerifiedCount === 1) ? '' : 's') + ' have been in the pipeline for 45+ days without a signed order.</strong> These are tagged with ⏰ in the LG Leads table.' });
+  }
+
   if (p.verified > 0) {
     var returnPct = Math.round((p.returnedDOs / p.verified) * 100);
-    if (returnPct >= 60) {
-      alerts.push({ type: 'success', icon: '📦', msg: '<strong>Good Return Rate (' + returnPct + '%)</strong> — ' + p.returnedDOs + ' of your verified leads made it back as signed orders.' });
-    } else if (returnPct >= 30) {
-      alerts.push({ type: 'info', icon: '📦', msg: '<strong>Moderate Return Rate (' + returnPct + '%)</strong> — ' + p.returnedDOs + ' of ' + p.verified + ' verified leads returned as DOs.' });
-    } else {
-      alerts.push({ type: 'warning', icon: '📦', msg: '<strong>Low Return Rate (' + returnPct + '%)</strong> — Only ' + p.returnedDOs + ' of ' + p.verified + ' verified leads came back as signed orders.' });
-    }
+    if      (returnPct >= 60) alerts.push({ type: 'success', icon: '📦', msg: '<strong>Good Return Rate (' + returnPct + '%)</strong> — ' + p.returnedDOs + ' of your verified leads converted to signed orders.' });
+    else if (returnPct >= 30) alerts.push({ type: 'info',    icon: '📦', msg: '<strong>Moderate Return Rate (' + returnPct + '%)</strong> — ' + p.returnedDOs + ' of ' + p.verified + ' verified leads returned as signed orders.' });
+    else                      alerts.push({ type: 'warning', icon: '📦', msg: '<strong>Low Return Rate (' + returnPct + '%)</strong> — Only ' + p.returnedDOs + ' of ' + p.verified + ' verified leads came back as signed orders.' });
   }
 
   container.innerHTML = alerts.map(function(a) {
     return '<div class="insight-alert ' + a.type + '"><div class="insight-alert-icon">' + a.icon + '</div><div class="insight-alert-text">' + a.msg + '</div></div>';
   }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// LG LEADS — Insights Helpers
+// ══════════════════════════════════════════════════════════
+function renderHeroStats(p, total) {
+  var el = document.getElementById('ins-hero-row');
+  if (!el) return;
+
+  var prodPct = total > 0 ? Math.round((p.verified / total) * 100) : 0;
+  var dropPct = total > 0 ? Math.round(((total - p.verified) / total) * 100) : 0;
+  var signedPct = p.verified > 0 ? Math.round((p.returnedDOs / p.verified) * 100) : 0;
+  var stalePct = p.verifiedOlderThan45 > 0 ? Math.round(((p.staleVerifiedCount || 0) / p.verifiedOlderThan45) * 100) : 0;
+
+  function badgeLabel(value, label, color) {
+    return '<div style="padding:18px;border-radius:var(--radius-md);background:' + color.bg + ';border:1.5px solid ' + color.border + ';">' +
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color.text + ';margin-bottom:6px;">' + label + '</div>' +
+      '<div style="font-size:40px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + color.text + ';line-height:1;">' + value + '</div>' +
+      '<div style="font-size:12px;color:' + color.text + ';opacity:.8;margin-top:4px;">' + label + '</div>' +
+    '</div>';
+  }
+
+  el.innerHTML =
+    badgeLabel(total, 'Total Submitted', { bg: '#eef2ff', border: 'rgba(37,99,235,.2)', text: '#1d4ed8' }) +
+    badgeLabel(p.verified || 0, 'Verified Leads', { bg: '#dcfce7', border: 'rgba(21,128,61,.2)', text: '#15803d' }) +
+    badgeLabel(total - (p.verified || 0), 'Dropped Leads', { bg: '#fee2e2', border: 'rgba(220,38,38,.2)', text: '#b91c1c' }) +
+    badgeLabel(p.returnedDOs || 0, 'Signed Orders', { bg: '#fef3c7', border: 'rgba(217,119,6,.2)', text: '#92400e' }) +
+    badgeLabel(p.staleVerifiedCount || 0, 'Stale 45+ Leads', { bg: '#fef9c3', border: 'rgba(217,119,6,.2)', text: '#92400e' });
+}
+
+function renderVerifiedCard(p, total) {
+  var el = document.getElementById('ins-verified-card');
+  if (!el) return;
+  var verified = p.verified || 0;
+  var medB = p.verifiedMedB || 0;
+  var ppo  = p.verifiedPPO  || 0;
+  var medBPct = verified > 0 ? Math.round((medB / verified) * 100) : 0;
+  var ppoPct  = verified > 0 ? Math.round((ppo  / verified) * 100) : 0;
+
+  if (verified === 0) {
+    el.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state" style="padding:20px;"><i class="fa-solid fa-check-circle"></i><p>No verified leads for this period.</p></div></div></div>';
+    return;
+  }
+
+  el.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">' +
+      '<div style="padding:18px;border-radius:var(--radius-md);background:#dcfce7;border:1.5px solid rgba(21,128,61,.2);">' +
+        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#15803d;margin-bottom:6px;">Med B Verified</div>' +
+        '<div style="font-size:42px;font-weight:800;font-family:\'DM Mono\',monospace;color:#15803d;line-height:1;">' + medB + '</div>' +
+        '<div style="font-size:12px;color:#15803d;opacity:.85;margin-top:4px;">' + medBPct + '% of verified leads</div>' +
+        '<div style="margin-top:10px;height:6px;border-radius:999px;background:rgba(21,128,61,.15);">' +
+          '<div style="height:100%;width:' + medBPct + '%;background:#15803d;border-radius:999px;"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="padding:18px;border-radius:var(--radius-md);background:#dbeafe;border:1.5px solid rgba(37,99,235,.2);">' +
+        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#1d4ed8;margin-bottom:6px;">PPO Verified</div>' +
+        '<div style="font-size:42px;font-weight:800;font-family:\'DM Mono\',monospace;color:#1d4ed8;line-height:1;">' + ppo + '</div>' +
+        '<div style="font-size:12px;color:#1d4ed8;opacity:.85;margin-top:4px;">' + ppoPct + '% of verified leads</div>' +
+        '<div style="margin-top:10px;height:6px;border-radius:999px;background:rgba(37,99,235,.15);">' +
+          '<div style="height:100%;width:' + ppoPct + '%;background:#1d4ed8;border-radius:999px;"></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);">Verified leads are split by Med B and PPO outcomes.</div>' +
+  '</div></div>';
+}
+
+function renderDroppedCard(p) {
+  var el = document.getElementById('ins-dropped-card');
+  if (!el) return;
+  var dist = p.droppedByDisposition || {};
+  var entries = Object.keys(dist).sort(function(a, b) { return dist[b] - dist[a]; });
+  if (!entries.length) {
+    el.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state" style="padding:20px;"><i class="fa-solid fa-thumbs-up"></i><p>No dropped leads in this period.</p></div></div></div>';
+    return;
+  }
+
+  var totalDropped = entries.reduce(function(sum, key) { return sum + dist[key]; }, 0);
+  el.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--text);">Dropped leads by disposition</div>' +
+      '<div style="font-size:11px;color:var(--text-muted);">' + totalDropped + ' dropped leads</div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;">' +
+      entries.map(function(key) {
+        var count = dist[key];
+        var pct = totalDropped > 0 ? Math.round((count / totalDropped) * 100) : 0;
+        return '<div style="padding:12px;border-radius:var(--radius-sm);background:var(--bg-surface2);border:1px solid var(--border);">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + esc(key) + '</div>' +
+          '<div style="font-size:20px;font-weight:800;color:var(--text);">' + count + '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' + pct + '% of dropped leads</div>' +
+        '</div>';
+      }).join('') +
+    '</div>' +
+  '</div></div>';
+}
+
+function renderPipelineCard(p) {
+  var el = document.getElementById('ins-pipeline-card');
+  if (!el) return;
+
+  var verified = p.verified || 0;
+  var signed   = p.returnedDOs || 0;
+  var signedPct = verified > 0 ? Math.round((signed / verified) * 100) : 0;
+  var signedClass = signedPct >= 25 ? 'great' : signedPct >= 15 ? 'ok' : 'poor';
+  var signedColor = signedClass === 'great' ? '#059669' : signedClass === 'ok' ? '#d97706' : '#dc2626';
+
+  el.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">Pipeline progression from verified leads to signed orders.</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:12px;">' +
+      '<div style="flex:1;min-width:180px;">' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Verified leads</div>' +
+        '<div style="font-size:34px;font-weight:800;font-family:\'DM Mono\',monospace;color:var(--text);">' + verified + '</div>' +
+      '</div>' +
+      '<div style="flex:1;min-width:180px;">' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Signed orders</div>' +
+        '<div style="font-size:34px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + signedColor + ';">' + signed + '</div>' +
+        '<div style="font-size:12px;color:' + signedColor + ';margin-top:4px;">' + signedPct + '% of verified leads</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-top:16px;height:10px;border-radius:999px;background:var(--bg-surface2);overflow:hidden;">' +
+      '<div style="height:100%;width:' + signedPct + '%;background:' + signedColor + ';border-radius:999px;transition:width .7s;"></div>' +
+    '</div>' +
+    '<div style="margin-top:8px;font-size:11px;color:var(--text-muted);">' +
+      (signedClass === 'great' ? '✅ Strong conversion from verified to signed.' : signedClass === 'ok' ? '⚠️ Moderate conversion — maintain focus on order completion.' : '🚨 Low conversion — follow up on verified leads to close orders.') +
+    '</div>' +
+  '</div></div>';
+}
+
+function renderPromiseCard(p) {
+  var el = document.getElementById('ins-promise-card');
+  if (!el) return;
+  var older45 = p.verifiedOlderThan45 || 0;
+  var signed45 = p.orderSignedOlderThan45 || 0;
+  var stale = p.staleVerifiedCount || 0;
+  var convPct = older45 > 0 ? Math.round((signed45 / older45) * 100) : null;
+  var convClass = convPct === null ? 'ok' : convPct >= 25 ? 'great' : convPct >= 15 ? 'ok' : 'poor';
+  var color = convClass === 'great' ? '#059669' : convClass === 'ok' ? '#d97706' : '#dc2626';
+
+  if (older45 === 0) {
+    el.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state" style="padding:20px;"><i class="fa-solid fa-clock"></i><p>No 45+ verified leads yet.</p></div></div></div>';
+    return;
+  }
+
+  el.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">' +
+      '<div style="text-align:center;">' +
+        '<div style="font-size:32px;font-weight:800;font-family:\'DM Mono\',monospace;color:var(--text);">' + older45 + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Verified 45+ days</div>' +
+      '</div>' +
+      '<div style="text-align:center;">' +
+        '<div style="font-size:32px;font-weight:800;font-family:\'DM Mono\',monospace;color:#059669;">' + signed45 + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Signed orders</div>' +
+      '</div>' +
+      '<div style="text-align:center;">' +
+        '<div style="font-size:32px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + color + ';">' + (convPct !== null ? convPct + '%' : 'N/A') + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Conversion rate</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="height:10px;border-radius:999px;background:var(--bg-surface2);overflow:hidden;margin-bottom:10px;">' +
+      '<div style="height:100%;width:' + (convPct !== null ? convPct : 0) + '%;background:' + color + ';border-radius:999px;transition:width .8s;"></div>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);">' +
+      '<span>0%</span>' +
+      '<span style="color:#d97706;font-weight:700;">20% target</span>' +
+      '<span style="color:#059669;font-weight:700;">25% goal</span>' +
+      '<span>100%</span>' +
+    '</div>' +
+    '<div style="margin-top:14px;padding:14px;border-radius:var(--radius-md);background:' + (convClass === 'great' ? '#dcfce7' : convClass === 'ok' ? '#fef9c3' : '#fee2e2') + ';border:1.5px solid ' + (convClass === 'great' ? '#15803d33' : convClass === 'ok' ? '#d9770633' : '#dc262633') + ';">' +
+      '<div style="font-size:13px;font-weight:700;color:' + color + ';">' +
+        (convClass === 'great' ? '✅ On track' : convClass === 'ok' ? '⚠️ Moderate conversion' : '🚨 Low conversion — take action') +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">' +
+        'Of ' + older45 + ' eligible leads, ' + signed45 + ' have signed orders. ' + (stale > 0 ? stale + ' are still waiting.' : 'No stalled 45+ leads currently.') +
+      '</div>' +
+    '</div>' +
+  '</div></div>';
+}
+
+function renderFinancialCard(p) {
+  var el = document.getElementById('ins-financial-card');
+  if (!el) return;
+  var signed = p.returnedDOs || 0;
+  var approved = p.approvedFromReturned || 0;
+  var rts = p.rtsFromReturned || 0;
+  var pending = Math.max(0, signed - approved - rts);
+  var appPct = signed > 0 ? Math.round((approved / signed) * 100) : 0;
+  var rtsPct = signed > 0 ? Math.round((rts / signed) * 100) : 0;
+  var appClass = appPct >= 60 ? 'great' : appPct >= 35 ? 'ok' : 'poor';
+  var rtsClass = rtsPct <= 7 ? 'great' : rtsPct <= 10 ? 'ok' : 'poor';
+  var appColor = appClass === 'great' ? '#059669' : appClass === 'ok' ? '#d97706' : '#dc2626';
+  var rtsColor = rtsClass === 'great' ? '#059669' : rtsClass === 'ok' ? '#d97706' : '#dc2626';
+
+  if (signed === 0) {
+    el.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state" style="padding:20px;"><i class="fa-solid fa-dollar-sign"></i><p>No signed orders yet.</p></div></div></div>';
+    return;
+  }
+
+  el.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:18px;">' +
+      '<div style="padding:18px;border-radius:var(--radius-md);background:' + (appClass === 'great' ? '#dcfce7' : appClass === 'ok' ? '#fef9c3' : '#fee2e2') + ';border:1.5px solid ' + (appColor + '33') + ';">' +
+        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:' + appColor + ';margin-bottom:6px;">Approved</div>' +
+        '<div style="font-size:42px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + appColor + ';">' + approved + '</div>' +
+        '<div style="font-size:12px;color:' + appColor + ';margin-top:4px;opacity:.85;">' + appPct + '% of signed orders</div>' +
+      '</div>' +
+      '<div style="padding:18px;border-radius:var(--radius-md);background:' + (rtsClass === 'great' ? '#dcfce7' : rtsClass === 'ok' ? '#fef9c3' : '#fee2e2') + ';border:1.5px solid ' + (rtsColor + '33') + ';">' +
+        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:' + rtsColor + ';margin-bottom:6px;">RTS</div>' +
+        '<div style="font-size:42px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + rtsColor + ';">' + rts + '</div>' +
+        '<div style="font-size:12px;color:' + rtsColor + ';margin-top:4px;opacity:.85;">' + rtsPct + '% of signed orders</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);">' +
+      'Approved orders are the source of real revenue, while RTS orders represent customer retention risk.' +
+    '</div>' +
+    '<div style="margin-top:12px;padding:14px;border-radius:var(--radius-md);background:var(--bg-surface2);">' +
+      '<div style="font-size:12px;color:var(--text);">Pending orders: ' + pending + ' (' + Math.round((pending / signed) * 100) + '%)</div>' +
+    '</div>' +
+  '</div></div>';
+}
+
+function renderPCPPanel(pcp, weeklyPCP) {
+  var heroEl = document.getElementById('ins-pcp-hero');
+  var alertEl = document.getElementById('ins-pcp-alerts');
+  var outEl = document.getElementById('ins-pcp-outcomes');
+  if (!heroEl || !outEl || !alertEl) return;
+
+  if (!pcp || pcp.total === 0) {
+    var empty = '<div class="card"><div class="card-body"><div class="empty-state" style="padding:30px;"><i class="fa-solid fa-file-medical"></i><p>No PCP Leads data for this period.</p></div></div></div>';
+    heroEl.innerHTML = empty;
+    alertEl.innerHTML = '';
+    outEl.innerHTML = '';
+    renderWeeklyTracking('weekly-pcp-container', weeklyPCP, 'PCP Leads Weekly Production');
+    return;
+  }
+
+  var appPct = Math.round((pcp.approved / pcp.total) * 100);
+  var denPct = Math.round((pcp.denied   / pcp.total) * 100);
+  var rtsPct = Math.round((pcp.rts      / pcp.total) * 100);
+  var pending = Math.max(0, pcp.total - pcp.approved - pcp.denied - pcp.rts);
+  var pendingPct = pcp.total > 0 ? Math.round((pending / pcp.total) * 100) : 0;
+  var approvedClass = appPct >= 50 ? 'great' : appPct >= 30 ? 'ok' : 'poor';
+  var deniedClass = denPct <= 20 ? 'great' : denPct <= 40 ? 'ok' : 'poor';
+  var rtsClass = rtsPct <= 7 ? 'great' : rtsPct <= 15 ? 'ok' : 'poor';
+
+  var alerts = [];
+  if (appPct >= 50) alerts.push({ type: 'success', icon: '✅', msg: '<strong>Strong PCP Approval Rate (' + appPct + '%)</strong> — Over half of submitted PCP orders are approved.' });
+  else if (appPct >= 30) alerts.push({ type: 'info', icon: '📊', msg: '<strong>Moderate PCP Approval Rate (' + appPct + '%)</strong> — ' + pcp.approved + ' of ' + pcp.total + ' orders approved.' });
+  else alerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Low PCP Approval Rate (' + appPct + '%)</strong> — Review submission quality.' });
+  if (rtsPct > 10) alerts.push({ type: 'danger', icon: '🚨', msg: '<strong>High PCP RTS (' + rtsPct + '%)</strong> — ' + pcp.rts + ' orders returned. Investigate further.' });
+  alertEl.innerHTML = alerts.map(function(a) {
+    return '<div class="insight-alert ' + a.type + '" style="margin-bottom:8px;"><div class="insight-alert-icon">' + a.icon + '</div><div class="insight-alert-text">' + a.msg + '</div></div>';
+  }).join('');
+
+  heroEl.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;">' +
+      qCard(pcp.total, 'ok', 'Total Submitted', 'PCP orders in period') +
+      qCard(pcp.approved, approvedClass, 'Approved', appPct + '% of submissions') +
+      qCard(pcp.denied, deniedClass, 'Denied', denPct + '% of submissions') +
+      qCard(pcp.rts, rtsClass, 'RTS', rtsPct + '% of submissions') +
+      (pending > 0 ? qCard(pending, 'ok', 'Pending', pendingPct + '% still processing') : '') +
+    '</div>' +
+  '</div></div>';
+
+  outEl.innerHTML = '<div class="card"><div class="card-body">' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">Processing outcomes for all PCP submissions.</div>' +
+    pcpMiniBar('Approved', pcp.approved, pcp.total, '#059669') +
+    pcpMiniBar('Denied', pcp.denied, pcp.total, '#dc2626') +
+    pcpMiniBar('RTS', pcp.rts, pcp.total, '#ea580c') +
+    (pending > 0 ? pcpMiniBar('Pending', pending, pcp.total, '#94a3b8') : '') +
+  '</div></div>';
+
+  renderWeeklyTracking('weekly-pcp-container', weeklyPCP, 'PCP Leads Weekly Production');
 }
 
 // ══════════════════════════════════════════════════════════
