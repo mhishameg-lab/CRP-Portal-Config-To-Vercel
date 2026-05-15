@@ -12,15 +12,6 @@ import {
   getActivityLog,
 } from '../../services/auth.js';
 
-// ── Chat service ──────────────────────────────────────────────────────────────
-import {
-  chatGetIdentity, chatGetCenters, chatSendMessage, chatBroadcast,
-  chatGetMessages, chatGetPinned, chatSendRing, chatCheckRing, chatClearRing,
-  chatUpdateStatus, chatGetStatuses,
-  chatPinMessage, chatForwardMessage, chatDeleteMessage, chatUploadImage,
-  getNewChatUnread,
-} from '../../services/chat.js';
-
 // ── Data service ──────────────────────────────────────────────────────────────
 import {
   getDashboardStats, getLeads, getLeadDetails,
@@ -63,31 +54,6 @@ const REGISTRY = {
   runChangeDetection     : (args) => runChangeDetection(...args),
   getAuditLog            : (args) => getAuditLog(...args),
   getAppConfig           : (args) => getAppConfig(...args),
-
-  // Chat
-  chatGetIdentity        : (args) => chatGetIdentity(...args),
-  chatGetCenters         : (args) => chatGetCenters(...args),
-  chatSendMessage        : (args) => chatSendMessage(...args),
-  chatBroadcast          : (args) => chatBroadcast(...args),
-  chatGetMessages        : (args) => chatGetMessages(...args),
-  chatGetPinned          : (args) => chatGetPinned(...args),
-  chatSendRing           : (args) => chatSendRing(...args),
-  chatCheckRing          : (args) => chatCheckRing(...args),
-  chatClearRing          : (args) => chatClearRing(...args),
-  chatUpdateStatus       : (args) => chatUpdateStatus(...args),
-  chatGetStatuses        : (args) => chatGetStatuses(...args),
-  chatPinMessage         : (args) => chatPinMessage(...args),
-  chatForwardMessage     : (args) => chatForwardMessage(...args),
-  chatDeleteMessage      : (args) => chatDeleteMessage(...args),
-  chatUploadImage        : (args) => chatUploadImage(...args),
-  getNewChatUnread       : (args) => getNewChatUnread(...args),
-// Chat aliases
-  getChatCenters         : (args) => chatGetCenters(...args),
-  getChatMessages        : (args) => chatGetMessages(...args),
-  getChatUnread          : (args) => getNewChatUnread(...args),
-  pollChatUnread         : (args) => getNewChatUnread(...args),
-  sendChatMessage        : (args) => chatSendMessage(...args),
-  markChatRead           : (args) => Promise.resolve({ success: true }),
 
   // Incentives (stubs — returns empty so app loads without crashing)
   getIncentives          : (args) => Promise.resolve({ success: true, data: [] }),

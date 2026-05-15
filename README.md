@@ -12,13 +12,12 @@ Browser
        ↓ POST /api/rpc
 pages/api/rpc.js                ← single dispatcher (mirrors all GAS functions)
   ├─ services/auth.js           ← port of Auth.gs
-  ├─ services/chat.js           ← port of ChatService.gs
   └─ services/data.js           ← port of DataService.gs
        ↓
   lib/sheets.js                 ← Google Sheets API v4 (replaces SpreadsheetApp)
   lib/auth.js                   ← JWT sessions (replaces CacheService + PropertiesService)
   lib/cache.js                  ← in-process cache (replaces CacheService for data)
-  lib/drive.js                  ← Drive API (replaces DriveApp in chatUploadImage)
+  lib/drive.js                  ← Drive API helper for file uploads
   lib/utils.js                  ← pure helpers (replaces GAS Utilities)
 
 pages/api/cron/change-detection.js  ← Vercel Cron every 10 min (replaces ScriptApp trigger)
@@ -56,7 +55,7 @@ cp .env.example .env.local
 
 ### 3. Migrate the HTML frontend
 
-1. In GAS, open your deployed web app and view source (or copy from `index.html` / `ChatView.html` / `CSS.html`).
+1. In GAS, open your deployed web app and view source (or copy from `index.html` / `CSS.html`).
 2. Save the combined HTML to `/public/app.html`.
 3. Add this as the **very first** `<script>` tag inside `<head>`:
    ```html
