@@ -3510,6 +3510,10 @@ function enterApp() {
   document.getElementById('sidebar').classList.add('collapsed');
 
   // Sidebar branding
+  // Sidebar starts collapsed on every login
+  document.getElementById('sidebar').classList.add('collapsed');
+
+  // Sidebar branding
   var displayName = APP.role === 'admin' ? 'Admin' : (APP.centerName || APP.centerCode);
   document.getElementById('sidebar-title').textContent = 'ICO | ' + displayName;
   document.getElementById('sidebar-subtitle').textContent = APP.role === 'admin' ? 'Administrator' : 'Center Portal';
