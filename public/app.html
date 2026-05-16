@@ -444,6 +444,160 @@ input, select, textarea { font-family: inherit; }
 .ud-badge { margin-left: auto; font-size: 9.5px; font-weight: 700; padding: 2px 7px;
   border-radius: 99px; background: var(--accent-lighter); color: var(--accent-primary); }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   CRITERIA LIST PAGE
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Search & filter bar */
+.cl-toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.cl-search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 0 12px; flex: 1; min-width: 200px; max-width: 340px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.cl-search-wrap:focus-within { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
+.cl-search-wrap i { color: var(--text-muted); font-size: 13px; flex-shrink: 0; }
+.cl-search { flex:1; height:36px; background:transparent; border:none; outline:none; color:var(--text-primary); font-size:13.5px; }
+.cl-search::placeholder { color: var(--text-muted); }
+.cl-filter-select {
+  height: 36px; padding: 0 10px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--bg-surface2);
+  color: var(--text-primary); font-size: 13px; transition: border-color var(--transition);
+}
+.cl-filter-select:focus { outline: none; border-color: var(--accent-primary); }
+
+/* Grid layout — cards */
+.cl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+}
+.cl-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+.cl-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: rgba(59,130,246,.3); }
+.cl-card.inactive { opacity: .55; }
+
+/* Card header */
+.cl-card-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--bg-surface2), var(--bg-surface));
+}
+.cl-supplier-avatar {
+  width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent-primary), #0ea5e9);
+  color: #fff; font-size: 17px; font-weight: 800;
+  display: grid; place-items: center;
+  box-shadow: 0 4px 12px rgba(37,99,235,.25);
+  letter-spacing: -1px;
+}
+.cl-supplier-name { font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.cl-supplier-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.cl-head-right    { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.cl-status-dot {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+  padding: 3px 9px; border-radius: 99px;
+}
+.cl-status-dot.active { background: rgba(16,185,129,.12); color: #059669; border: 1px solid rgba(16,185,129,.25); }
+.cl-status-dot.inactive { background: var(--bg-surface2); color: var(--text-muted); border: 1px solid var(--border); }
+.cl-status-dot::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
+
+/* Card body */
+.cl-card-body { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+/* Row inside card */
+.cl-row { display: flex; flex-direction: column; gap: 3px; }
+.cl-row-inline { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.cl-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .6px;
+}
+.cl-value { font-size: 13px; color: var(--text-secondary); line-height: 1.45; }
+.cl-value.mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+/* Tag pills */
+.cl-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 1px; }
+.cl-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 9px; border-radius: 99px;
+  border: 1px solid transparent;
+}
+.cl-tag.plan      { background: rgba(37,99,235,.1);  color: var(--accent-primary); border-color: rgba(37,99,235,.2); }
+.cl-tag.state     { background: var(--bg-surface2);  color: var(--text-secondary); border-color: var(--border); font-family:'DM Mono',monospace; font-size:10.5px; }
+.cl-tag.hcpcs     { background: rgba(167,139,250,.1); color: #7c3aed; border-color: rgba(167,139,250,.25); font-family:'DM Mono',monospace; font-size:10.5px; }
+.cl-tag.combo     { background: rgba(251,146,60,.1); color: #c2410c; border-color: rgba(251,146,60,.25); font-size:10.5px; }
+.cl-tag.campaign  { background: rgba(16,185,129,.1); color: #065f46; border-color: rgba(16,185,129,.25); }
+.cl-tag.sending   { background: rgba(34,211,238,.1);  color: #0891b2; border-color: rgba(34,211,238,.25); }
+[data-theme="dark"] .cl-tag.campaign { color: #34d399; }
+[data-theme="dark"] .cl-tag.combo    { color: #fb923c; }
+[data-theme="dark"] .cl-tag.plan     { color: #93c5fd; }
+
+/* Note section — collapsible */
+.cl-note-wrap { background: var(--bg-surface2); border-radius: var(--radius-md); border: 1px solid var(--border); overflow: hidden; }
+.cl-note-toggle {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 8px 12px; background: transparent; border: none; cursor: pointer;
+  font-size: 11.5px; font-weight: 600; color: var(--text-secondary);
+  transition: background var(--transition), color var(--transition);
+}
+.cl-note-toggle:hover { background: var(--accent-lighter); color: var(--accent-primary); }
+.cl-note-toggle i.toggle-arrow { margin-left: auto; font-size: 10px; transition: transform .2s; }
+.cl-note-toggle.open i.toggle-arrow { transform: rotate(180deg); }
+.cl-note-body { display: none; padding: 10px 12px 12px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; white-space: pre-wrap; border-top: 1px solid var(--border); }
+.cl-note-body.open { display: block; }
+
+/* Transfer number pill */
+.cl-transfer {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px; border-radius: var(--radius-md);
+  background: linear-gradient(135deg,rgba(34,211,238,.1),rgba(37,99,235,.08));
+  border: 1px solid rgba(34,211,238,.25); color: #0891b2; font-size: 13px; font-weight: 700;
+  font-family: 'DM Mono', monospace; letter-spacing: .5px; margin-top: 2px;
+}
+[data-theme="dark"] .cl-transfer { color: #22d3ee; border-color: rgba(34,211,238,.3); background: rgba(34,211,238,.08); }
+.cl-transfer i { font-size: 11px; }
+
+/* Divider inside card */
+.cl-divider { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+
+/* Empty / loading */
+.cl-empty {
+  grid-column: 1/-1; text-align: center; padding: 60px 20px;
+  color: var(--text-muted); font-size: 14px;
+}
+.cl-empty i { font-size: 36px; display: block; margin-bottom: 12px; opacity: .35; }
+
+/* Age / type meta row */
+.cl-meta-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.cl-meta-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px;
+  background: var(--bg-surface2); border: 1px solid var(--border); color: var(--text-secondary);
+}
+.cl-meta-chip i { font-size: 10px; color: var(--accent-primary); }
+
+/* Count badge in page header */
+.cl-count-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 20px; padding: 0 7px;
+  border-radius: 99px; background: var(--accent-primary); color: #fff;
+  font-size: 11px; font-weight: 700;
+}
+
 /* ── View Container ────────────────────────────────────────────────────────── */
 #view-container { flex: 1; overflow-y: auto; padding: 24px; }
 .view { display: none; }
@@ -1147,6 +1301,114 @@ input, select, textarea { font-family: inherit; }
 /* ══════════════════════════════════════════════════════════════════════════════
    USER MANAGEMENT & FORMS
    ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Centers Directory ──────────────────────────────────────────────────────── */
+.centers-video-banner {
+  background: linear-gradient(135deg, #0f1e3d 0%, #1a3a7c 60%, #2563eb 100%);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.centers-video-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='30'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+  pointer-events: none;
+}
+.cvb-content {
+  display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;
+}
+.cvb-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,.12); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: #fff; flex-shrink: 0;
+}
+.cvb-text { flex: 1; min-width: 0; }
+.cvb-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+.cvb-sub   { font-size: 12.5px; color: rgba(255,255,255,.7); line-height: 1.4; }
+.cvb-btn { background: #fff !important; color: #1a3a7c !important; font-weight: 700; flex-shrink: 0; gap: 6px; }
+.cvb-btn:hover { background: rgba(255,255,255,.9) !important; }
+.cvb-close {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,.1); border: none; cursor: pointer;
+  color: rgba(255,255,255,.7); font-size: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+.cvb-close:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+/* Stats row */
+.centers-stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;
+}
+.cstat-card {
+  background: var(--bg-surface); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card); padding: 16px 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.cstat-icon {
+  width: 42px; height: 42px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.cstat-val   { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -.5px; }
+.cstat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+/* Center cards grid */
+.centers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.center-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition);
+  display: flex; flex-direction: column;
+}
+.center-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.center-card-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.center-avatar {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0;
+  letter-spacing: -.5px;
+}
+.center-card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
+.center-card-code  { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono, monospace); margin-top: 2px; }
+.center-card-body  { padding: 14px 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.center-detail-row { display: flex; align-items: flex-start; gap: 8px; }
+.center-detail-icon { width: 18px; text-align: center; color: var(--text-muted); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+.center-detail-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; line-height: 1; margin-bottom: 1px; }
+.center-detail-val   { font-size: 12.5px; color: var(--text-primary); font-weight: 500; word-break: break-all; }
+.center-card-footer  { padding: 10px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface2); }
+.signed-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.signed-yes { background: var(--success-bg); color: var(--success); }
+.signed-no  { background: var(--warning-bg); color: var(--warning); }
+.centers-empty { grid-column: 1/-1; padding: 60px; text-align: center; color: var(--text-muted); }
+.centers-empty i { font-size: 40px; margin-bottom: 12px; opacity: .4; }
+.centers-empty p { font-size: 14px; }
+
+@media (max-width: 900px) {
+  .centers-stats-row { grid-template-columns: repeat(2, 1fr); }
+  .cvb-content { flex-wrap: wrap; }
+  .cvb-btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 600px) {
+  .centers-stats-row { grid-template-columns: 1fr 1fr; }
+  .centers-grid { grid-template-columns: 1fr; }
+}
+
 .users-table .action-btns { display: flex; gap: 6px; }
 .role-badge { padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
 .role-badge.admin  { background: var(--accent-lighter); color: var(--accent-primary); }
@@ -1631,6 +1893,11 @@ body {
         <span class="nav-label">PCP Leads</span>
       </div>
 
+      <div class="nav-item" data-view="criteria" onclick="showView('criteria')">
+        <i class="fa-solid fa-list-check nav-icon"></i>
+        <span class="nav-label">Criteria List</span>
+      </div>
+
       <div class="nav-section-label admin-only hidden">Admin</div>
 
       <div class="nav-item admin-only hidden" data-view="incentives" onclick="showView('incentives')">
@@ -1641,6 +1908,11 @@ body {
       <div class="nav-item admin-only hidden" data-view="users" onclick="showView('users')">
         <i class="fa-solid fa-users-gear nav-icon"></i>
         <span class="nav-label">User Management</span>
+      </div>
+
+      <div class="nav-item admin-only hidden" data-view="centers" onclick="showView('centers')">
+        <i class="fa-solid fa-building nav-icon"></i>
+        <span class="nav-label">Centers</span>
       </div>
 
       <div class="nav-item admin-only hidden" data-view="activity" onclick="showView('activity')">
@@ -2211,6 +2483,81 @@ body {
         </div>
       </div><!-- /view-users -->
 
+
+      <!-- ════════════════════════════════════════════════
+           VIEW: CENTERS DIRECTORY (admin)
+      ═════════════════════════════════════════════════ -->
+      <div id="view-centers" class="view">
+        <div class="page-header">
+          <div class="page-title">Centers <span>Directory</span></div>
+          <button class="btn btn-ghost btn-sm" onclick="loadCenters()">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+
+        <!-- CRM Intro Video Banner -->
+        <div class="centers-video-banner" id="centers-video-banner">
+          <div class="cvb-content">
+            <div class="cvb-icon">
+              <i class="fa-brands fa-youtube"></i>
+            </div>
+            <div class="cvb-text">
+              <div class="cvb-title">CRM Walkthrough Video</div>
+              <div class="cvb-sub">A complete guide to using the ICO Center Portal — share with your centers to get them onboarded fast.</div>
+            </div>
+            <a href="#" id="cvb-link" target="_blank" rel="noopener" class="btn btn-primary cvb-btn" onclick="openCrmVideo(event)">
+              <i class="fa-solid fa-circle-play"></i> Watch Now
+            </a>
+            <button class="cvb-close" onclick="document.getElementById('centers-video-banner').style.display='none'" title="Dismiss">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="centers-stats-row" id="centers-stats-row">
+          <div class="cstat-card">
+            <div class="cstat-icon" style="background:var(--accent-lighter);color:var(--accent-primary);"><i class="fa-solid fa-building"></i></div>
+            <div><div class="cstat-val" id="cstat-total">—</div><div class="cstat-label">Total Centers</div></div>
+          </div>
+          <div class="cstat-card">
+            <div class="cstat-icon" style="background:var(--success-bg);color:var(--success);"><i class="fa-solid fa-file-signature"></i></div>
+            <div><div class="cstat-val" id="cstat-signed">—</div><div class="cstat-label">Agreement Signed</div></div>
+          </div>
+          <div class="cstat-card">
+            <div class="cstat-icon" style="background:var(--warning-bg);color:var(--warning);"><i class="fa-solid fa-globe"></i></div>
+            <div><div class="cstat-val" id="cstat-countries">—</div><div class="cstat-label">Countries</div></div>
+          </div>
+          <div class="cstat-card">
+            <div class="cstat-icon" style="background:var(--purple-bg);color:var(--purple);"><i class="fa-solid fa-credit-card"></i></div>
+            <div><div class="cstat-val" id="cstat-methods">—</div><div class="cstat-label">Payment Methods</div></div>
+          </div>
+        </div>
+
+        <!-- Search + Filter bar -->
+        <div class="centers-toolbar card" style="padding:14px 18px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div style="position:relative;flex:1;min-width:200px;">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;"></i>
+            <input class="form-input" id="centers-search" type="text" placeholder="Search by code, name, country…" style="padding-left:32px;" oninput="filterCenters()">
+          </div>
+          <select class="form-select" id="centers-filter-signed" onchange="filterCenters()" style="width:160px;">
+            <option value="">All Agreements</option>
+            <option value="yes">Signed ✓</option>
+            <option value="no">Not Signed</option>
+          </select>
+          <select class="form-select" id="centers-filter-country" onchange="filterCenters()" style="width:150px;">
+            <option value="">All Countries</option>
+          </select>
+        </div>
+
+        <!-- Centers grid -->
+        <div id="centers-grid" class="centers-grid">
+          <div style="grid-column:1/-1;padding:40px;text-align:center;">
+            <div class="spinner" style="margin:0 auto;"></div>
+          </div>
+        </div>
+      </div><!-- /view-centers -->
+
       <!-- ════════════════════════════════════════════════
            VIEW: ACTIVITY LOG (admin)
       ═════════════════════════════════════════════════ -->
@@ -2369,6 +2716,74 @@ body {
           </div>
         </div>
       </div><!-- /view-pcp -->
+
+
+      <!-- ════════════════════════════════════════════════
+           VIEW: CRITERIA LIST
+      ═════════════════════════════════════════════════ -->
+      <div id="view-criteria" class="view">
+
+        <!-- Page header -->
+        <div class="page-header">
+          <div>
+            <div class="page-title">Supplier <span>Criteria List</span></div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">
+              Active suppliers, accepted plans, HCPCS codes &amp; campaign rules
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span class="cl-count-badge" id="cl-count">—</span>
+            <span style="font-size:12px;color:var(--text-muted);">suppliers</span>
+            <button class="btn btn-ghost btn-sm" onclick="criteriaRefresh()" title="Refresh">
+              <i class="fa-solid fa-rotate-right"></i> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Toolbar: search + filters -->
+        <div class="cl-toolbar">
+          <div class="cl-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input class="cl-search" id="cl-search" type="text"
+                   placeholder="Search supplier name, plans, states…"
+                   oninput="criteriaFilter()">
+          </div>
+          <select class="cl-filter-select" id="cl-filter-campaign" onchange="criteriaFilter()">
+            <option value="">All Campaigns</option>
+            <option value="LG">LG</option>
+            <option value="PCP">PCP</option>
+            <option value="Both">Both</option>
+          </select>
+          <select class="cl-filter-select" id="cl-filter-sending" onchange="criteriaFilter()">
+            <option value="">All Sending Types</option>
+            <option value="Posting">Posting</option>
+            <option value="Live Transfer">Live Transfer</option>
+          </select>
+          <select class="cl-filter-select" id="cl-filter-plans" onchange="criteriaFilter()">
+            <option value="">All Plans</option>
+            <option value="Med B">Med B</option>
+            <option value="PPO">PPO</option>
+            <option value="Both">Both</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;user-select:none;">
+            <input type="checkbox" id="cl-filter-active" onchange="criteriaFilter()"
+                   style="accent-color:var(--accent-primary);width:14px;height:14px;">
+            Active only
+          </label>
+          <button class="btn btn-ghost btn-sm" onclick="criteriaClearFilters()">
+            <i class="fa-solid fa-xmark"></i> Clear
+          </button>
+        </div>
+
+        <!-- Loading spinner -->
+        <div id="cl-loading" style="display:flex;align-items:center;justify-content:center;padding:60px 0;">
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Cards grid -->
+        <div class="cl-grid" id="cl-grid" style="display:none;"></div>
+
+      </div><!-- /view-criteria -->
 
 
     </div><!-- /view-container -->
@@ -2716,7 +3131,7 @@ const APP = {
   pwResetTarget    : null,
   notifPollTimer   : null,
   searchDebounce   : null,
-  sidebarCollapsed : false,
+  sidebarCollapsed : true,
 };
 
 const WEBFORM_URL = 'https://script.google.com/macros/s/AKfycbxecKhXkD7fddhw0YoOleY6DDHYP7gFaqKd65onZjOnr7GqJpcthquXVfO8tqlv01kKPg/exec';
@@ -3091,6 +3506,9 @@ function enterApp() {
   document.getElementById('login-page').classList.add('hidden');
   document.getElementById('app-shell').classList.remove('hidden');
 
+  // Sidebar starts collapsed on every login
+  document.getElementById('sidebar').classList.add('collapsed');
+
   // Sidebar branding
   var displayName = APP.role === 'admin' ? 'Admin' : (APP.centerName || APP.centerCode);
   document.getElementById('sidebar-title').textContent = 'ICO | ' + displayName;
@@ -3144,6 +3562,7 @@ var titles = {
     incentives: 'Incentives',
     users     : 'User Management',
     activity  : 'Activity Log',
+    criteria  : 'Supplier Criteria List',
   };
   document.getElementById('topbar-title').textContent = titles[name] || name;
   document.getElementById('topbar-search').style.display = name === 'dashboard' ? 'flex' : 'none';
@@ -3157,8 +3576,10 @@ if (name === 'dashboard') {
   if (name === 'pcp') pcpInit();
   if (name === 'insights')   loadInsights();
   if (name === 'users')      loadUsers();
+  if (name === 'centers')    loadCenters();
   if (name === 'activity')   loadActivityLog();
   if (name === 'incentives') loadIncentives();
+  if (name === 'criteria')   criteriaInit();
 }
 
 // ── Dashboard Stats ────────────────────────────────────────
@@ -4984,6 +5405,127 @@ function deleteIncentive(id) {
 // USER MANAGEMENT
 // ══════════════════════════════════════════════════════════
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  CENTERS DIRECTORY
+// ─────────────────────────────────────────────────────────────────────────────
+var APP_CENTERS = [];   // cached raw list from server
+
+var CRM_VIDEO_URL = '';  // set this to your actual video link
+
+function openCrmVideo(e) {
+  if (!CRM_VIDEO_URL) {
+    e.preventDefault();
+    // Prompt admin to configure the link
+    var url = prompt('Paste the CRM walkthrough video URL:', '');
+    if (url && url.trim()) {
+      CRM_VIDEO_URL = url.trim();
+      document.getElementById('cvb-link').href = CRM_VIDEO_URL;
+      window.open(CRM_VIDEO_URL, '_blank');
+    }
+    return;
+  }
+  // If URL is set, let the <a> do its job
+}
+
+function loadCenters() {
+  var grid = document.getElementById('centers-grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>';
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (!r.success) { toast(r.error || 'Failed to load centers.', 'error'); return; }
+      APP_CENTERS = r.centers || [];
+      renderCenters(APP_CENTERS);
+      updateCenterStats(APP_CENTERS);
+      populateCenterCountryFilter(APP_CENTERS);
+    })
+    .withFailureHandler(function() { toast('Connection error.', 'error'); })
+    .getCenters(APP.token);
+}
+
+function updateCenterStats(centers) {
+  document.getElementById('cstat-total').textContent   = centers.length;
+  document.getElementById('cstat-signed').textContent  = centers.filter(function(c){ return isSigned(c.signedAgreement); }).length;
+  var countries = [...new Set(centers.map(function(c){ return c.country.trim(); }).filter(Boolean))];
+  var methods   = [...new Set(centers.map(function(c){ return c.paymentMethod.trim(); }).filter(Boolean))];
+  document.getElementById('cstat-countries').textContent = countries.length || 0;
+  document.getElementById('cstat-methods').textContent   = methods.length || 0;
+}
+
+function populateCenterCountryFilter(centers) {
+  var sel = document.getElementById('centers-filter-country');
+  var countries = [...new Set(centers.map(function(c){ return c.country.trim(); }).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">All Countries</option>' +
+    countries.map(function(c){ return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+}
+
+function isSigned(val) {
+  var v = String(val || '').toLowerCase().trim();
+  return v === 'yes' || v === 'true' || v === '1' || v === 'signed';
+}
+
+function filterCenters() {
+  var q        = (document.getElementById('centers-search').value || '').toLowerCase();
+  var signedF  = document.getElementById('centers-filter-signed').value;
+  var countryF = document.getElementById('centers-filter-country').value.toLowerCase();
+  var filtered = APP_CENTERS.filter(function(c) {
+    var matchQ = !q || (c.centerCode + ' ' + c.centerName + ' ' + c.country + ' ' + c.email + ' ' + c.phone).toLowerCase().includes(q);
+    var matchS = !signedF || (signedF === 'yes' ? isSigned(c.signedAgreement) : !isSigned(c.signedAgreement));
+    var matchC = !countryF || c.country.toLowerCase() === countryF;
+    return matchQ && matchS && matchC;
+  });
+  renderCenters(filtered);
+}
+
+function renderCenters(centers) {
+  var grid = document.getElementById('centers-grid');
+  if (!centers.length) {
+    grid.innerHTML = '<div class="centers-empty"><i class="fa-solid fa-building-circle-exclamation"></i><p>No centers found.</p></div>';
+    return;
+  }
+  grid.innerHTML = centers.map(function(c) {
+    var initials  = (c.centerCode || 'C').slice(0, 2).toUpperCase();
+    var nameDisp  = c.centerName || c.centerCode || '—';
+    var signed    = isSigned(c.signedAgreement);
+    return '<div class="center-card">' +
+      '<div class="center-card-header">' +
+        '<div class="center-avatar">' + esc(initials) + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="center-card-title">' + esc(nameDisp) + '</div>' +
+          '<div class="center-card-code"><i class="fa-solid fa-hashtag" style="margin-right:3px;"></i>' + esc(c.centerCode) + '</div>' +
+        '</div>' +
+        '<span class="badge ' + (c.status.toLowerCase() === 'active' ? 'badge-success' : 'badge-danger') + '" style="font-size:10px;">' + esc(c.status) + '</span>' +
+      '</div>' +
+      '<div class="center-card-body">' +
+        centerDetailRow('fa-phone-flip', 'WhatsApp / Phone', c.phone || '—') +
+        centerDetailRow('fa-envelope',   'Email',            c.email || '—') +
+        centerDetailRow('fa-globe',      'Country',          c.country || '—') +
+        centerDetailRow('fa-credit-card','Payment Method',   c.paymentMethod || '—') +
+      '</div>' +
+      '<div class="center-card-footer">' +
+        '<span class="signed-badge ' + (signed ? 'signed-yes' : 'signed-no') + '">' +
+          '<i class="fa-solid ' + (signed ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i>' +
+          (signed ? 'Agreement Signed' : 'No Agreement') +
+        '</span>' +
+        (c.email ? '<a href="mailto:' + esc(c.email) + '" class="btn btn-ghost btn-sm" title="Send email" style="padding:4px 8px;font-size:11px;">' +
+          '<i class="fa-solid fa-paper-plane"></i></a>' : '') +
+        (c.phone ? '<a href="https://wa.me/' + esc(c.phone.replace(/\D/g,'')) + '" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" title="WhatsApp" style="padding:4px 8px;font-size:11px;color:#25d366;">' +
+          '<i class="fa-brands fa-whatsapp"></i></a>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function centerDetailRow(icon, label, val) {
+  return '<div class="center-detail-row">' +
+    '<i class="fa-solid ' + icon + ' center-detail-icon"></i>' +
+    '<div>' +
+      '<div class="center-detail-label">' + esc(label) + '</div>' +
+      '<div class="center-detail-val">' + esc(val) + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function loadUsers() {
   var tbody = document.getElementById('users-tbody');
   tbody.innerHTML = '<tr><td colspan="5"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
@@ -5512,6 +6054,232 @@ function pcpSwitchTab(tabName) {
 
 function pcpCloseModal() {
   document.getElementById('pcp-modal').classList.add('hidden');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  CRITERIA LIST PAGE
+// ══════════════════════════════════════════════════════════════════════════════
+
+var CRITERIA = {
+  raw     : [],   // all rows from sheet
+  filtered: [],   // after search/filter
+  loaded  : false,
+};
+
+// ── Init ───────────────────────────────────────────────────
+function criteriaInit() {
+  if (CRITERIA.loaded) { criteriaFilter(); return; }
+  criteriaLoad();
+}
+
+function criteriaRefresh() {
+  CRITERIA.loaded = false;
+  CRITERIA.raw    = [];
+  criteriaLoad();
+}
+
+// ── Load data from backend ──────────────────────────────────
+function criteriaLoad() {
+  document.getElementById('cl-loading').style.display = 'flex';
+  document.getElementById('cl-grid').style.display    = 'none';
+
+  google.script.run
+    .withSuccessHandler(function(r) {
+      document.getElementById('cl-loading').style.display = 'none';
+      if (!r.success) { toast(r.error || 'Failed to load criteria.', 'error'); return; }
+      CRITERIA.raw    = r.data || [];
+      CRITERIA.loaded = true;
+      criteriaFilter();
+    })
+    .withFailureHandler(function() {
+      document.getElementById('cl-loading').style.display = 'none';
+      toast('Connection error loading criteria list.', 'error');
+      document.getElementById('cl-grid').innerHTML =
+        '<div class="cl-empty"><i class="fa-solid fa-triangle-exclamation"></i>Failed to load data.</div>';
+      document.getElementById('cl-grid').style.display = 'grid';
+    })
+    .getCriteriaList(APP.token);
+}
+
+// ── Filter & render ─────────────────────────────────────────
+function criteriaFilter() {
+  var search   = (document.getElementById('cl-search')          || {}).value || '';
+  var campaign = (document.getElementById('cl-filter-campaign') || {}).value || '';
+  var sending  = (document.getElementById('cl-filter-sending')  || {}).value || '';
+  var plans    = (document.getElementById('cl-filter-plans')    || {}).value || '';
+  var activeOnly = (document.getElementById('cl-filter-active') || {}).checked;
+
+  var q = search.trim().toLowerCase();
+
+  CRITERIA.filtered = CRITERIA.raw.filter(function(s) {
+    if (activeOnly && !s.active) return false;
+    if (campaign && s.campaignType && s.campaignType.indexOf(campaign) === -1) return false;
+    if (sending  && s.sendingType  && s.sendingType.indexOf(sending)   === -1) return false;
+    if (plans    && s.acceptedPlans && s.acceptedPlans.indexOf(plans)  === -1) return false;
+    if (!q) return true;
+    var hay = [
+      s.supplierName, s.campaignType, s.acceptedPlans, s.plansAvailable,
+      s.goodStates, s.hcpcsCodes, s.combosAccepted, s.supplierNote, s.transferNumber
+    ].join(' ').toLowerCase();
+    return hay.indexOf(q) !== -1;
+  });
+
+  var count = document.getElementById('cl-count');
+  if (count) count.textContent = CRITERIA.filtered.length;
+
+  criteriaRender(CRITERIA.filtered);
+}
+
+function criteriaClearFilters() {
+  var ids = ['cl-search','cl-filter-campaign','cl-filter-sending','cl-filter-plans'];
+  ids.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  var cb = document.getElementById('cl-filter-active'); if (cb) cb.checked = false;
+  criteriaFilter();
+}
+
+// ── Render card grid ─────────────────────────────────────────
+function criteriaRender(suppliers) {
+  var grid = document.getElementById('cl-grid');
+  grid.style.display = 'grid';
+
+  if (!suppliers || !suppliers.length) {
+    grid.innerHTML = '<div class="cl-empty"><i class="fa-solid fa-inbox"></i>No suppliers match your filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = suppliers.map(function(s, idx) {
+    var initials = (s.supplierName || '?').trim().split(/\s+/).slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase() || '?';
+    var isActive = !!s.active;
+    var isLiveTransfer = s.sendingType && s.sendingType.toLowerCase().indexOf('live transfer') !== -1;
+
+    // Tags builder helpers
+    function tags(csv, cls) {
+      if (!csv) return '<span style="color:var(--text-muted);font-style:italic;font-size:12px;">—</span>';
+      return csv.split(',').map(function(v){ v = v.trim(); return v ? '<span class="cl-tag ' + cls + '">' + esc(v) + '</span>' : ''; }).join('');
+    }
+
+    // HCPCS: show code prefix bold + value
+    function hcpcsRow(csv) {
+      if (!csv) return '<span style="color:var(--text-muted);font-style:italic;font-size:12px;">—</span>';
+      return csv.split(',').map(function(pair) {
+        pair = pair.trim();
+        var parts = pair.split('-');
+        if (parts.length >= 2) {
+          return '<span class="cl-tag hcpcs" title="' + esc(pair) + '"><b>' + esc(parts[0].trim()) + '</b>&nbsp;·&nbsp;' + esc(parts.slice(1).join('-').trim()) + '</span>';
+        }
+        return '<span class="cl-tag hcpcs">' + esc(pair) + '</span>';
+      }).join('');
+    }
+
+    // Sending type tag
+    var sendingCls = isLiveTransfer ? 'cl-tag sending' : 'cl-tag state';
+
+    // Note section (collapsible)
+    var noteId = 'cl-note-' + idx;
+    var noteHtml = '';
+    if (s.supplierNote && s.supplierNote.trim()) {
+      noteHtml =
+        '<div class="cl-note-wrap">' +
+          '<button class="cl-note-toggle" onclick="criteriaToggleNote(\'' + noteId + '\', this)">' +
+            '<i class="fa-solid fa-file-lines" style="color:var(--accent-primary);font-size:11px;"></i>' +
+            'Supplier Instructions' +
+            '<i class="fa-solid fa-chevron-down toggle-arrow"></i>' +
+          '</button>' +
+          '<div class="cl-note-body" id="' + noteId + '">' + esc(s.supplierNote.trim()) + '</div>' +
+        '</div>';
+    }
+
+    // Transfer number (only for live transfer)
+    var transferHtml = '';
+    if (isLiveTransfer && s.transferNumber && s.transferNumber.trim()) {
+      transferHtml =
+        '<div class="cl-row">' +
+          '<div class="cl-label"><i class="fa-solid fa-phone" style="margin-right:4px;color:var(--accent-primary);"></i>Transfer Number</div>' +
+          '<div class="cl-transfer"><i class="fa-solid fa-phone-volume"></i>' + esc(s.transferNumber.trim()) + '</div>' +
+        '</div>';
+    }
+
+    return (
+      '<div class="cl-card' + (isActive ? '' : ' inactive') + '">' +
+
+        // ── Head ──
+        '<div class="cl-card-head">' +
+          '<div class="cl-supplier-avatar">' + esc(initials) + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div class="cl-supplier-name">' + esc(s.supplierName || '—') + '</div>' +
+            '<div class="cl-supplier-sub">Supplier</div>' +
+          '</div>' +
+          '<div class="cl-head-right">' +
+            '<span class="cl-status-dot ' + (isActive ? 'active' : 'inactive') + '">' +
+              (isActive ? 'Active' : 'Inactive') +
+            '</span>' +
+            (s.sendingType ? '<span class="' + sendingCls + '"><i class="fa-solid fa-' + (isLiveTransfer ? 'headset' : 'paper-plane') + '"></i> ' + esc(s.sendingType) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+
+        // ── Body ──
+        '<div class="cl-card-body">' +
+
+          // Meta row: campaign + age
+          '<div class="cl-meta-row">' +
+            (s.campaignType ? '<div class="cl-meta-chip"><i class="fa-solid fa-bullhorn"></i>' + esc(s.campaignType) + '</div>' : '') +
+            (s.ageLimit     ? '<div class="cl-meta-chip"><i class="fa-solid fa-calendar-days"></i>' + esc(s.ageLimit) + '</div>' : '') +
+          '</div>' +
+
+          '<hr class="cl-divider">' +
+
+          // Plans accepted
+          '<div class="cl-row">' +
+            '<div class="cl-label">Accepted Plans</div>' +
+            '<div class="cl-tags">' + tags(s.acceptedPlans, 'plan') + '</div>' +
+          '</div>' +
+
+          // Plans available
+          '<div class="cl-row">' +
+            '<div class="cl-label">Plans Available</div>' +
+            '<div class="cl-tags">' + tags(s.plansAvailable, 'plan') + '</div>' +
+          '</div>' +
+
+          // Good states
+          '<div class="cl-row">' +
+            '<div class="cl-label">Good States</div>' +
+            '<div class="cl-tags">' + tags(s.goodStates, 'state') + '</div>' +
+          '</div>' +
+
+          '<hr class="cl-divider">' +
+
+          // HCPCS codes
+          '<div class="cl-row">' +
+            '<div class="cl-label">HCPCS Codes</div>' +
+            '<div class="cl-tags">' + hcpcsRow(s.hcpcsCodes) + '</div>' +
+          '</div>' +
+
+          // Combos accepted
+          (s.combosAccepted && s.combosAccepted.trim() ?
+            '<div class="cl-row">' +
+              '<div class="cl-label">Combos Accepted</div>' +
+              '<div class="cl-tags">' + tags(s.combosAccepted, 'combo') + '</div>' +
+            '</div>'
+          : '') +
+
+          // Transfer number (live transfer only)
+          transferHtml +
+
+          // Note (collapsible)
+          noteHtml +
+
+        '</div>' + // /cl-card-body
+      '</div>'     // /cl-card
+    );
+  }).join('');
+}
+
+// ── Note toggle ──────────────────────────────────────────────
+function criteriaToggleNote(noteId, btn) {
+  var body = document.getElementById(noteId);
+  if (!body) return;
+  var isOpen = body.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
 }
 
 </script>
