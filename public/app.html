@@ -374,6 +374,76 @@ input, select, textarea { font-family: inherit; }
   color: #bfdbfe;
 }
 
+/* ── User Menu Dropdown ────────────────────────────────────────────────────── */
+.user-menu-wrap { position: relative; }
+.user-menu-trigger {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 10px 0 6px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface2); border: 1.5px solid var(--border);
+  color: var(--text-primary); cursor: pointer;
+  font-size: 13px; font-weight: 600;
+  transition: all var(--transition);
+}
+.user-menu-trigger:hover { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
+.user-menu-trigger .um-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), #0ea5e9);
+  color: #fff; font-size: 11px; font-weight: 700;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.user-menu-trigger .um-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-menu-trigger .um-caret { font-size: 10px; color: var(--text-muted); margin-left: 2px; transition: transform .2s; }
+.user-menu-trigger.open .um-caret { transform: rotate(180deg); }
+.user-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 230px;
+  background: var(--bg-surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.06);
+  z-index: 999; overflow: hidden;
+  animation: dropIn .18s ease;
+}
+@keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.user-dropdown.hidden { display: none; }
+.ud-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--bg-surface2), var(--bg-surface));
+}
+.ud-header .ud-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), #0ea5e9);
+  color: #fff; font-size: 15px; font-weight: 700;
+  display: grid; place-items: center; margin-bottom: 8px;
+}
+.ud-header .ud-username { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.ud-header .ud-role { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; margin-top: 1px; }
+.ud-section { padding: 6px 0; }
+.ud-section + .ud-section { border-top: 1px solid var(--border); }
+.ud-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 16px; width: 100%; text-align: left;
+  background: transparent; border: none; cursor: pointer;
+  font-size: 13px; color: var(--text-secondary);
+  transition: background var(--transition), color var(--transition);
+}
+.ud-item:hover { background: var(--bg-surface2); color: var(--text-primary); }
+.ud-item .ud-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  display: grid; place-items: center; font-size: 12px; flex-shrink: 0;
+  background: var(--bg-surface2); border: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition);
+}
+.ud-item:hover .ud-icon { background: var(--accent-lighter); border-color: rgba(37,99,235,.2); color: var(--accent-primary); }
+.ud-item.ud-danger { color: var(--danger); }
+.ud-item.ud-danger:hover { background: var(--danger-bg); color: var(--danger); }
+.ud-item.ud-danger .ud-icon { color: var(--danger); }
+.ud-label-wrap { display: flex; flex-direction: column; }
+.ud-label-wrap .ud-sub { font-size: 10.5px; color: var(--text-muted); margin-top: 1px; }
+.ud-badge { margin-left: auto; font-size: 9.5px; font-weight: 700; padding: 2px 7px;
+  border-radius: 99px; background: var(--accent-lighter); color: var(--accent-primary); }
+
 /* ── View Container ────────────────────────────────────────────────────────── */
 #view-container { flex: 1; overflow-y: auto; padding: 24px; }
 .view { display: none; }
@@ -394,12 +464,30 @@ input, select, textarea { font-family: inherit; }
   box-shadow: var(--shadow-sm); transition: box-shadow var(--transition), transform var(--transition);
 }
 .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.stat-icon { width: 44px; height: 44px; border-radius: var(--radius-md); display: grid; place-items: center; font-size: 18px; }
-.stat-icon.blue   { background: var(--accent-lighter); color: var(--accent-primary); }
-.stat-icon.green  { background: var(--success-bg);     color: var(--success); }
-.stat-icon.yellow { background: var(--warning-bg);     color: var(--warning); }
-.stat-icon.red    { background: var(--danger-bg);      color: var(--danger); }
-.stat-icon.purple { background: var(--purple-bg);      color: var(--purple); }
+.stat-icon { width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; font-size: 19px; flex-shrink: 0;
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  color: var(--accent-primary);
+  box-shadow: 0 2px 10px rgba(37,99,235,.13), inset 0 1px 0 rgba(255,255,255,.7);
+  border: 1px solid rgba(37,99,235,.12);
+}
+/* All icon variants → unified premium blue */
+.stat-icon.blue, .stat-icon.green, .stat-icon.yellow, .stat-icon.red, .stat-icon.purple {
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  color: var(--accent-primary);
+  box-shadow: 0 2px 10px rgba(37,99,235,.13), inset 0 1px 0 rgba(255,255,255,.7);
+  border: 1px solid rgba(37,99,235,.12);
+}
+[data-theme="dark"] .stat-icon,
+[data-theme="dark"] .stat-icon.blue,
+[data-theme="dark"] .stat-icon.green,
+[data-theme="dark"] .stat-icon.yellow,
+[data-theme="dark"] .stat-icon.red,
+[data-theme="dark"] .stat-icon.purple {
+  background: linear-gradient(135deg, rgba(37,99,235,.22) 0%, rgba(14,165,233,.12) 100%);
+  color: #93c5fd;
+  box-shadow: 0 2px 10px rgba(37,99,235,.2), inset 0 1px 0 rgba(255,255,255,.06);
+  border: 1px solid rgba(96,165,250,.18);
+}
 .stat-info { flex: 1; }
 .stat-value { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; letter-spacing: -1px; line-height: 1; }
 .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; }
@@ -1312,6 +1400,29 @@ body {
 [data-theme="dark"] .modal-head {
   background: linear-gradient(180deg, rgba(17,31,64,.92), rgba(13,27,54,.72));
 }
+/* Dark mode: warning callout banners */
+[data-theme="dark"] .status-callout-yellow {
+  background: linear-gradient(135deg,rgba(234,179,8,.12),rgba(234,179,8,.07)) !important;
+  border-color: rgba(234,179,8,.35) !important;
+}
+[data-theme="dark"] .status-callout-yellow .callout-title { color: #fbbf24 !important; }
+[data-theme="dark"] .status-callout-yellow .callout-body  { color: #fde68a !important; }
+[data-theme="dark"] .status-callout-red {
+  background: linear-gradient(135deg,rgba(239,68,68,.12),rgba(239,68,68,.07)) !important;
+  border-color: rgba(239,68,68,.35) !important;
+}
+[data-theme="dark"] .status-callout-red .callout-title { color: #f87171 !important; }
+[data-theme="dark"] .status-callout-red .callout-body  { color: #fecaca !important; }
+/* Dark mode: user dropdown */
+[data-theme="dark"] .user-dropdown {
+  background: var(--bg-surface);
+  border-color: var(--border);
+  box-shadow: 0 16px 48px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.2);
+}
+[data-theme="dark"] .user-menu-trigger { background: rgba(17,31,64,.82); }
+[data-theme="dark"] .ud-header { background: linear-gradient(135deg,rgba(17,31,64,.8),rgba(13,27,54,.5)); }
+[data-theme="dark"] .ud-item:hover { background: rgba(37,99,235,.12); }
+[data-theme="dark"] .ud-item.ud-danger:hover { background: rgba(239,68,68,.12); }
 
 @keyframes fadeIn       { from { opacity: 0; }             to { opacity: 1; } }
 @keyframes fadeUp       { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
@@ -1575,22 +1686,74 @@ body {
           <span class="notif-dot" id="notif-dot"></span>
         </button>
 
-        <!-- Add to phone -->
-        <button class="install-btn hidden" id="install-app-btn" onclick="installApp()" title="Add it to your phone">
-          <i class="fa-solid fa-mobile-screen-button"></i>
-          <span>Add It To Your Phone</span>
-        </button>
+        <!-- User Menu Dropdown -->
+        <div class="user-menu-wrap" id="user-menu-wrap">
+          <button class="user-menu-trigger" id="user-menu-trigger" onclick="toggleUserMenu()">
+            <div class="um-avatar" id="um-avatar-topbar">?</div>
+            <span class="um-name" id="um-name-topbar">—</span>
+            <i class="fa-solid fa-chevron-down um-caret" id="um-caret"></i>
+          </button>
 
-        <!-- Theme Toggle -->
-        <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">
-          <i class="fa-solid fa-moon" id="theme-icon"></i>
-        </button>
+          <div class="user-dropdown hidden" id="user-dropdown">
+            <!-- Header -->
+            <div class="ud-header">
+              <div class="ud-avatar" id="ud-avatar-header">?</div>
+              <div class="ud-username" id="ud-username-header">—</div>
+              <div class="ud-role" id="ud-role-header">Member</div>
+            </div>
 
-        <!-- Logout -->
-        <button class="btn btn-ghost btn-sm" onclick="showLogoutConfirm()">
-          <i class="fa-solid fa-right-from-bracket"></i>
-          <span class="nav-label">Logout</span>
-        </button>
+            <!-- Utility section -->
+            <div class="ud-section">
+              <!-- Dark Mode Toggle -->
+              <button class="ud-item" onclick="toggleTheme(); updateThemeMenuItem();" id="ud-theme-item">
+                <div class="ud-icon"><i class="fa-solid fa-moon" id="ud-theme-icon"></i></div>
+                <div class="ud-label-wrap">
+                  <span id="ud-theme-label">Dark Mode</span>
+                  <span class="ud-sub">Switch appearance</span>
+                </div>
+                <span class="ud-badge" id="ud-theme-badge">OFF</span>
+              </button>
+
+              <!-- Add to Phone -->
+              <button class="ud-item" id="ud-install-btn" onclick="installApp()" style="display:none;">
+                <div class="ud-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <div class="ud-label-wrap">
+                  <span>Add to Phone</span>
+                  <span class="ud-sub">Install as mobile app</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Export section -->
+            <div class="ud-section">
+              <button class="ud-item" id="ud-export-csv" onclick="exportCurrentCSV(); closeUserMenu();">
+                <div class="ud-icon"><i class="fa-solid fa-file-csv"></i></div>
+                <div class="ud-label-wrap">
+                  <span>Export to CSV</span>
+                  <span class="ud-sub" id="ud-csv-sub">Download current page data</span>
+                </div>
+              </button>
+              <button class="ud-item" id="ud-export-pdf" onclick="exportAnalysisPDF(); closeUserMenu();" style="display:none;">
+                <div class="ud-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                <div class="ud-label-wrap">
+                  <span>Export Report PDF</span>
+                  <span class="ud-sub">Download analytics report</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Logout section -->
+            <div class="ud-section">
+              <button class="ud-item ud-danger" onclick="closeUserMenu(); showLogoutConfirm();">
+                <div class="ud-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+                <div class="ud-label-wrap">
+                  <span>Sign Out</span>
+                  <span class="ud-sub">End your session</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div><!-- /topbar -->
 
@@ -1622,7 +1785,7 @@ body {
         <!-- Stats Row -->
         <div class="stats-row" id="stats-row">
           <div class="stat-card">
-            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-layer-group"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="stat-total">—</div>
               <div class="stat-label">Total Submitted</div>
@@ -1630,7 +1793,7 @@ body {
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-shield-halved"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="stat-verified">—</div>
               <div class="stat-label">Verified Leads</div>
@@ -1638,7 +1801,7 @@ body {
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon yellow"><i class="fa-solid fa-file-signature"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-pen-to-square"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="stat-signed">—</div>
               <div class="stat-label">Orders Signed</div>
@@ -1646,7 +1809,7 @@ body {
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon purple"><i class="fa-solid fa-badge-check"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-trophy"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="stat-approved">—</div>
               <div class="stat-label">Approved</div>
@@ -1683,8 +1846,27 @@ body {
             <span class="card-title">Lead Records</span>
             <span id="table-count" style="font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace;"></span>
           </div>
-          <div style="padding:0 18px 12px;color:var(--text-muted);font-size:12px;">
-            Yellow statuses need center follow-up. Red statuses mean In-Call teams are not working on them.
+          <div style="padding:0 18px 14px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;">
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:8px;background:linear-gradient(135deg,#fefce8,#fef9c3);border:1px solid #fde047;flex:1;min-width:220px;">
+                <div style="width:28px;height:28px;border-radius:6px;background:#eab308;display:grid;place-items:center;flex-shrink:0;">
+                  <i class="fa-solid fa-triangle-exclamation" style="color:#fff;font-size:12px;"></i>
+                </div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Action Required — Center Team</div>
+                  <div style="font-size:11.5px;color:#713f12;line-height:1.4;">Yellow processing statuses indicate a record pending center-side follow-up. Immediate review is needed.</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:8px;background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:1px solid #fca5a5;flex:1;min-width:220px;">
+                <div style="width:28px;height:28px;border-radius:6px;background:#ef4444;display:grid;place-items:center;flex-shrink:0;">
+                  <i class="fa-solid fa-circle-exclamation" style="color:#fff;font-size:12px;"></i>
+                </div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Escalation Alert — In-Call Team</div>
+                  <div style="font-size:11.5px;color:#7f1d1d;line-height:1.4;">Red statuses signal that the In-Call team has not yet engaged. Escalation or reassignment may be required.</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="data-table">
@@ -2081,28 +2263,28 @@ body {
         <!-- Stats -->
         <div class="stats-row" id="pcp-stats-row">
           <div class="stat-card">
-            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-database"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="pcp-stat-total">—</div>
               <div class="stat-label">Total Records</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-circle-check"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="pcp-stat-approved">—</div>
               <div class="stat-label">Approved</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon yellow"><i class="fa-solid fa-spinner"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-hourglass-half"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="pcp-stat-inprocess">—</div>
               <div class="stat-label">In Process</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon red"><i class="fa-solid fa-circle-xmark"></i></div>
+            <div class="stat-icon blue"><i class="fa-solid fa-ban"></i></div>
             <div class="stat-info">
               <div class="stat-value" id="pcp-stat-denied">—</div>
               <div class="stat-label">Denied</div>
@@ -2132,8 +2314,27 @@ body {
             <i class="fa-solid fa-xmark"></i> Clear
           </button>
         </div>
-        <div style="font-size:12px;color:var(--text-secondary);margin:-6px 0 14px 2px;">
-          Yellow processing statuses need center follow-up. Red statuses mean In-Call teams are not working on them.
+        <div style="margin:-6px 0 16px 0;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;">
+            <div style="display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:8px;background:linear-gradient(135deg,#fefce8,#fef9c3);border:1px solid #fde047;flex:1;min-width:220px;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#eab308;display:grid;place-items:center;flex-shrink:0;">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#fff;font-size:12px;"></i>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Action Required — Center Team</div>
+                <div style="font-size:11.5px;color:#713f12;line-height:1.4;">Yellow processing statuses indicate a record pending center-side follow-up. Immediate review is needed.</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:8px;background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:1px solid #fca5a5;flex:1;min-width:220px;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#ef4444;display:grid;place-items:center;flex-shrink:0;">
+                <i class="fa-solid fa-circle-exclamation" style="color:#fff;font-size:12px;"></i>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Escalation Alert — In-Call Team</div>
+                <div style="font-size:11.5px;color:#7f1d1d;line-height:1.4;">Red statuses signal that the In-Call team has not yet engaged. Escalation or reassignment may be required.</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Table -->
@@ -2532,8 +2733,12 @@ function isIosDevice() {
 }
 
 function setInstallButtonVisible(show) {
+  // Legacy btn (removed but kept for safety)
   var btn = document.getElementById('install-app-btn');
   if (btn) btn.classList.toggle('hidden', !show);
+  // New dropdown install item
+  var udBtn = document.getElementById('ud-install-btn');
+  if (udBtn) udBtn.style.display = show ? 'flex' : 'none';
 }
 
 function installApp() {
@@ -2649,15 +2854,142 @@ function toggleTheme() {
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('lf_theme', theme);
+  // Legacy icon (now removed from topbar but safe to update)
   var icon = document.getElementById('theme-icon');
   if (icon) icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  updateThemeMenuItem();
   if (Object.keys(APP.charts).length > 0) setTimeout(rerenderCharts, 50);
+}
+function updateThemeMenuItem() {
+  var theme = document.documentElement.getAttribute('data-theme');
+  var udIcon  = document.getElementById('ud-theme-icon');
+  var udLabel = document.getElementById('ud-theme-label');
+  var udBadge = document.getElementById('ud-theme-badge');
+  if (udIcon)  udIcon.className  = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  if (udLabel) udLabel.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+  if (udBadge) { udBadge.textContent = theme === 'dark' ? 'ON' : 'OFF';
+    udBadge.style.background = theme === 'dark' ? 'rgba(37,99,235,.2)' : '';
+    udBadge.style.color = theme === 'dark' ? '#93c5fd' : ''; }
 }
 
 // ── Sidebar ────────────────────────────────────────────────
 function toggleSidebar() {
   APP.sidebarCollapsed = !APP.sidebarCollapsed;
   document.getElementById('sidebar').classList.toggle('collapsed', APP.sidebarCollapsed);
+}
+
+// ── User Menu Dropdown ──────────────────────────────────────
+function toggleUserMenu() {
+  var drop = document.getElementById('user-dropdown');
+  var trigger = document.getElementById('user-menu-trigger');
+  var caret = document.getElementById('um-caret');
+  if (!drop) return;
+  var isOpen = !drop.classList.contains('hidden');
+  if (isOpen) { closeUserMenu(); return; }
+  drop.classList.remove('hidden');
+  trigger.classList.add('open');
+  updateExportMenuItems();
+  setTimeout(function() {
+    document.addEventListener('click', closeUserMenuOnOutside, { once: true });
+  }, 10);
+}
+function closeUserMenu() {
+  var drop = document.getElementById('user-dropdown');
+  var trigger = document.getElementById('user-menu-trigger');
+  if (drop) drop.classList.add('hidden');
+  if (trigger) trigger.classList.remove('open');
+}
+function closeUserMenuOnOutside(e) {
+  var wrap = document.getElementById('user-menu-wrap');
+  if (wrap && !wrap.contains(e.target)) closeUserMenu();
+  else if (!wrap) {}
+  else document.addEventListener('click', closeUserMenuOnOutside, { once: true });
+}
+function updateExportMenuItems() {
+  var view = APP.currentView;
+  var csvBtn = document.getElementById('ud-export-csv');
+  var pdfBtn = document.getElementById('ud-export-pdf');
+  var csvSub = document.getElementById('ud-csv-sub');
+  // Show CSV on leads pages, PDF on insights
+  if (csvBtn) csvBtn.style.display = (view === 'dashboard' || view === 'pcp') ? 'flex' : 'none';
+  if (pdfBtn) pdfBtn.style.display = (view === 'insights') ? 'flex' : 'none';
+  if (csvSub) csvSub.textContent = view === 'pcp' ? 'Download PCP records (current page)' : 'Download leads (current page)';
+}
+
+// ── Export CSV ──────────────────────────────────────────────
+function exportCurrentCSV() {
+  var view = APP.currentView;
+  var data = [], filename = 'export.csv', headers = [], rows = [];
+  if (view === 'dashboard') {
+    data = APP.leads.data || [];
+    filename = 'leads_export_' + new Date().toISOString().slice(0,10) + '.csv';
+    headers = ['Date','Patient Name','Phone','Lead Type','Requested Braces','Closing Status','Chasing Status','Processing Status','Backend Status','Center'];
+    if (!data.length) { toast('No leads data loaded to export.', 'warning'); return; }
+    rows = data.map(function(l) {
+      return [l.date||'', l.fullName||'', l.phone||'', l.leadType||'', l.requestedProducts||'',
+              l.leadStatus||'', l.chaserStatus||'', l.processingStatus||'', l.backendStatus||'', l.center||''];
+    });
+    downloadCSV(filename, headers, rows);
+  } else if (view === 'pcp') {
+    data = PCP.data || [];
+    filename = 'pcp_export_' + new Date().toISOString().slice(0,10) + '.csv';
+    headers = ['Date','Patient Name','Phone','Lead Type','Requested Products','Backend Status','Processing Status','Center'];
+    if (!data.length) { toast('No PCP data loaded to export.', 'warning'); return; }
+    rows = data.map(function(l) {
+      return [l.timestamp||'', l.fullName||'', l.phone||'', l.leadType||'', l.requestedProducts||'',
+              l.backendStatus||'', l.processingStatus||'', l.center||''];
+    });
+    downloadCSV(filename, headers, rows);
+  } else {
+    toast('CSV export is available on the Leads or PCP pages.', 'info');
+  }
+}
+function downloadCSV(filename, headers, rows) {
+  var csvContent = [headers].concat(rows).map(function(row) {
+    return row.map(function(cell) {
+      var val = (cell == null ? '' : String(cell)).replace(/"/g, '""');
+      return val.indexOf(',') !== -1 || val.indexOf('"') !== -1 || val.indexOf('\n') !== -1 ? '"' + val + '"' : val;
+    }).join(',');
+  }).join('\r\n');
+  var BOM = '\uFEFF'; // UTF-8 BOM for Excel
+  var blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('CSV exported successfully.', 'success');
+}
+
+// ── Export PDF (Analysis/Insights page) ─────────────────────
+function exportAnalysisPDF() {
+  var view = APP.currentView;
+  if (view !== 'insights') { toast('PDF export is available on the Analytics page.', 'info'); return; }
+  toast('Preparing PDF report…', 'info');
+  var container = document.getElementById('charts-container');
+  if (!container) { toast('No analytics data to export.', 'warning'); return; }
+  // Build a clean print window
+  var dateFrom = (document.getElementById('ins-date-from') || {}).value || '';
+  var dateTo   = (document.getElementById('ins-date-to')   || {}).value || '';
+  var dateRange = (dateFrom || dateTo) ? (' | ' + (dateFrom || '…') + ' → ' + (dateTo || '…')) : '';
+  var win = window.open('', '_blank', 'width=900,height=700');
+  if (!win) { toast('Please allow pop-ups to export PDF.', 'warning'); return; }
+  var head = document.head ? document.head.innerHTML : '';
+  win.document.write(
+    '<!DOCTYPE html><html><head>' + head +
+    '<title>Analytics Report</title>' +
+    '<style>body{margin:24px;font-family:Inter,sans-serif;} @media print{.no-print{display:none!important;}}</style>' +
+    '</head><body>' +
+    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #e2e8f0;">' +
+    '<div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#0ea5e9);display:grid;place-items:center;">' +
+    '<i class="fa-solid fa-chart-line" style="color:#fff;font-size:18px;"></i></div>' +
+    '<div><div style="font-size:18px;font-weight:800;color:#1e293b;">Performance Analytics Report</div>' +
+    '<div style="font-size:12px;color:#64748b;margin-top:2px;">Generated ' + new Date().toLocaleString() + dateRange + '</div></div>' +
+    '</div>' +
+    container.innerHTML +
+    '<script>window.onload=function(){window.print();};<\/script>' +
+    '</body></html>'
+  );
+  win.document.close();
 }
 
 // ── Logout flow ────────────────────────────────────────────
@@ -2773,6 +3105,14 @@ function enterApp() {
   document.getElementById('user-name-display').textContent = APP.username;
   document.getElementById('user-role-display').textContent = APP.role.toUpperCase();
   document.getElementById('user-avatar').textContent = APP.username.charAt(0).toUpperCase();
+  // New user dropdown topbar elements
+  var initials = APP.username.charAt(0).toUpperCase();
+  var roleLabel = APP.role === 'admin' ? 'Administrator' : 'Center Portal';
+  ['um-avatar-topbar','ud-avatar-header'].forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=initials; });
+  var nameEl = document.getElementById('um-name-topbar'); if(nameEl) nameEl.textContent = APP.username;
+  var uname = document.getElementById('ud-username-header'); if(uname) uname.textContent = APP.username;
+  var urole = document.getElementById('ud-role-header'); if(urole) urole.textContent = roleLabel;
+  updateThemeMenuItem();
 
   document.querySelectorAll('.admin-only').forEach(function(el) {
     el.classList.toggle('hidden', APP.role !== 'admin');
@@ -2807,6 +3147,7 @@ var titles = {
   };
   document.getElementById('topbar-title').textContent = titles[name] || name;
   document.getElementById('topbar-search').style.display = name === 'dashboard' ? 'flex' : 'none';
+  updateExportMenuItems(); // keep dropdown export options in sync with current view
 
 if (name === 'dashboard') {
     loadDashboardStats();
