@@ -1106,8 +1106,8 @@ export async function getCenters(token) {
     if (hit) {
       rows = hit;
     } else {
-      const ss = getSourceSpreadsheet();
-      const all = await ss.getValues('Center Card');
+      const sheet = await getCrmSheet(SHEETS.CENTER_CARD);
+      const all = await sheet.getValues();
       rows = (all && all.length > 1) ? all.slice(1).filter(r => r.some(c => c !== '' && c !== null && c !== undefined)) : [];
       await cache.set(KEY, rows, CONFIG.CACHE_TTL_SEC);
     }
