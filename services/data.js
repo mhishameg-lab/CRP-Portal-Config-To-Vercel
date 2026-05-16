@@ -735,7 +735,7 @@ function _buildWeekBuckets() {
   const day = today.getDay();
   const thisMonday = new Date(today);
   thisMonday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
-  return [2, 1, 0].map(weeksBack => {
+  return [6, 5, 4, 3, 2, 1, 0].map(weeksBack => {
     const start = new Date(thisMonday);
     start.setDate(thisMonday.getDate() - weeksBack * 7);
     const end = new Date(start);

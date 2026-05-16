@@ -712,7 +712,15 @@ input, select, textarea { font-family: inherit; }
    INSIGHTS / CHARTS
    ══════════════════════════════════════════════════════════════════════════════ */
 .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.chart-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); }
+.chart-card {
+  background:
+    linear-gradient(180deg, rgba(37,99,235,.045), transparent 54%),
+    var(--bg-surface);
+  border: 1px solid rgba(37,99,235,.16);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .065);
+}
 .chart-card.wide { grid-column: 1 / -1; }
 .chart-card.third { grid-column: span 1; }
 .chart-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
@@ -775,22 +783,24 @@ input, select, textarea { font-family: inherit; }
 .insight-alert.danger  { background: var(--danger-bg);  border: 1px solid rgba(220,38,38,.25);  color: var(--danger); }
 .insight-alert.success { background: var(--success-bg); border: 1px solid rgba(5,150,105,.25);  color: var(--success); }
 .insight-alert.info    { background: var(--info-bg);    border: 1px solid rgba(8,145,178,.25);   color: var(--info); }
-.insight-alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.insight-alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 2px; color:#2563eb; }
 .insight-alert-text { color: var(--text-primary); }
 .insight-alert-text strong { color: inherit; }
 
 /* Analyst layer */
 .analyst-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(135deg, rgba(37,99,235,.09), transparent 42%),
+    var(--bg-surface);
+  border: 1px solid rgba(37,99,235,.18);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+  padding: 20px;
   margin-bottom: 18px;
 }
-.analyst-panel.strong { border-left: 4px solid var(--success); }
-.analyst-panel.watch { border-left: 4px solid var(--warning); }
-.analyst-panel.risk { border-left: 4px solid var(--danger); }
+.analyst-panel.strong { border-left: 4px solid #1d4ed8; }
+.analyst-panel.watch { border-left: 4px solid #2563eb; }
+.analyst-panel.risk { border-left: 4px solid #0f172a; }
 .analyst-kicker {
   font-size: 10.5px;
   font-weight: 800;
@@ -817,9 +827,9 @@ input, select, textarea { font-family: inherit; }
   margin-top: 14px;
 }
 .analyst-action {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(37,99,235,.16);
   border-radius: var(--radius-md);
-  background: var(--bg-surface2);
+  background: rgba(37,99,235,.045);
   padding: 12px;
 }
 .analyst-action-title {
@@ -840,12 +850,15 @@ input, select, textarea { font-family: inherit; }
   margin-bottom: 18px;
 }
 .health-card {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(37,99,235,.15);
   border-radius: var(--radius-md);
-  background: var(--bg-surface);
+  background:
+    linear-gradient(180deg, rgba(37,99,235,.055), transparent 58%),
+    var(--bg-surface);
   padding: 14px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 10px 28px rgba(15,23,42,.055);
 }
 .health-card::before {
   content: '';
@@ -854,9 +867,9 @@ input, select, textarea { font-family: inherit; }
   height: 4px;
   background: var(--text-muted);
 }
-.health-card.great::before { background: var(--success); }
-.health-card.ok::before { background: var(--warning); }
-.health-card.poor::before { background: var(--danger); }
+.health-card.great::before { background: #1d4ed8; }
+.health-card.ok::before { background: #3b82f6; }
+.health-card.poor::before { background: #0f172a; }
 .health-value {
   font-family: 'DM Mono', monospace;
   font-size: 30px;
@@ -864,9 +877,9 @@ input, select, textarea { font-family: inherit; }
   line-height: 1;
   margin-top: 4px;
 }
-.health-card.great .health-value { color: var(--success); }
-.health-card.ok .health-value { color: var(--warning); }
-.health-card.poor .health-value { color: var(--danger); }
+.health-card.great .health-value { color: #1d4ed8; }
+.health-card.ok .health-value { color: #2563eb; }
+.health-card.poor .health-value { color: #0f172a; }
 .health-label {
   font-size: 11px;
   color: var(--text-muted);
@@ -919,13 +932,19 @@ input, select, textarea { font-family: inherit; }
   font-size: 11px;
   font-weight: 800;
 }
-.score-pill.great { background: var(--success-bg); color: var(--success); }
-.score-pill.ok { background: var(--warning-bg); color: var(--warning); }
-.score-pill.poor { background: var(--danger-bg); color: var(--danger); }
+.score-pill.great { background: rgba(29,78,216,.1); color: #1d4ed8; }
+.score-pill.ok { background: rgba(37,99,235,.1); color: #2563eb; }
+.score-pill.poor { background: rgba(15,23,42,.08); color: #0f172a; }
 
 /* Section header for insights */
 .section-header { display: flex; align-items: baseline; gap: 10px; margin: 24px 0 14px; }
 .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.section-title i {
+  color: #2563eb;
+  width: 18px;
+  margin-right: 7px;
+  text-align: center;
+}
 .section-subtitle { font-size: 12px; color: var(--text-muted); }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -1599,12 +1618,12 @@ body {
               <button id="ins-tab-lg"  onclick="insTab('lg')"
                 style="padding:7px 18px;font-size:12px;font-weight:700;border:none;cursor:pointer;
                        background:var(--accent-primary);color:#fff;transition:all .2s;">
-                📋 LG Leads
+                <i class="fa-solid fa-chart-simple"></i> LG Leads
               </button>
               <button id="ins-tab-pcp" onclick="insTab('pcp')"
                 style="padding:7px 18px;font-size:12px;font-weight:700;border:none;cursor:pointer;
                        background:var(--bg-surface2);color:var(--text-secondary);transition:all .2s;">
-                🏥 PCP Leads
+                <i class="fa-solid fa-briefcase-medical"></i> PCP Leads
               </button>
             </div>
             <!-- Date filters -->
@@ -1636,25 +1655,24 @@ body {
 
             <!-- ── Verified Breakdown ──────────────────────── -->
             <div class="section-header">
-              <div class="section-title">✅ Verified Leads Breakdown</div>
+              <div class="section-title"><i class="fa-solid fa-circle-check"></i>Verified Leads Breakdown</div>
               <div class="section-subtitle">Med B vs PPO — production split</div>
             </div>
             <div id="ins-verified-card" style="margin-bottom:20px;"></div>
 
             <!-- ── Dropped Leads by Disposition ───────────── -->
             <div class="section-header">
-              <div class="section-title">🗑 Dropped Leads — Disposition Breakdown</div>
+              <div class="section-title"><i class="fa-solid fa-layer-group"></i>Dropped Leads — Disposition Breakdown</div>
               <div class="section-subtitle">
-                <span style="color:#dc2626;font-weight:600;">🔴 Red</span> = In-Call not working on them &nbsp;·&nbsp;
-                <span style="color:#d97706;font-weight:600;">🟡 Yellow</span> = Center needs to follow up
+                Distinct premium blue tones make each disposition easy to separate at a glance.
               </div>
             </div>
             <div id="ins-dropped-card" style="margin-bottom:20px;"></div>
 
             <!-- ── Weekly Production ───────────────────────── -->
             <div class="section-header">
-              <div class="section-title">📅 Weekly Production</div>
-              <div class="section-subtitle">Last 3 weeks · Minimum target: 10 leads/week</div>
+              <div class="section-title"><i class="fa-solid fa-calendar-week"></i>Weekly Production</div>
+              <div class="section-subtitle">Last 7 weeks · Minimum target: 10 leads/week</div>
             </div>
             <div class="card" style="margin-bottom:20px;">
               <div class="card-body"><div id="weekly-lg-container"></div></div>
@@ -1662,28 +1680,28 @@ body {
 
             <!-- ── Documentation Pipeline ─────────────────── -->
             <div class="section-header">
-              <div class="section-title">📂 Documentation Pipeline</div>
+              <div class="section-title"><i class="fa-solid fa-diagram-project"></i>Documentation Pipeline</div>
               <div class="section-subtitle">From verified lead → signed order → financial outcome</div>
             </div>
             <div id="ins-pipeline-card" style="margin-bottom:20px;"></div>
 
             <!-- ── 45-Day Promise Tracker ──────────────────── -->
             <div class="section-header">
-              <div class="section-title">⏱ 45-Day Conversion Promise</div>
+              <div class="section-title"><i class="fa-solid fa-stopwatch"></i>45-Day Conversion Promise</div>
               <div class="section-subtitle">We guarantee 20–25% of verified leads convert to signed orders within 45 days</div>
             </div>
             <div id="ins-promise-card" style="margin-bottom:20px;"></div>
 
             <!-- ── Financial Results ───────────────────────── -->
             <div class="section-header">
-              <div class="section-title">💰 Financial Results</div>
+              <div class="section-title"><i class="fa-solid fa-coins"></i>Financial Results</div>
               <div class="section-subtitle">From signed orders → Approved (real revenue) and RTS (returned product)</div>
             </div>
             <div id="ins-financial-card" style="margin-bottom:20px;"></div>
 
             <!-- ── Charts (existing) ───────────────────────── -->
             <div class="section-header">
-              <div class="section-title">📈 Detailed Charts</div>
+              <div class="section-title"><i class="fa-solid fa-chart-line"></i>Detailed Charts</div>
             </div>
             <div class="charts-grid">
               <div class="chart-card">
@@ -1738,7 +1756,7 @@ body {
 
             <!-- ── PCP Hero stats ──────────────────────────── -->
             <div class="section-header">
-              <div class="section-title">🏥 PCP Leads — Performance Overview</div>
+              <div class="section-title"><i class="fa-solid fa-briefcase-medical"></i>PCP Leads — Performance Overview</div>
               <div class="section-subtitle">You provide the documentation — we process and track every order</div>
             </div>
             <div id="ins-pcp-analysis"></div>
@@ -1746,8 +1764,8 @@ body {
 
             <!-- ── PCP Weekly ──────────────────────────────── -->
             <div class="section-header">
-              <div class="section-title">📅 Weekly Submissions</div>
-              <div class="section-subtitle">Last 3 weeks · Minimum target: 10 leads/week</div>
+              <div class="section-title"><i class="fa-solid fa-calendar-week"></i>Weekly Submissions</div>
+              <div class="section-subtitle">Last 7 weeks · Minimum target: 10 leads/week</div>
             </div>
             <div class="card" style="margin-bottom:20px;">
               <div class="card-body"><div id="weekly-pcp-container"></div></div>
@@ -1755,7 +1773,7 @@ body {
 
             <!-- ── PCP Financial Results ───────────────────── -->
             <div class="section-header">
-              <div class="section-title">💰 Processing Outcomes</div>
+              <div class="section-title"><i class="fa-solid fa-chart-column"></i>Processing Outcomes</div>
               <div class="section-subtitle">Approval rate and RTS rate across all your PCP submissions</div>
             </div>
             <div id="ins-pcp-outcomes" style="margin-bottom:20px;"></div>
@@ -2452,10 +2470,10 @@ const CHART_PALETTE = [
   '#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6',
 ];
 const CATEGORY_COLORS = [
-  '#2563eb','#059669','#d97706','#dc2626','#7c3aed',
-  '#0891b2','#ea580c','#65a30d','#db2777','#0f766e',
-  '#4f46e5','#be123c','#9333ea','#0369a1','#16a34a',
-  '#ca8a04','#c2410c','#475569',
+  '#0f172a','#1e3a8a','#1d4ed8','#2563eb','#3b82f6',
+  '#60a5fa','#0284c7','#0369a1','#0e7490','#0891b2',
+  '#4338ca','#4f46e5','#64748b','#334155','#172554',
+  '#075985','#1e40af','#2563eb',
 ];
 
 // Production dispositions (must match DataService.gs DISPOSITIONS)
@@ -3747,7 +3765,7 @@ function renderPipelineCard(p) {
       '<div style="height:100%;width:' + signedPct + '%;background:' + signedColor + ';border-radius:999px;transition:width .7s;"></div>' +
     '</div>' +
     '<div style="margin-top:8px;font-size:11px;color:var(--text-muted);">' +
-      (signedClass === 'great' ? '✅ Strong conversion from verified to signed.' : signedClass === 'ok' ? '⚠️ Moderate conversion — maintain focus on order completion.' : '🚨 Low conversion — follow up on verified leads to close orders.') +
+      (signedClass === 'great' ? 'Strong conversion from verified to signed.' : signedClass === 'ok' ? 'Moderate conversion — maintain focus on order completion.' : 'Low conversion — follow up on verified leads to close orders.') +
     '</div>' +
   '</div></div>';
 }
@@ -3793,7 +3811,7 @@ function renderPromiseCard(p) {
     '</div>' +
     '<div style="margin-top:14px;padding:14px;border-radius:var(--radius-md);background:' + (convClass === 'great' ? '#dcfce7' : convClass === 'ok' ? '#fef9c3' : '#fee2e2') + ';border:1.5px solid ' + (convClass === 'great' ? '#15803d33' : convClass === 'ok' ? '#d9770633' : '#dc262633') + ';">' +
       '<div style="font-size:13px;font-weight:700;color:' + color + ';">' +
-        (convClass === 'great' ? '✅ On track' : convClass === 'ok' ? '⚠️ Moderate conversion' : '🚨 Low conversion — take action') +
+        (convClass === 'great' ? 'On track' : convClass === 'ok' ? 'Moderate conversion' : 'Low conversion — take action') +
       '</div>' +
       '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">' +
         'Of ' + older45 + ' eligible leads, ' + signed45 + ' have signed orders. ' + (stale > 0 ? stale + ' are still waiting.' : 'No stalled 45+ leads currently.') +
@@ -3871,10 +3889,10 @@ function renderPCPPanel(pcp, weeklyPCP) {
   renderPcpAnalysis(pcp, appPct, denPct, rtsPct, pendingPct);
 
   var alerts = [];
-  if (appPct >= 50) alerts.push({ type: 'success', icon: '✅', msg: '<strong>Strong PCP Approval Rate (' + appPct + '%)</strong> — Over half of submitted PCP orders are approved.' });
-  else if (appPct >= 30) alerts.push({ type: 'info', icon: '📊', msg: '<strong>Moderate PCP Approval Rate (' + appPct + '%)</strong> — ' + pcp.approved + ' of ' + pcp.total + ' orders approved.' });
-  else alerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Low PCP Approval Rate (' + appPct + '%)</strong> — Review submission quality.' });
-  if (rtsPct > 10) alerts.push({ type: 'danger', icon: '🚨', msg: '<strong>High PCP RTS (' + rtsPct + '%)</strong> — ' + pcp.rts + ' orders returned. Investigate further.' });
+  if (appPct >= 50) alerts.push({ type: 'success', icon: '<i class="fa-solid fa-circle-check"></i>', msg: '<strong>Strong PCP Approval Rate (' + appPct + '%)</strong> — Over half of submitted PCP orders are approved.' });
+  else if (appPct >= 30) alerts.push({ type: 'info', icon: '<i class="fa-solid fa-chart-simple"></i>', msg: '<strong>Moderate PCP Approval Rate (' + appPct + '%)</strong> — ' + pcp.approved + ' of ' + pcp.total + ' orders approved.' });
+  else alerts.push({ type: 'warning', icon: '<i class="fa-solid fa-circle-exclamation"></i>', msg: '<strong>Low PCP Approval Rate (' + appPct + '%)</strong> — Review submission quality.' });
+  if (rtsPct > 10) alerts.push({ type: 'danger', icon: '<i class="fa-solid fa-triangle-exclamation"></i>', msg: '<strong>High PCP RTS (' + rtsPct + '%)</strong> — ' + pcp.rts + ' orders returned. Investigate further.' });
   alertEl.innerHTML = alerts.map(function(a) {
     return '<div class="insight-alert ' + a.type + '" style="margin-bottom:8px;"><div class="insight-alert-icon">' + a.icon + '</div><div class="insight-alert-text">' + a.msg + '</div></div>';
   }).join('');
@@ -3945,7 +3963,7 @@ function qCard(score, cls, label, desc) {
 
 // ══════════════════════════════════════════════════════════
 // WEEKLY PRODUCTION TRACKING (shared by LG & PCP)
-// weeklyData = [{label: 'Apr 14–20', count: 12}, ...]  (3 items, oldest→newest)
+// weeklyData = [{label: 'Apr 14-20', count: 12}, ...]  (7 items, oldest to newest)
 // ══════════════════════════════════════════════════════════
 var WEEKLY_TARGET = 10;
 
@@ -3964,36 +3982,36 @@ function renderWeeklyTracking(containerId, weeklyData, title) {
   var latest    = weeklyData[weeklyData.length - 1];
   var prevWeek  = weeklyData.length >= 2 ? weeklyData[weeklyData.length - 2] : null;
   var weekTrend = prevWeek ? (latest.count - prevWeek.count) : 0;
-  var trendTxt  = weekTrend > 0 ? ('▲ ' + weekTrend + ' vs last week') : weekTrend < 0 ? ('▼ ' + Math.abs(weekTrend) + ' vs last week') : '— Same as last week';
-  var trendClr  = weekTrend > 0 ? 'var(--success)' : weekTrend < 0 ? 'var(--danger)' : 'var(--text-muted)';
+  var trendTxt  = weekTrend > 0 ? ('+' + weekTrend + ' vs last week') : weekTrend < 0 ? ('-' + Math.abs(weekTrend) + ' vs last week') : 'Same as last week';
+  var trendClr  = weekTrend > 0 ? '#1d4ed8' : weekTrend < 0 ? '#0f172a' : 'var(--text-muted)';
 
   var barsHtml = weeklyData.map(function(w, i) {
     var isLatest  = i === weeklyData.length - 1;
     var cls       = w.count >= WEEKLY_TARGET ? 'great' : w.count >= Math.ceil(WEEKLY_TARGET * 0.7) ? 'ok' : 'poor';
-    var color     = cls === 'great' ? '#059669' : cls === 'ok' ? '#d97706' : '#dc2626';
+    var color     = cls === 'great' ? '#1d4ed8' : cls === 'ok' ? '#3b82f6' : '#93c5fd';
     var barH      = Math.max(Math.round((w.count / maxVal) * 100), 3);
     var diff      = i > 0 ? (w.count - weeklyData[i - 1].count) : null;
-    var diffIcon  = diff === null ? '' : diff > 0 ? ('▲' + diff) : diff < 0 ? ('▼' + Math.abs(diff)) : '—';
-    var diffColor = diff === null ? '' : diff > 0 ? '#059669' : diff < 0 ? '#dc2626' : '#94a3b8';
+    var diffIcon  = diff === null ? '' : diff > 0 ? ('+' + diff) : diff < 0 ? ('-' + Math.abs(diff)) : '0';
+    var diffColor = diff === null ? '' : diff > 0 ? '#1d4ed8' : diff < 0 ? '#0f172a' : '#94a3b8';
 
-    return '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:0;">' +
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:58px;">' +
       // Count
-      '<div style="font-size:24px;font-weight:800;font-family:DM Mono,monospace;color:' + color + ';">' + w.count + '</div>' +
+      '<div style="font-size:23px;font-weight:800;font-family:DM Mono,monospace;color:' + color + ';letter-spacing:0;">' + w.count + '</div>' +
       // Trend vs previous
       '<div style="font-size:10px;font-weight:700;color:' + (diff !== null ? diffColor : 'transparent') + ';">' + (diffIcon || '&nbsp;') + '</div>' +
       // Bar
-      '<div style="width:52px;height:90px;background:var(--bg-surface2);border-radius:8px 8px 0 0;display:flex;align-items:flex-end;overflow:hidden;position:relative;">' +
+      '<div style="width:42px;height:96px;background:linear-gradient(180deg,rgba(37,99,235,.08),rgba(37,99,235,.025));border:1px solid rgba(37,99,235,.10);border-radius:10px 10px 4px 4px;display:flex;align-items:flex-end;overflow:hidden;position:relative;">' +
         // Target line at WEEKLY_TARGET level
-        '<div style="position:absolute;bottom:' + Math.round((WEEKLY_TARGET / maxVal) * 100) + '%;left:0;right:0;height:2px;background:#2563eb44;z-index:1;"></div>' +
-        '<div style="width:100%;height:' + barH + '%;background:' + color + ';border-radius:8px 8px 0 0;transition:height .7s ease;position:relative;z-index:2;"></div>' +
+        '<div style="position:absolute;bottom:' + Math.round((WEEKLY_TARGET / maxVal) * 100) + '%;left:4px;right:4px;height:2px;background:#0f172a55;z-index:1;"></div>' +
+        '<div style="width:100%;height:' + barH + '%;background:linear-gradient(180deg,' + color + ',#1e40af);border-radius:10px 10px 4px 4px;transition:height .7s ease;position:relative;z-index:2;"></div>' +
       '</div>' +
       // Week label
       '<div style="font-size:9px;color:var(--text-muted);text-align:center;line-height:1.3;">' +
         w.label + (isLatest ? '<br><span style="color:#2563eb;font-weight:700;">Current</span>' : '') +
       '</div>' +
       // Status badge
-      '<div style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;background:' + color + '22;color:' + color + ';">' +
-        (w.count >= WEEKLY_TARGET ? '✅ On Track' : '⚠️ Below') +
+      '<div style="font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;background:' + color + '14;color:' + (cls === 'poor' ? '#1e3a8a' : color) + ';border:1px solid ' + color + '33;">' +
+        (w.count >= WEEKLY_TARGET ? 'On target' : 'Below target') +
       '</div>' +
     '</div>';
   }).join('');
@@ -4003,12 +4021,12 @@ function renderWeeklyTracking(containerId, weeklyData, title) {
     '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px;">' +
       '<div>' +
         '<div style="font-size:13px;font-weight:700;color:var(--text);">' + title + '</div>' +
-        '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Last 3 weeks · <strong style="color:#2563eb;">Target: ' + WEEKLY_TARGET + ' leads/week</strong></div>' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Last 7 weeks · <strong style="color:#2563eb;">Target: ' + WEEKLY_TARGET + ' leads/week</strong></div>' +
       '</div>' +
-      '<div style="font-size:11px;font-weight:700;color:' + trendClr + ';background:var(--bg-surface2);padding:4px 12px;border-radius:999px;">' + trendTxt + '</div>' +
+      '<div style="font-size:11px;font-weight:800;color:' + trendClr + ';background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.14);padding:5px 12px;border-radius:999px;">' + trendTxt + '</div>' +
     '</div>' +
     // Bars
-    '<div style="display:flex;gap:20px;align-items:flex-end;justify-content:center;padding:4px 0 8px;">' + barsHtml + '</div>' +
+    '<div style="display:flex;gap:14px;align-items:flex-end;justify-content:center;padding:4px 0 8px;overflow-x:auto;">' + barsHtml + '</div>' +
     // Target legend
     '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--text-muted);">' +
       '<div style="width:20px;height:2px;background:#2563eb88;"></div>' +
@@ -4045,14 +4063,14 @@ function renderPCPSection(pcp, weeklyPCP) {
   var alertsHtml = '';
   var pcpAlerts = [];
   if (approvedPct >= 50) {
-    pcpAlerts.push({ type: 'success', icon: '✅', msg: '<strong>Strong PCP Approval Rate (' + approvedPct + '%)</strong> — Over half of submitted PCP orders are getting approved.' });
+    pcpAlerts.push({ type: 'success', icon: '<i class="fa-solid fa-circle-check"></i>', msg: '<strong>Strong PCP Approval Rate (' + approvedPct + '%)</strong> — Over half of submitted PCP orders are getting approved.' });
   } else if (approvedPct >= 30) {
-    pcpAlerts.push({ type: 'info', icon: '📊', msg: '<strong>Moderate PCP Approval Rate (' + approvedPct + '%)</strong> — ' + pcp.approved + ' of ' + pcp.total + ' PCP orders approved.' });
+    pcpAlerts.push({ type: 'info', icon: '<i class="fa-solid fa-chart-simple"></i>', msg: '<strong>Moderate PCP Approval Rate (' + approvedPct + '%)</strong> — ' + pcp.approved + ' of ' + pcp.total + ' PCP orders approved.' });
   } else {
-    pcpAlerts.push({ type: 'warning', icon: '⚠️', msg: '<strong>Low PCP Approval Rate (' + approvedPct + '%)</strong> — Only ' + pcp.approved + ' of ' + pcp.total + ' PCP orders approved. Review order quality.' });
+    pcpAlerts.push({ type: 'warning', icon: '<i class="fa-solid fa-circle-exclamation"></i>', msg: '<strong>Low PCP Approval Rate (' + approvedPct + '%)</strong> — Only ' + pcp.approved + ' of ' + pcp.total + ' PCP orders approved. Review order quality.' });
   }
   if (rtsPct > 15) {
-    pcpAlerts.push({ type: 'danger', icon: '🚨', msg: '<strong>High PCP RTS (' + rtsPct + '%)</strong> — ' + pcp.rts + ' orders returned. Investigate product/patient fit.' });
+    pcpAlerts.push({ type: 'danger', icon: '<i class="fa-solid fa-triangle-exclamation"></i>', msg: '<strong>High PCP RTS (' + rtsPct + '%)</strong> — ' + pcp.rts + ' orders returned. Investigate product/patient fit.' });
   }
   alertsHtml = pcpAlerts.map(function(a) {
     return '<div class="insight-alert ' + a.type + '" style="margin-bottom:8px;"><div class="insight-alert-icon">' + a.icon + '</div><div class="insight-alert-text">' + a.msg + '</div></div>';
@@ -4209,7 +4227,7 @@ function buildProductionDoughnut(id, dist) {
       plugins: {
         legend: { position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 11 } } },
         tooltip: { callbacks: { label: function(ctx) {
-          var lbl = PROD_LEAD.indexOf(ctx.label) !== -1 ? '✅ Production' : '🗑 Trash';
+          var lbl = PROD_LEAD.indexOf(ctx.label) !== -1 ? 'Production' : 'Dropped';
           return ' ' + ctx.label + ': ' + ctx.raw + ' (' + lbl + ')';
         }}}
       }
@@ -4233,9 +4251,9 @@ function buildChaserDoughnut(id, dist) {
       plugins: {
         legend: { position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 11 } } },
         tooltip: { callbacks: { label: function(ctx) {
-          var cat = PROD_CHASER_SIGNED.indexOf(ctx.label) !== -1 ? '✅ Signed'
-                  : PROD_CHASER_POTENTIAL.indexOf(ctx.label) !== -1 ? '🔶 High Potential'
-                  : '🗑 Trash';
+          var cat = PROD_CHASER_SIGNED.indexOf(ctx.label) !== -1 ? 'Signed'
+                  : PROD_CHASER_POTENTIAL.indexOf(ctx.label) !== -1 ? 'High Potential'
+                  : 'Dropped';
           return ' ' + ctx.label + ': ' + ctx.raw + ' (' + cat + ')';
         }}}
       }
@@ -4347,7 +4365,7 @@ function drawRtsGauge(p) {
   var label = document.getElementById('rts-gauge-label');
   if (label) {
     label.innerHTML = '<span class="rts-gauge-value" style="color:' + color + ';">' + rate + '%</span><br>' +
-      (rate <= 7 ? '✅ Excellent — well below threshold' : rate <= 15 ? '⚠️ Acceptable — stay below 15%' : '🚨 Critical — investigate immediately');
+      (rate <= 7 ? 'Excellent — well below threshold' : rate <= 15 ? 'Acceptable — stay below 15%' : 'Critical — investigate immediately');
   }
 }
 
