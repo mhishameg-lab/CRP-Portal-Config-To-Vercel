@@ -936,6 +936,115 @@ input, select, textarea { font-family: inherit; }
 .score-pill.ok { background: rgba(37,99,235,.1); color: #2563eb; }
 .score-pill.poor { background: rgba(15,23,42,.08); color: #0f172a; }
 
+@keyframes insightReveal {
+  from { opacity: 0; transform: translateY(18px) scale(.985); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes barRise {
+  from { transform: scaleY(.02); filter: saturate(.7); }
+  to { transform: scaleY(1); filter: saturate(1.12); }
+}
+@keyframes pulseHalo {
+  0%, 100% { box-shadow: 0 0 0 rgba(37,99,235,0); }
+  50% { box-shadow: 0 0 34px rgba(37,99,235,.16); }
+}
+@keyframes scanLine {
+  from { transform: translateX(-120%); opacity: 0; }
+  25%, 70% { opacity: .55; }
+  to { transform: translateX(140%); opacity: 0; }
+}
+#view-insights .chart-card,
+#view-insights .analyst-panel,
+#view-insights .health-card,
+#view-insights .quality-card,
+#view-insights .card {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+#view-insights .chart-card::after,
+#view-insights .analyst-panel::after,
+#view-insights .health-card::after,
+#view-insights .quality-card::after,
+#view-insights .card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 20%), rgba(37,99,235,.18), transparent 48%);
+  transition: opacity .22s ease;
+}
+#view-insights .chart-card:hover,
+#view-insights .analyst-panel:hover,
+#view-insights .health-card:hover,
+#view-insights .quality-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(37,99,235,.38);
+  box-shadow: 0 22px 55px rgba(15,23,42,.11);
+}
+#view-insights .chart-card:hover::after,
+#view-insights .analyst-panel:hover::after,
+#view-insights .health-card:hover::after,
+#view-insights .quality-card:hover::after,
+#view-insights .card:hover::after { opacity: 1; }
+#view-insights .analyst-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+  animation: scanLine 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.motion-enter {
+  opacity: 0;
+  transform: translateY(18px) scale(.985);
+  filter: blur(8px);
+}
+.motion-enter.is-visible {
+  animation: insightReveal .68s cubic-bezier(.18,.89,.32,1.08) forwards;
+  animation-delay: var(--motion-delay, 0ms);
+}
+.weekly-bar-fill {
+  transform-origin: bottom;
+  animation: barRise .9s cubic-bezier(.18,.89,.32,1.08) both;
+  animation-delay: var(--bar-delay, 0ms);
+}
+.weekly-count {
+  animation: pulseHalo 2.4s ease-in-out infinite;
+  animation-delay: var(--bar-delay, 0ms);
+  border-radius: 10px;
+}
+.insights-animated-number {
+  font-variant-numeric: tabular-nums;
+  transition: color .25s ease, text-shadow .25s ease;
+}
+.insights-animated-number.is-counting {
+  text-shadow: 0 0 22px rgba(37,99,235,.22);
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-enter,
+  .motion-enter.is-visible,
+  .weekly-bar-fill,
+  .weekly-count,
+  #view-insights .analyst-panel::before {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  #view-insights .chart-card,
+  #view-insights .analyst-panel,
+  #view-insights .health-card,
+  #view-insights .quality-card,
+  #view-insights .card {
+    transition: none !important;
+  }
+}
+
 /* Section header for insights */
 .section-header { display: flex; align-items: baseline; gap: 10px; margin: 24px 0 14px; }
 .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
@@ -3317,6 +3426,62 @@ function insTab(tab) {
   }
 }
 
+function enhanceInsightsMotion() {
+  var root = document.getElementById('view-insights');
+  if (!root) return;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var animated = root.querySelectorAll('.analyst-panel,.health-card,.quality-card,.chart-card,#ins-hero-row > div,#ins-verified-card .card,#ins-dropped-card .card,#ins-pipeline-card .card,#ins-promise-card .card,#ins-financial-card .card,#ins-pcp-hero .card,#ins-pcp-outcomes .card');
+  animated.forEach(function(el, idx) {
+    el.classList.remove('motion-enter', 'is-visible');
+    if (!reduceMotion) {
+      el.classList.add('motion-enter');
+      el.style.setProperty('--motion-delay', Math.min(idx * 42, 520) + 'ms');
+      requestAnimationFrame(function() { el.classList.add('is-visible'); });
+    }
+  });
+
+  root.querySelectorAll('.chart-card,.analyst-panel,.health-card,.quality-card,.card').forEach(function(el) {
+    if (el.dataset.spotlightBound) return;
+    el.dataset.spotlightBound = '1';
+    el.addEventListener('pointermove', function(evt) {
+      var rect = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (evt.clientX - rect.left) + 'px');
+      el.style.setProperty('--my', (evt.clientY - rect.top) + 'px');
+    });
+  });
+
+  animateInsightNumbers(root);
+}
+
+function animateInsightNumbers(root) {
+  if (!root) return;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  root.querySelectorAll('[data-animate-number]').forEach(function(el) {
+    var target = parseFloat(el.getAttribute('data-animate-number'));
+    if (isNaN(target)) return;
+    var suffix = el.getAttribute('data-number-suffix') || '';
+    if (reduceMotion) {
+      el.textContent = Math.round(target) + suffix;
+      return;
+    }
+    var duration = 820;
+    var startTime = performance.now();
+    el.classList.add('is-counting');
+    function tick(now) {
+      var progress = Math.min((now - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var value = Math.round(target * eased);
+      el.textContent = value + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+      else {
+        el.textContent = Math.round(target) + suffix;
+        el.classList.remove('is-counting');
+      }
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
 function loadInsights() {
   var dateFrom = document.getElementById('ins-date-from').value;
   var dateTo   = document.getElementById('ins-date-to').value;
@@ -3348,6 +3513,7 @@ function loadInsights() {
 
       renderPCPPanel(r.pcp, r.weeklyPCP);
       insTab(_insActiveTab);
+      enhanceInsightsMotion();
     })
     .withFailureHandler(function() {
       document.getElementById('insights-loading').style.display = 'none';
@@ -3526,8 +3692,11 @@ function renderHealthGrid(p, total) {
 }
 
 function healthCard(value, cls, label, note) {
+  var raw = parseFloat(String(value).replace(/[^0-9.-]/g, ''));
+  var suffix = String(value).indexOf('%') !== -1 ? '%' : '';
+  var numAttr = isNaN(raw) ? '' : ' data-animate-number="' + raw + '" data-number-suffix="' + suffix + '"';
   return '<div class="health-card ' + cls + '">' +
-    '<div class="health-value">' + value + '</div>' +
+    '<div class="health-value insights-animated-number"' + numAttr + '>' + value + '</div>' +
     '<div class="health-label">' + esc(label) + '</div>' +
     '<div class="health-note">' + esc(note) + '</div>' +
   '</div>';
@@ -3651,10 +3820,10 @@ function renderHeroStats(p, total) {
   var signedPct = p.verified > 0 ? Math.round((p.returnedDOs / p.verified) * 100) : 0;
   var stalePct = p.verifiedOlderThan45 > 0 ? Math.round(((p.staleVerifiedCount || 0) / p.verifiedOlderThan45) * 100) : 0;
 
-  function badgeLabel(value, label, color) {
+    function badgeLabel(value, label, color) {
     return '<div style="padding:18px;border-radius:var(--radius-md);background:' + color.bg + ';border:1.5px solid ' + color.border + ';">' +
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color.text + ';margin-bottom:6px;">' + label + '</div>' +
-      '<div style="font-size:40px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + color.text + ';line-height:1;">' + value + '</div>' +
+      '<div class="insights-animated-number" data-animate-number="' + value + '" style="font-size:40px;font-weight:800;font-family:\'DM Mono\',monospace;color:' + color.text + ';line-height:1;">' + value + '</div>' +
       '<div style="font-size:12px;color:' + color.text + ';opacity:.8;margin-top:4px;">' + label + '</div>' +
     '</div>';
   }
@@ -3954,8 +4123,12 @@ function renderQualityCards(p, total) {
 }
 
 function qCard(score, cls, label, desc) {
+  var raw = parseFloat(String(score).replace(/[^0-9.-]/g, ''));
+  var suffix = String(score).indexOf('%') !== -1 ? '%' : '';
+  var canAnimate = !String(score).includes('<') && !isNaN(raw);
+  var numAttr = canAnimate ? ' data-animate-number="' + raw + '" data-number-suffix="' + suffix + '"' : '';
   return '<div class="quality-card ' + cls + '">' +
-    '<div class="quality-score ' + cls + '">' + score + '</div>' +
+    '<div class="quality-score insights-animated-number ' + cls + '"' + numAttr + '>' + score + '</div>' +
     '<div class="quality-label">' + label + '</div>' +
     '<div class="quality-desc">' + desc + '</div>' +
   '</div>';
@@ -3996,14 +4169,14 @@ function renderWeeklyTracking(containerId, weeklyData, title) {
 
     return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:58px;">' +
       // Count
-      '<div style="font-size:23px;font-weight:800;font-family:DM Mono,monospace;color:' + color + ';letter-spacing:0;">' + w.count + '</div>' +
+      '<div class="weekly-count insights-animated-number" data-animate-number="' + w.count + '" style="--bar-delay:' + (i * 70) + 'ms;font-size:23px;font-weight:800;font-family:DM Mono,monospace;color:' + color + ';letter-spacing:0;">' + w.count + '</div>' +
       // Trend vs previous
       '<div style="font-size:10px;font-weight:700;color:' + (diff !== null ? diffColor : 'transparent') + ';">' + (diffIcon || '&nbsp;') + '</div>' +
       // Bar
       '<div style="width:42px;height:96px;background:linear-gradient(180deg,rgba(37,99,235,.08),rgba(37,99,235,.025));border:1px solid rgba(37,99,235,.10);border-radius:10px 10px 4px 4px;display:flex;align-items:flex-end;overflow:hidden;position:relative;">' +
         // Target line at WEEKLY_TARGET level
         '<div style="position:absolute;bottom:' + Math.round((WEEKLY_TARGET / maxVal) * 100) + '%;left:4px;right:4px;height:2px;background:#0f172a55;z-index:1;"></div>' +
-        '<div style="width:100%;height:' + barH + '%;background:linear-gradient(180deg,' + color + ',#1e40af);border-radius:10px 10px 4px 4px;transition:height .7s ease;position:relative;z-index:2;"></div>' +
+        '<div class="weekly-bar-fill" style="--bar-delay:' + (i * 70) + 'ms;width:100%;height:' + barH + '%;background:linear-gradient(180deg,' + color + ',#1e40af);border-radius:10px 10px 4px 4px;transition:height .7s ease;position:relative;z-index:2;"></div>' +
       '</div>' +
       // Week label
       '<div style="font-size:9px;color:var(--text-muted);text-align:center;line-height:1.3;">' +
@@ -4195,6 +4368,10 @@ function renderCharts(r) {
 
   Chart.defaults.color       = textColor;
   Chart.defaults.borderColor = gridColor;
+  Chart.defaults.animation = {
+    duration: 1200,
+    easing: 'easeOutQuart',
+  };
 
   Object.values(APP.charts).forEach(function(c) { if (c) c.destroy(); });
   APP.charts = {};
@@ -4224,6 +4401,7 @@ function buildProductionDoughnut(id, dist) {
     data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 2, borderColor: 'transparent' }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '62%',
+      animation: { animateRotate: true, animateScale: true, duration: 1300, easing: 'easeOutQuart' },
       plugins: {
         legend: { position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 11 } } },
         tooltip: { callbacks: { label: function(ctx) {
@@ -4248,6 +4426,7 @@ function buildChaserDoughnut(id, dist) {
     data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 2, borderColor: 'transparent' }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '62%',
+      animation: { animateRotate: true, animateScale: true, duration: 1300, easing: 'easeOutQuart' },
       plugins: {
         legend: { position: 'right', labels: { boxWidth: 12, padding: 14, font: { size: 11 } } },
         tooltip: { callbacks: { label: function(ctx) {
@@ -4279,6 +4458,7 @@ function buildProcessingBar(id, dist, isDark, gridColor) {
     data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1200, easing: 'easeOutQuart' },
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { display: false }, ticks: { font: { size: 10 } } },
@@ -4298,6 +4478,7 @@ function buildBar(id, dist, gridColor) {
     data: { labels: labels, datasets: [{ data: data, backgroundColor: CHART_PALETTE, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1200, easing: 'easeOutQuart' },
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { display: false }, ticks: { font: { size: 10 } } },
@@ -4323,6 +4504,7 @@ function buildLine(id, timeData, isDark, gridColor) {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1400, easing: 'easeOutQuart' },
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { color: gridColor }, ticks: { font: { size: 10 } } },
