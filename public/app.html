@@ -2451,6 +2451,12 @@ const CHART_PALETTE = [
   '#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6',
   '#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6',
 ];
+const CATEGORY_COLORS = [
+  '#2563eb','#059669','#d97706','#dc2626','#7c3aed',
+  '#0891b2','#ea580c','#65a30d','#db2777','#0f766e',
+  '#4f46e5','#be123c','#9333ea','#0369a1','#16a34a',
+  '#ca8a04','#c2410c','#475569',
+];
 
 // Production dispositions (must match DataService.gs DISPOSITIONS)
 const PROD_LEAD   = ['Verified ppo', 'Verified Med b'];
@@ -3350,6 +3356,16 @@ function classLabel(cls) {
   return cls === 'great' ? 'Strong' : cls === 'ok' ? 'Watch' : 'Risk';
 }
 
+function categoryColor(label, idx) {
+  if (!label) return CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
+  var hash = 0;
+  for (var i = 0; i < String(label).length; i++) {
+    hash = ((hash << 5) - hash) + String(label).charCodeAt(i);
+    hash |= 0;
+  }
+  return CATEGORY_COLORS[Math.abs(hash) % CATEGORY_COLORS.length];
+}
+
 function renderExecutiveAnalysis(r) {
   var el = document.getElementById('ins-exec-analysis');
   if (!el || !r || !r.production) return;
@@ -3369,16 +3385,86 @@ function renderExecutiveAnalysis(r) {
   var riskScore = [prodClass, signedClass, approvalClass, rtsClass].filter(function(c) { return c === 'poor'; }).length;
   var panelClass = riskScore >= 2 || stale >= 10 ? 'risk' : riskScore === 1 || stale > 0 ? 'watch' : 'strong';
 
-  var headline = panelClass === 'strong'
-    ? 'Pipeline is healthy: quality and downstream outcomes are aligned.'
-    : panelClass === 'watch'
-      ? 'Pipeline needs attention: one or more conversion points is under target.'
-      : 'Pipeline is at risk: fix quality, conversion, or RTS before volume scaling.';
-
   var topDrop = 'No major dropped disposition';
   var drops = p.droppedByDisposition || {};
   var dropKeys = Object.keys(drops).sort(function(a, b) { return drops[b] - drops[a]; });
   if (dropKeys.length) topDrop = dropKeys[0] + ' (' + drops[dropKeys[0]] + ')';
+
+  var metrics = [
+    {
+      name: 'Production quality',
+      value: prodPct,
+      suffix: '%',
+      cls: prodClass,
+      target: '60%+',
+      action: prodClass === 'poor'
+        ? 'Most leakage is in lead quality. Start with ' + topDrop + ' and coach the intake script around that disposition.'
+        : prodClass === 'ok'
+          ? 'Production is usable but not clean. Review the top dropped bucket, ' + topDrop + ', before increasing volume.'
+          : 'Production quality is strong. Keep the same qualification standard while watching ' + topDrop + '.'
+    },
+    {
+      name: 'Verified to signed',
+      value: signedPct,
+      suffix: '%',
+      cls: signedClass,
+      target: '25%+',
+      action: signedClass === 'poor'
+        ? 'The largest bottleneck is after verification. Work the oldest verified leads first and tighten chaser follow-up.'
+        : signedClass === 'ok'
+          ? 'Conversion is close but not comfortable. Daily follow-up should focus on verified leads without signed orders.'
+          : 'Signed-order conversion is performing. Protect turnaround time from verification to documentation.'
+    },
+    {
+      name: 'Signed to approved',
+      value: approvalPct,
+      suffix: '%',
+      cls: approvalClass,
+      target: '60%+',
+      action: approvalClass === 'poor'
+        ? 'Approvals are weak after orders are signed. Audit document completeness and product match before submission.'
+        : approvalClass === 'ok'
+          ? 'Approval rate is mid-range. Spot-check signed orders for missing documentation patterns.'
+          : 'Approval rate is healthy. Keep submission checks consistent.'
+    },
+    {
+      name: 'RTS control',
+      value: rtsPct,
+      suffix: '%',
+      cls: rtsClass,
+      target: '7% or less',
+      action: rtsClass === 'poor'
+        ? 'RTS is the fulfillment risk. Confirm patient readiness, address accuracy, and product fit before shipment.'
+        : rtsClass === 'ok'
+          ? 'RTS is watchable. Review the latest RTS cases before the rate crosses the danger band.'
+          : 'RTS is controlled. Keep monitoring for product or center-specific spikes.'
+    },
+    {
+      name: '45-day stale leads',
+      value: stale,
+      suffix: '',
+      cls: stale >= 10 ? 'poor' : stale > 0 ? 'ok' : 'great',
+      target: '0',
+      action: stale > 0
+        ? 'There are ' + stale + ' verified leads older than 45 days without a signed order. Make this the cleanup queue.'
+        : 'No stale verified leads are blocking the 45-day promise.'
+    },
+  ];
+  var rank = { poor: 0, ok: 1, great: 2 };
+  metrics.sort(function(a, b) {
+    if (rank[a.cls] !== rank[b.cls]) return rank[a.cls] - rank[b.cls];
+    return b.value - a.value;
+  });
+  var weakest = metrics[0];
+  var strongest = metrics.slice().sort(function(a, b) {
+    if (rank[a.cls] !== rank[b.cls]) return rank[b.cls] - rank[a.cls];
+    return b.value - a.value;
+  })[0];
+  var headline = panelClass === 'strong'
+    ? 'Strongest area: ' + strongest.name + '. Keep pressure on ' + weakest.name + '.'
+    : panelClass === 'watch'
+      ? 'Main watch point: ' + weakest.name + ' is limiting the pipeline.'
+      : 'Highest-risk bottleneck: ' + weakest.name + ' needs action before scaling volume.';
 
   el.innerHTML = '<div class="analyst-panel ' + panelClass + '">' +
     '<div class="analyst-kicker">Executive diagnosis</div>' +
@@ -3390,9 +3476,9 @@ function renderExecutiveAnalysis(r) {
       (stale > 0 ? stale + ' verified lead' + (stale === 1 ? ' is' : 's are') + ' older than 45 days without a signed order.' : 'No stale verified leads are currently blocking the 45-day view.') +
     '</div>' +
     '<div class="analyst-actions">' +
-      actionTile('Quality focus', prodClass, prodClass === 'poor' ? 'Audit dropped calls. Top loss bucket: ' + esc(topDrop) + '.' : 'Keep intake criteria stable. Top loss bucket: ' + esc(topDrop) + '.') +
-      actionTile('Conversion focus', signedClass, signedClass === 'poor' ? 'Prioritize verified leads without signed orders and tighten chaser follow-up.' : 'Signed-order flow is acceptable; protect speed from verification to documentation.') +
-      actionTile('Fulfillment focus', rtsClass, rtsClass === 'poor' ? 'RTS is above safe range. Review product fit, shipping readiness, and patient confirmation.' : 'RTS is within controllable range; keep monitoring high-risk products.') +
+      metrics.slice(0, 3).map(function(m) {
+        return actionTile(m.name + ' (' + m.value + m.suffix + ' / target ' + m.target + ')', m.cls, m.action);
+      }).join('') +
     '</div>' +
   '</div>';
 }
@@ -3495,6 +3581,8 @@ function renderPcpAnalysis(pcp, appPct, denPct, rtsPct, pendingPct) {
 
 function renderInsightsAlerts(p, total) {
   var container = document.getElementById('insights-alerts');
+  if (container) container.innerHTML = '';
+  return;
   if (!p) { container.innerHTML = ''; return; }
   var alerts = [];
 
@@ -3615,13 +3703,17 @@ function renderDroppedCard(p) {
       '<div style="font-size:11px;color:var(--text-muted);">' + totalDropped + ' dropped leads</div>' +
     '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;">' +
-      entries.map(function(key) {
+      entries.map(function(key, idx) {
         var count = dist[key];
         var pct = totalDropped > 0 ? Math.round((count / totalDropped) * 100) : 0;
-        return '<div style="padding:12px;border-radius:var(--radius-sm);background:var(--bg-surface2);border:1px solid var(--border);">' +
-          '<div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + esc(key) + '</div>' +
-          '<div style="font-size:20px;font-weight:800;color:var(--text);">' + count + '</div>' +
+        var color = categoryColor(key, idx);
+        return '<div style="padding:12px;border-radius:var(--radius-sm);background:' + color + '12;border:1px solid ' + color + '55;">' +
+          '<div style="font-size:12px;font-weight:700;color:' + color + ';margin-bottom:4px;">' + esc(key) + '</div>' +
+          '<div style="font-size:20px;font-weight:800;color:' + color + ';">' + count + '</div>' +
           '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' + pct + '% of dropped leads</div>' +
+          '<div style="margin-top:8px;height:5px;border-radius:999px;background:' + color + '22;overflow:hidden;">' +
+            '<div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:999px;"></div>' +
+          '</div>' +
         '</div>';
       }).join('') +
     '</div>' +
@@ -4106,8 +4198,8 @@ function buildProductionDoughnut(id, dist) {
   if (!canvas) return null;
   var labels = Object.keys(dist);
   var data   = labels.map(function(k) { return dist[k]; });
-  var colors = labels.map(function(l) {
-    return PROD_LEAD.indexOf(l) !== -1 ? '#059669' : '#94a3b8';
+  var colors = labels.map(function(l, idx) {
+    return categoryColor(l, idx);
   });
   return new Chart(canvas, {
     type: 'doughnut',
@@ -4130,10 +4222,8 @@ function buildChaserDoughnut(id, dist) {
   if (!canvas) return null;
   var labels = Object.keys(dist);
   var data   = labels.map(function(k) { return dist[k]; });
-  var colors = labels.map(function(l) {
-    if (PROD_CHASER_SIGNED.indexOf(l) !== -1)    return '#059669';
-    if (PROD_CHASER_POTENTIAL.indexOf(l) !== -1) return '#d97706';
-    return '#94a3b8';
+  var colors = labels.map(function(l, idx) {
+    return categoryColor(l, idx);
   });
   return new Chart(canvas, {
     type: 'doughnut',

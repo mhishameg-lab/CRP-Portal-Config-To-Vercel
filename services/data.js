@@ -790,7 +790,7 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       const ls  = String(row[COL.LEAD_STATUS]               || '').trim();
       const cs  = String(row[COL.CHASER_STATUS]             || '').trim();
       const ps  = String(row[COL.PROCESSING_STATUS_CENTERS] || '').trim();
-      const cc  = String(row[COL.CENTER_CODE]               || 'Unknown');
+      const cc  = String(row[COL.CENTER_CODE]               || 'No Update');
       const psU = ps.toUpperCase();
       if (!centerPerformance[cc]) {
         centerPerformance[cc] = {
@@ -806,9 +806,9 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       }
       const center = centerPerformance[cc];
 
-      leadStatusDist[ls || 'Unknown']       = (leadStatusDist[ls || 'Unknown']       || 0) + 1;
-      chaserStatusDist[cs || 'Unknown']     = (chaserStatusDist[cs || 'Unknown']     || 0) + 1;
-      processingStatusDist[ps || 'Unknown'] = (processingStatusDist[ps || 'Unknown'] || 0) + 1;
+      leadStatusDist[ls || 'No Update']       = (leadStatusDist[ls || 'No Update']       || 0) + 1;
+      chaserStatusDist[cs || 'No Update']     = (chaserStatusDist[cs || 'No Update']     || 0) + 1;
+      processingStatusDist[ps || 'No Update'] = (processingStatusDist[ps || 'No Update'] || 0) + 1;
       centerStats[cc] = (centerStats[cc] || 0) + 1;
       center.total++;
 
