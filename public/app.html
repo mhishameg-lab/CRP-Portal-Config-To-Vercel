@@ -1387,6 +1387,16 @@ input, select, textarea { font-family: inherit; }
 .center-card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
 .center-card-code  { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono, monospace); margin-top: 2px; }
 .center-card-body  { padding: 14px 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.center-card-subtitle { font-size: 12px; color: rgba(255,255,255,.78); margin-top: 3px; }
+.center-card.identity-card { background: linear-gradient(135deg, #0f2c5e, #2563eb); border: 1px solid rgba(255,255,255,.12); color: #fff; }
+.center-card.identity-card .center-card-header { border-bottom-color: rgba(255,255,255,.18); }
+.center-card.identity-card .center-avatar { background: rgba(255,255,255,.16); color: #fff; }
+.center-card.identity-card .center-card-title,
+.center-card.identity-card .center-detail-val,
+.center-card.identity-card .center-card-code { color: #fff; }
+.center-card.identity-card .center-detail-label { color: rgba(255,255,255,.72); }
+.center-card.identity-card .center-card-footer { border-top-color: rgba(255,255,255,.14); background: rgba(255,255,255,.06); }
+.center-card.identity-card .signed-badge { background: rgba(255,255,255,.1); color: #fff; }
 .center-detail-row { display: flex; align-items: flex-start; gap: 8px; }
 .center-detail-icon { width: 18px; text-align: center; color: var(--text-muted); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
 .center-detail-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; line-height: 1; margin-bottom: 1px; }
@@ -1898,6 +1908,11 @@ body {
         <span class="nav-label">Criteria List</span>
       </div>
 
+      <div class="nav-item center-nav hidden" data-view="centers" onclick="showView('centers')">
+        <i class="fa-solid fa-id-card-alt nav-icon"></i>
+        <span class="nav-label">centeri Identity Card</span>
+      </div>
+
       <div class="nav-section-label admin-only hidden">Admin</div>
 
       <div class="nav-item admin-only hidden" data-view="incentives" onclick="showView('incentives')">
@@ -1908,11 +1923,6 @@ body {
       <div class="nav-item admin-only hidden" data-view="users" onclick="showView('users')">
         <i class="fa-solid fa-users-gear nav-icon"></i>
         <span class="nav-label">User Management</span>
-      </div>
-
-      <div class="nav-item admin-only hidden" data-view="centers" onclick="showView('centers')">
-        <i class="fa-solid fa-building nav-icon"></i>
-        <span class="nav-label">Centers</span>
       </div>
 
       <div class="nav-item admin-only hidden" data-view="activity" onclick="showView('activity')">
@@ -2489,7 +2499,7 @@ body {
       ═════════════════════════════════════════════════ -->
       <div id="view-centers" class="view">
         <div class="page-header">
-          <div class="page-title">Centers <span>Directory</span></div>
+          <div class="page-title" id="center-page-title">centeri Identity Card</div>
           <button class="btn btn-ghost btn-sm" onclick="loadCenters()">
             <i class="fa-solid fa-rotate-right"></i> Refresh
           </button>
@@ -2511,6 +2521,26 @@ body {
             <button class="cvb-close" onclick="document.getElementById('centers-video-banner').style.display='none'" title="Dismiss">
               <i class="fa-solid fa-xmark"></i>
             </button>
+          </div>
+        </div>
+
+        <div class="card admin-only hidden" id="crm-video-config-card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-link" style="margin-right:6px;color:var(--accent-primary);"></i>CRM Video Link</span>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="gap:10px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:220px;">
+                <label class="form-label">Video URL</label>
+                <input class="form-input" id="crm-video-input" type="text" placeholder="Paste the CRM introduction video URL" />
+              </div>
+              <div style="display:flex;align-items:flex-end;">
+                <button class="btn btn-primary" onclick="saveCrmVideoLink()">
+                  <i class="fa-solid fa-save"></i> Save Link
+                </button>
+              </div>
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:var(--text-muted);">This link appears on the center identity card page for all centers.</div>
           </div>
         </div>
 
@@ -3539,7 +3569,11 @@ function enterApp() {
   document.querySelectorAll('.admin-only').forEach(function(el) {
     el.classList.toggle('hidden', APP.role !== 'admin');
   });
+  document.querySelectorAll('.center-nav').forEach(function(el) {
+    el.classList.toggle('hidden', APP.role !== 'admin' && APP.role !== 'center');
+  });
 
+  loadCrmVideoUrl();
   loadFilterOptions();
   showView('dashboard');
   loadNotifications();
@@ -3568,7 +3602,11 @@ var titles = {
     activity  : 'Activity Log',
     criteria  : 'Supplier Criteria List',
   };
-  document.getElementById('topbar-title').textContent = titles[name] || name;
+  var title = titles[name] || name;
+  if (name === 'centers') title = 'centeri Identity Card';
+  document.getElementById('topbar-title').textContent = title;
+  var pageTitleEl = document.getElementById('center-page-title');
+  if (pageTitleEl) pageTitleEl.textContent = title;
   document.getElementById('topbar-search').style.display = name === 'dashboard' ? 'flex' : 'none';
   updateExportMenuItems(); // keep dropdown export options in sync with current view
 
@@ -5417,48 +5455,87 @@ var APP_CENTERS = [];   // cached raw list from server
 
 var CRM_VIDEO_URL = '';  // set this to your actual video link
 
+function loadCrmVideoUrl() {
+  var stored = localStorage.getItem('crmVideoUrl') || '';
+  CRM_VIDEO_URL = stored.trim();
+  var link = document.getElementById('cvb-link');
+  if (link) link.href = CRM_VIDEO_URL || '#';
+  var input = document.getElementById('crm-video-input');
+  if (input) input.value = CRM_VIDEO_URL;
+}
+
+function saveCrmVideoLink() {
+  var input = document.getElementById('crm-video-input');
+  if (!input) return;
+  var url = String(input.value || '').trim();
+  if (!url) { toast('Please enter the CRM video URL first.', 'warning'); return; }
+  CRM_VIDEO_URL = url;
+  localStorage.setItem('crmVideoUrl', CRM_VIDEO_URL);
+  var link = document.getElementById('cvb-link');
+  if (link) link.href = CRM_VIDEO_URL;
+  toast('CRM video link saved and ready for centers.', 'success');
+}
+
 function openCrmVideo(e) {
   if (!CRM_VIDEO_URL) {
     e.preventDefault();
-    // Prompt admin to configure the link
-    var url = prompt('Paste the CRM walkthrough video URL:', '');
-    if (url && url.trim()) {
-      CRM_VIDEO_URL = url.trim();
-      document.getElementById('cvb-link').href = CRM_VIDEO_URL;
-      window.open(CRM_VIDEO_URL, '_blank');
+    if (APP.role === 'admin') {
+      var url = prompt('Paste the CRM walkthrough video URL:', '');
+      if (url && url.trim()) {
+        CRM_VIDEO_URL = url.trim();
+        localStorage.setItem('crmVideoUrl', CRM_VIDEO_URL);
+        document.getElementById('cvb-link').href = CRM_VIDEO_URL;
+        window.open(CRM_VIDEO_URL, '_blank');
+      }
+      return;
     }
+    toast('CRM video link is not configured yet. Please contact your administrator.', 'warning');
     return;
   }
-  // If URL is set, let the <a> do its job
 }
 
 function loadCenters() {
+  setCenterViewMode(APP.role);
   var grid = document.getElementById('centers-grid');
   grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>';
   google.script.run
     .withSuccessHandler(function(r) {
       if (!r.success) { toast(r.error || 'Failed to load centers.', 'error'); return; }
       APP_CENTERS = r.centers || [];
-      renderCenters(APP_CENTERS);
-      updateCenterStats(APP_CENTERS);
-      populateCenterCountryFilter(APP_CENTERS);
+      var visibleCenters = APP.role === 'center'
+        ? APP_CENTERS.filter(function(c) {
+            return String(c.centerCode || '').trim().toLowerCase() === String(APP.centerCode || '').trim().toLowerCase();
+          })
+        : APP_CENTERS;
+      renderCenters(visibleCenters);
+      updateCenterStats(visibleCenters);
+      if (APP.role === 'admin') populateCenterCountryFilter(APP_CENTERS);
     })
     .withFailureHandler(function() { toast('Connection error.', 'error'); })
     .getCenters(APP.token);
 }
 
+function setCenterViewMode(role) {
+  var stats = document.getElementById('centers-stats-row');
+  var toolbar = document.querySelector('.centers-toolbar');
+  var title = document.getElementById('center-page-title');
+  if (stats) stats.style.display = role === 'admin' ? 'grid' : 'none';
+  if (toolbar) toolbar.style.display = role === 'admin' ? 'flex' : 'none';
+  if (title) title.textContent = role === 'admin' ? 'Centers Directory' : 'Center Identity Card';
+}
+
 function updateCenterStats(centers) {
   document.getElementById('cstat-total').textContent   = centers.length;
   document.getElementById('cstat-signed').textContent  = centers.filter(function(c){ return isSigned(c.signedAgreement); }).length;
-  var countries = [...new Set(centers.map(function(c){ return c.country.trim(); }).filter(Boolean))];
-  var methods   = [...new Set(centers.map(function(c){ return c.paymentMethod.trim(); }).filter(Boolean))];
+  var countries = [...new Set(centers.map(function(c){ return String(c.country || '').trim(); }).filter(Boolean))];
+  var methods   = [...new Set(centers.map(function(c){ return String(c.paymentMethod || '').trim(); }).filter(Boolean))];
   document.getElementById('cstat-countries').textContent = countries.length || 0;
   document.getElementById('cstat-methods').textContent   = methods.length || 0;
 }
 
 function populateCenterCountryFilter(centers) {
   var sel = document.getElementById('centers-filter-country');
-  var countries = [...new Set(centers.map(function(c){ return c.country.trim(); }).filter(Boolean))].sort();
+  var countries = [...new Set(centers.map(function(c){ return String(c.country || '').trim(); }).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">All Countries</option>' +
     countries.map(function(c){ return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
 }
@@ -5487,24 +5564,27 @@ function renderCenters(centers) {
     grid.innerHTML = '<div class="centers-empty"><i class="fa-solid fa-building-circle-exclamation"></i><p>No centers found.</p></div>';
     return;
   }
+  var isCenterView = APP.role === 'center';
   grid.innerHTML = centers.map(function(c) {
     var initials  = (c.centerCode || 'C').slice(0, 2).toUpperCase();
     var nameDisp  = c.centerName || c.centerCode || '—';
     var signed    = isSigned(c.signedAgreement);
-    return '<div class="center-card">' +
+    return '<div class="center-card' + (isCenterView ? ' identity-card' : '') + '">' +
       '<div class="center-card-header">' +
         '<div class="center-avatar">' + esc(initials) + '</div>' +
         '<div style="flex:1;min-width:0;">' +
           '<div class="center-card-title">' + esc(nameDisp) + '</div>' +
-          '<div class="center-card-code"><i class="fa-solid fa-hashtag" style="margin-right:3px;"></i>' + esc(c.centerCode) + '</div>' +
+          '<div class="center-card-subtitle">Center Identity · ' + esc(c.centerCode) + '</div>' +
         '</div>' +
         '<span class="badge ' + (c.status.toLowerCase() === 'active' ? 'badge-success' : 'badge-danger') + '" style="font-size:10px;">' + esc(c.status) + '</span>' +
       '</div>' +
       '<div class="center-card-body">' +
+        centerDetailRow('fa-hashtag', 'Center Code', c.centerCode || '—') +
+        centerDetailRow('fa-building', 'Center Name', nameDisp) +
         centerDetailRow('fa-phone-flip', 'WhatsApp / Phone', c.phone || '—') +
-        centerDetailRow('fa-envelope',   'Email',            c.email || '—') +
-        centerDetailRow('fa-globe',      'Country',          c.country || '—') +
-        centerDetailRow('fa-credit-card','Payment Method',   c.paymentMethod || '—') +
+        centerDetailRow('fa-envelope', 'Email', c.email || '—') +
+        centerDetailRow('fa-globe', 'Country', c.country || '—') +
+        centerDetailRow('fa-credit-card', 'Payment Method', c.paymentMethod || '—') +
       '</div>' +
       '<div class="center-card-footer">' +
         '<span class="signed-badge ' + (signed ? 'signed-yes' : 'signed-no') + '">' +
