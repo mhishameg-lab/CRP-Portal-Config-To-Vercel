@@ -1968,7 +1968,7 @@ body {
 
       <div class="nav-item center-nav hidden" data-view="centers" onclick="showView('centers')">
         <i class="fa-solid fa-id-card-alt nav-icon"></i>
-        <span class="nav-label">centeri Identity Card</span>
+        <span class="nav-label">Center ID Card</span>
       </div>
 
       <div class="nav-item" data-view="about" onclick="showView('about')">
@@ -2657,7 +2657,7 @@ body {
       ═════════════════════════════════════════════════ -->
       <div id="view-centers" class="view">
         <div class="page-header">
-          <div class="page-title" id="center-page-title">centeri Identity Card</div>
+          <div class="page-title" id="center-page-title">Center ID Card</div>
           <button class="btn btn-ghost btn-sm" onclick="loadCenters()">
             <i class="fa-solid fa-rotate-right"></i> Refresh
           </button>
@@ -3761,7 +3761,7 @@ var titles = {
     criteria  : 'Supplier Criteria List',
   };
   var title = titles[name] || name;
-  if (name === 'centers') title = 'centeri Identity Card';
+  if (name === 'centers') title = 'Center ID Card';
   document.getElementById('topbar-title').textContent = title;
   var pageTitleEl = document.getElementById('center-page-title');
   if (pageTitleEl) pageTitleEl.textContent = title;
@@ -5679,7 +5679,7 @@ function setCenterViewMode(role) {
   var title = document.getElementById('center-page-title');
   if (stats) stats.style.display = role === 'admin' ? 'grid' : 'none';
   if (toolbar) toolbar.style.display = role === 'admin' ? 'flex' : 'none';
-  if (title) title.textContent = role === 'admin' ? 'Centers Directory' : 'Center Identity Card';
+  if (title) title.textContent = role === 'admin' ? 'Centers Directory' : 'Center ID Card';
 }
 
 function updateCenterStats(centers) {
@@ -5732,7 +5732,7 @@ function renderCenters(centers) {
         '<div class="center-avatar">' + esc(initials) + '</div>' +
         '<div style="flex:1;min-width:0;">' +
           '<div class="center-card-title">' + esc(nameDisp) + '</div>' +
-          '<div class="center-card-subtitle">Center Identity · ' + esc(c.centerCode) + '</div>' +
+          '<div class="center-card-subtitle">Center ID · ' + esc(c.centerCode) + '</div>' +
         '</div>' +
         '<span class="badge ' + (c.status.toLowerCase() === 'active' ? 'badge-success' : 'badge-danger') + '" style="font-size:10px;">' + esc(c.status) + '</span>' +
       '</div>' +
