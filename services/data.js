@@ -299,6 +299,7 @@ export async function getLeads(token, options) {
         chaserNote              : String(row[COL.CHASER_NOTE]               || ''),
         leadType                : String(row[COL.LEAD_TYPE]                 || ''),
         requestedProducts       : String(row[COL.REQUESTED_PRODUCTS]        || ''),
+        approvalDate            : fmtDate(row[COL.APPROVAL_DATE]),
         paymentStatus           : _paymentStatusFor(paymentMap, leadId),
       };
     });
@@ -756,6 +757,7 @@ export async function getInsightsData(token, dateFrom, dateTo) {
     const processingStatusDist = {};
     const leadsOverTime        = {};
     const centerStats          = {};
+    const centerPerformance    = {};
 
     let total = 0, verified = 0, trash_ls = 0;
     let orderSigned = 0, highPotential = 0, trash_cs = 0;
@@ -790,11 +792,25 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       const ps  = String(row[COL.PROCESSING_STATUS_CENTERS] || '').trim();
       const cc  = String(row[COL.CENTER_CODE]               || 'Unknown');
       const psU = ps.toUpperCase();
+      if (!centerPerformance[cc]) {
+        centerPerformance[cc] = {
+          centerCode: cc,
+          total: 0,
+          verified: 0,
+          dropped: 0,
+          signed: 0,
+          approved: 0,
+          rts: 0,
+          staleVerified: 0,
+        };
+      }
+      const center = centerPerformance[cc];
 
       leadStatusDist[ls || 'Unknown']       = (leadStatusDist[ls || 'Unknown']       || 0) + 1;
       chaserStatusDist[cs || 'Unknown']     = (chaserStatusDist[cs || 'Unknown']     || 0) + 1;
       processingStatusDist[ps || 'Unknown'] = (processingStatusDist[ps || 'Unknown'] || 0) + 1;
       centerStats[cc] = (centerStats[cc] || 0) + 1;
+      center.total++;
 
       const isVerified = DISPOSITIONS.LEAD_PRODUCTION.includes(ls);
       const isReturned = DISPOSITIONS.CHASER_SIGNED.includes(cs);
@@ -803,15 +819,18 @@ export async function getInsightsData(token, dateFrom, dateTo) {
 
       if (isVerified) {
         verified++;
+        center.verified++;
         if (ls === 'Verified Med b') verifiedMedB++;
         else if (ls === 'Verified ppo') verifiedPPO++;
       } else {
         trash_ls++;
+        center.dropped++;
         if (ls) droppedByDisposition[ls] = (droppedByDisposition[ls] || 0) + 1;
       }
 
       if (isReturned) {
         orderSigned++; returnedDOs++;
+        center.signed++;
         if (isRTS)      rtsFromReturned++;
         if (isApproved) approvedFromReturned++;
       } else if (DISPOSITIONS.CHASER_POTENTIAL.includes(cs)) {
@@ -824,6 +843,8 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       else if (psU === 'IN PROCESS') inProcess++;
       else if (psU === 'DENIED')     denied++;
       else if (isRTS)                rts++;
+      if (isApproved) center.approved++;
+      if (isRTS)      center.rts++;
 
       if (isVerified && rowDate && !isNaN(rowDate) && rowDate >= cutoff45) {
         verifiedWithin45++;
@@ -834,7 +855,10 @@ export async function getInsightsData(token, dateFrom, dateTo) {
         if (isReturned) orderSignedOlderThan45++;
         if (isVerified) {
           verifiedOlderThan45++;
-          if (!isReturned) staleVerifiedCount++;
+          if (!isReturned) {
+            staleVerifiedCount++;
+            center.staleVerified++;
+          }
         }
       }
       if (rowDate && !isNaN(rowDate)) {
@@ -852,6 +876,15 @@ export async function getInsightsData(token, dateFrom, dateTo) {
     const orderConversionRate = leadsOlderThan45 > 0
       ? Math.round((orderSignedOlderThan45 / leadsOlderThan45) * 100)
       : null;
+    const centerPerformanceRows = Object.values(centerPerformance)
+      .map(c => ({
+        ...c,
+        productionRate: c.total > 0 ? Math.round((c.verified / c.total) * 100) : 0,
+        signedRate    : c.verified > 0 ? Math.round((c.signed / c.verified) * 100) : 0,
+        approvalRate  : c.signed > 0 ? Math.round((c.approved / c.signed) * 100) : 0,
+        rtsRate       : c.signed > 0 ? Math.round((c.rts / c.signed) * 100) : 0,
+      }))
+      .sort((a, b) => b.total - a.total);
 
     // PCP
     const pcpData        = await _getPcpSourceData();
@@ -886,6 +919,7 @@ export async function getInsightsData(token, dateFrom, dateTo) {
       success: true,
       totalLeads: total,
       leadStatusDist, chaserStatusDist, processingStatusDist, centerStats,
+      centerPerformance: centerPerformanceRows,
       leadsOverTime: { labels: timeLabels, data: timeLabels.map(k => leadsOverTime[k]) },
       production: {
         verified, trash: trash_ls, prodRate,

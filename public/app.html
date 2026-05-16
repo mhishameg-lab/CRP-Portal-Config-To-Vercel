@@ -779,6 +779,150 @@ input, select, textarea { font-family: inherit; }
 .insight-alert-text { color: var(--text-primary); }
 .insight-alert-text strong { color: inherit; }
 
+/* Analyst layer */
+.analyst-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.analyst-panel.strong { border-left: 4px solid var(--success); }
+.analyst-panel.watch { border-left: 4px solid var(--warning); }
+.analyst-panel.risk { border-left: 4px solid var(--danger); }
+.analyst-kicker {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.analyst-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.analyst-copy {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.analyst-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.analyst-action {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface2);
+  padding: 12px;
+}
+.analyst-action-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+.analyst-action-copy {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.ins-health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.health-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.health-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--text-muted);
+}
+.health-card.great::before { background: var(--success); }
+.health-card.ok::before { background: var(--warning); }
+.health-card.poor::before { background: var(--danger); }
+.health-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  margin-top: 4px;
+}
+.health-card.great .health-value { color: var(--success); }
+.health-card.ok .health-value { color: var(--warning); }
+.health-card.poor .health-value { color: var(--danger); }
+.health-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 800;
+  margin-top: 8px;
+}
+.health-note {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  margin-top: 6px;
+}
+.performance-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  margin-bottom: 18px;
+}
+.performance-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+.performance-table th,
+.performance-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  text-align: left;
+}
+.performance-table th {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  background: var(--bg-surface2);
+}
+.performance-table tr:last-child td { border-bottom: none; }
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  min-width: 52px;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+}
+.score-pill.great { background: var(--success-bg); color: var(--success); }
+.score-pill.ok { background: var(--warning-bg); color: var(--warning); }
+.score-pill.poor { background: var(--danger-bg); color: var(--danger); }
+
 /* Section header for insights */
 .section-header { display: flex; align-items: baseline; gap: 10px; margin: 24px 0 14px; }
 .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
@@ -1426,11 +1570,12 @@ body {
                   <th>Closing Status</th>
                   <th>Chasing Status</th>
                   <th>Processing Status</th>
+                  <th>Approval Date</th>
                   <th>Payment Alert</th>
                 </tr>
               </thead>
               <tbody id="leads-tbody">
-                <tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
+                <tr><td colspan="10"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -1482,6 +1627,9 @@ body {
 
             <!-- Alert zone -->
             <div id="insights-alerts"></div>
+            <div id="ins-exec-analysis"></div>
+            <div id="ins-health-grid" class="ins-health-grid"></div>
+            <div id="ins-center-performance" class="admin-only hidden"></div>
 
             <!-- ── Row 1: Hero stats ────────────────────────── -->
             <div id="ins-hero-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;"></div>
@@ -1593,6 +1741,7 @@ body {
               <div class="section-title">🏥 PCP Leads — Performance Overview</div>
               <div class="section-subtitle">You provide the documentation — we process and track every order</div>
             </div>
+            <div id="ins-pcp-analysis"></div>
             <div id="ins-pcp-hero" style="margin-bottom:20px;"></div>
 
             <!-- ── PCP Weekly ──────────────────────────────── -->
@@ -2656,7 +2805,7 @@ function loadLeads(page) {
   APP.leads.page    = page;
 
   var tbody = document.getElementById('leads-tbody');
-  tbody.innerHTML = '<tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="10"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>';
 
   google.script.run
     .withSuccessHandler(function(r) {
@@ -2671,7 +2820,7 @@ function loadLeads(page) {
     .withFailureHandler(function() {
       APP.leads.loading = false;
       toast('Connection error loading leads.', 'error');
-      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load leads</p></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load leads</p></div></td></tr>';
     })
     .getLeads(APP.token, { page: page, search: APP.leads.search, filters: APP.leads.filters });
 }
@@ -2682,7 +2831,7 @@ function renderLeadsTable(leads) {
   var count   = document.getElementById('table-count');
 
   if (!leads || leads.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No leads found matching your criteria</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No leads found matching your criteria</p></div></td></tr>';
     count.textContent = '';
     return;
   }
@@ -2710,6 +2859,7 @@ function renderLeadsTable(leads) {
       '<td>' + leadStatusBadge(l.leadStatus, l.closingNotes) + '</td>' +
       '<td>' + chaserStatusBadge(l.chaserStatus, l.chaserNote) + '</td>' +
       '<td>' + processingStatusBadge(l.processingStatusCenters) + '</td>' +
+      '<td style="white-space:nowrap;font-size:12px;color:var(--text-secondary)">' + esc(l.approvalDate || '-') + '</td>' +
       '<td>' + paymentStatusControl(l, isAdmin) + '</td>' +
       '</tr>';
   });
@@ -3160,6 +3310,9 @@ function loadInsights() {
       var tt = r.totalLeads;
 
       renderInsightsAlerts(p, tt);
+      renderExecutiveAnalysis(r);
+      renderHealthGrid(p, tt);
+      renderCenterPerformance(r.centerPerformance || []);
       renderHeroStats(p, tt);
       renderVerifiedCard(p, tt);
       renderDroppedCard(p);
@@ -3182,6 +3335,164 @@ function loadInsights() {
 // ══════════════════════════════════════════════════════════
 // LG LEADS — Alerts
 // ══════════════════════════════════════════════════════════
+function metricClass(value, goodAt, okAt, lowerIsBetter) {
+  if (lowerIsBetter) {
+    if (value <= goodAt) return 'great';
+    if (value <= okAt) return 'ok';
+    return 'poor';
+  }
+  if (value >= goodAt) return 'great';
+  if (value >= okAt) return 'ok';
+  return 'poor';
+}
+
+function classLabel(cls) {
+  return cls === 'great' ? 'Strong' : cls === 'ok' ? 'Watch' : 'Risk';
+}
+
+function renderExecutiveAnalysis(r) {
+  var el = document.getElementById('ins-exec-analysis');
+  if (!el || !r || !r.production) return;
+
+  var p = r.production;
+  var total = r.totalLeads || 0;
+  var prodPct = total > 0 ? Math.round((p.verified / total) * 100) : 0;
+  var signedPct = p.verified > 0 ? Math.round((p.returnedDOs / p.verified) * 100) : 0;
+  var approvalPct = p.returnedDOs > 0 ? Math.round((p.approvedFromReturned / p.returnedDOs) * 100) : 0;
+  var rtsPct = p.returnedDOs > 0 ? Math.round((p.rtsFromReturned / p.returnedDOs) * 100) : 0;
+  var stale = p.staleVerifiedCount || 0;
+
+  var prodClass = metricClass(prodPct, 60, 40, false);
+  var signedClass = metricClass(signedPct, 25, 15, false);
+  var approvalClass = metricClass(approvalPct, 60, 35, false);
+  var rtsClass = metricClass(rtsPct, 7, 15, true);
+  var riskScore = [prodClass, signedClass, approvalClass, rtsClass].filter(function(c) { return c === 'poor'; }).length;
+  var panelClass = riskScore >= 2 || stale >= 10 ? 'risk' : riskScore === 1 || stale > 0 ? 'watch' : 'strong';
+
+  var headline = panelClass === 'strong'
+    ? 'Pipeline is healthy: quality and downstream outcomes are aligned.'
+    : panelClass === 'watch'
+      ? 'Pipeline needs attention: one or more conversion points is under target.'
+      : 'Pipeline is at risk: fix quality, conversion, or RTS before volume scaling.';
+
+  var topDrop = 'No major dropped disposition';
+  var drops = p.droppedByDisposition || {};
+  var dropKeys = Object.keys(drops).sort(function(a, b) { return drops[b] - drops[a]; });
+  if (dropKeys.length) topDrop = dropKeys[0] + ' (' + drops[dropKeys[0]] + ')';
+
+  el.innerHTML = '<div class="analyst-panel ' + panelClass + '">' +
+    '<div class="analyst-kicker">Executive diagnosis</div>' +
+    '<div class="analyst-title">' + headline + '</div>' +
+    '<div class="analyst-copy">' +
+      'Out of ' + total + ' LG submissions, ' + p.verified + ' became verified leads (' + prodPct + '%). ' +
+      p.returnedDOs + ' converted to signed orders (' + signedPct + '% of verified), with ' +
+      approvalPct + '% approved and ' + rtsPct + '% RTS among signed orders. ' +
+      (stale > 0 ? stale + ' verified lead' + (stale === 1 ? ' is' : 's are') + ' older than 45 days without a signed order.' : 'No stale verified leads are currently blocking the 45-day view.') +
+    '</div>' +
+    '<div class="analyst-actions">' +
+      actionTile('Quality focus', prodClass, prodClass === 'poor' ? 'Audit dropped calls. Top loss bucket: ' + esc(topDrop) + '.' : 'Keep intake criteria stable. Top loss bucket: ' + esc(topDrop) + '.') +
+      actionTile('Conversion focus', signedClass, signedClass === 'poor' ? 'Prioritize verified leads without signed orders and tighten chaser follow-up.' : 'Signed-order flow is acceptable; protect speed from verification to documentation.') +
+      actionTile('Fulfillment focus', rtsClass, rtsClass === 'poor' ? 'RTS is above safe range. Review product fit, shipping readiness, and patient confirmation.' : 'RTS is within controllable range; keep monitoring high-risk products.') +
+    '</div>' +
+  '</div>';
+}
+
+function actionTile(title, cls, copy) {
+  return '<div class="analyst-action">' +
+    '<div class="analyst-action-title">' + esc(title) + ' <span class="score-pill ' + cls + '">' + classLabel(cls) + '</span></div>' +
+    '<div class="analyst-action-copy">' + copy + '</div>' +
+  '</div>';
+}
+
+function renderHealthGrid(p, total) {
+  var el = document.getElementById('ins-health-grid');
+  if (!el || !p) return;
+  var prodPct = total > 0 ? Math.round((p.verified / total) * 100) : 0;
+  var signedPct = p.verified > 0 ? Math.round((p.returnedDOs / p.verified) * 100) : 0;
+  var approvalPct = p.returnedDOs > 0 ? Math.round((p.approvedFromReturned / p.returnedDOs) * 100) : 0;
+  var rtsPct = p.returnedDOs > 0 ? Math.round((p.rtsFromReturned / p.returnedDOs) * 100) : 0;
+  var stalePct = p.verifiedOlderThan45 > 0 ? Math.round(((p.staleVerifiedCount || 0) / p.verifiedOlderThan45) * 100) : 0;
+
+  el.innerHTML =
+    healthCard(prodPct + '%', metricClass(prodPct, 60, 40, false), 'Production', p.verified + ' verified from ' + total + ' submissions') +
+    healthCard(signedPct + '%', metricClass(signedPct, 25, 15, false), 'Verified to Signed', p.returnedDOs + ' signed from ' + p.verified + ' verified') +
+    healthCard(approvalPct + '%', metricClass(approvalPct, 60, 35, false), 'Signed to Approved', p.approvedFromReturned + ' approved from ' + p.returnedDOs + ' signed') +
+    healthCard(rtsPct + '%', metricClass(rtsPct, 7, 15, true), 'RTS Control', p.rtsFromReturned + ' RTS from ' + p.returnedDOs + ' signed') +
+    healthCard(stalePct + '%', metricClass(stalePct, 0, 15, true), '45-Day Stale', (p.staleVerifiedCount || 0) + ' stale from ' + (p.verifiedOlderThan45 || 0) + ' eligible');
+}
+
+function healthCard(value, cls, label, note) {
+  return '<div class="health-card ' + cls + '">' +
+    '<div class="health-value">' + value + '</div>' +
+    '<div class="health-label">' + esc(label) + '</div>' +
+    '<div class="health-note">' + esc(note) + '</div>' +
+  '</div>';
+}
+
+function renderCenterPerformance(rows) {
+  var el = document.getElementById('ins-center-performance');
+  if (!el) return;
+  if (APP.role !== 'admin' || !rows || !rows.length) {
+    el.innerHTML = '';
+    return;
+  }
+  var topRows = rows.slice(0, 12);
+  el.innerHTML = '<div class="section-header" style="margin-top:6px;">' +
+    '<div class="section-title">Center performance leaderboard</div>' +
+    '<div class="section-subtitle">Volume, quality, conversion, and RTS risk by center</div>' +
+  '</div>' +
+  '<div class="performance-table-wrap"><table class="performance-table">' +
+    '<thead><tr><th>Center</th><th>Total</th><th>Verified</th><th>Dropped</th><th>Signed</th><th>Prod Rate</th><th>Signed Rate</th><th>Approval</th><th>RTS</th><th>Stale</th></tr></thead>' +
+    '<tbody>' + topRows.map(function(c) {
+      return '<tr>' +
+        '<td><strong>' + esc(c.centerCode) + '</strong></td>' +
+        '<td>' + c.total + '</td>' +
+        '<td>' + c.verified + '</td>' +
+        '<td>' + c.dropped + '</td>' +
+        '<td>' + c.signed + '</td>' +
+        '<td>' + scorePill(c.productionRate, metricClass(c.productionRate, 60, 40, false)) + '</td>' +
+        '<td>' + scorePill(c.signedRate, metricClass(c.signedRate, 25, 15, false)) + '</td>' +
+        '<td>' + scorePill(c.approvalRate, metricClass(c.approvalRate, 60, 35, false)) + '</td>' +
+        '<td>' + scorePill(c.rtsRate, metricClass(c.rtsRate, 7, 15, true)) + '</td>' +
+        '<td>' + c.staleVerified + '</td>' +
+      '</tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+function scorePill(value, cls) {
+  return '<span class="score-pill ' + cls + '">' + value + '%</span>';
+}
+
+function renderPcpAnalysis(pcp, appPct, denPct, rtsPct, pendingPct) {
+  var el = document.getElementById('ins-pcp-analysis');
+  if (!el || !pcp) return;
+  var appClass = metricClass(appPct, 50, 30, false);
+  var denClass = metricClass(denPct, 20, 40, true);
+  var rtsClass = metricClass(rtsPct, 7, 15, true);
+  var riskCount = [appClass, denClass, rtsClass].filter(function(c) { return c === 'poor'; }).length;
+  var panelClass = riskCount >= 2 ? 'risk' : riskCount === 1 || pendingPct > 35 ? 'watch' : 'strong';
+  var headline = panelClass === 'strong'
+    ? 'PCP processing is in a healthy range.'
+    : panelClass === 'watch'
+      ? 'PCP processing needs follow-up on one pressure point.'
+      : 'PCP processing is at risk and needs immediate review.';
+
+  el.innerHTML = '<div class="analyst-panel ' + panelClass + '">' +
+    '<div class="analyst-kicker">PCP diagnosis</div>' +
+    '<div class="analyst-title">' + headline + '</div>' +
+    '<div class="analyst-copy">' +
+      'From ' + pcp.total + ' PCP submissions, ' + pcp.approved + ' are approved (' + appPct + '%), ' +
+      pcp.denied + ' are denied (' + denPct + '%), and ' + pcp.rts + ' are RTS (' + rtsPct + '%). ' +
+      'Pending work is ' + pendingPct + '% of the PCP queue.' +
+    '</div>' +
+    '<div class="analyst-actions">' +
+      actionTile('Approval quality', appClass, appClass === 'poor' ? 'Review document completeness and product fit before submission.' : 'Approval quality is acceptable; keep submission checks consistent.') +
+      actionTile('Denial control', denClass, denClass === 'poor' ? 'Denial rate is high. Audit the most common denial reasons before adding more volume.' : 'Denials are controlled enough to keep processing moving.') +
+      actionTile('RTS control', rtsClass, rtsClass === 'poor' ? 'RTS needs action. Confirm patient readiness and shipping details before fulfillment.' : 'RTS is within the expected control band.') +
+    '</div>' +
+  '</div>';
+}
+
 function renderInsightsAlerts(p, total) {
   var container = document.getElementById('insights-alerts');
   if (!p) { container.innerHTML = ''; return; }
@@ -3444,6 +3755,7 @@ function renderPCPPanel(pcp, weeklyPCP) {
   var heroEl = document.getElementById('ins-pcp-hero');
   var alertEl = document.getElementById('ins-pcp-alerts');
   var outEl = document.getElementById('ins-pcp-outcomes');
+  var analysisEl = document.getElementById('ins-pcp-analysis');
   if (!heroEl || !outEl || !alertEl) return;
 
   if (!pcp || pcp.total === 0) {
@@ -3451,6 +3763,7 @@ function renderPCPPanel(pcp, weeklyPCP) {
     heroEl.innerHTML = empty;
     alertEl.innerHTML = '';
     outEl.innerHTML = '';
+    if (analysisEl) analysisEl.innerHTML = '';
     renderWeeklyTracking('weekly-pcp-container', weeklyPCP, 'PCP Leads Weekly Production');
     return;
   }
@@ -3463,6 +3776,7 @@ function renderPCPPanel(pcp, weeklyPCP) {
   var approvedClass = appPct >= 50 ? 'great' : appPct >= 30 ? 'ok' : 'poor';
   var deniedClass = denPct <= 20 ? 'great' : denPct <= 40 ? 'ok' : 'poor';
   var rtsClass = rtsPct <= 7 ? 'great' : rtsPct <= 15 ? 'ok' : 'poor';
+  renderPcpAnalysis(pcp, appPct, denPct, rtsPct, pendingPct);
 
   var alerts = [];
   if (appPct >= 50) alerts.push({ type: 'success', icon: '✅', msg: '<strong>Strong PCP Approval Rate (' + appPct + '%)</strong> — Over half of submitted PCP orders are approved.' });
