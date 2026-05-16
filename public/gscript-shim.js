@@ -25,8 +25,12 @@
         callArgs = [tok, ...callArgs];
       }
     }
+
+    const origin = window.location.origin;
+    const rpcUrl = origin && origin !== 'null' ? `${origin}/api/rpc` : '/api/rpc';
+
     try {
-      const resp = await fetch('/api/rpc', {
+      const resp = await fetch(rpcUrl, {
         method : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body   : JSON.stringify({ fn, args: callArgs }),
@@ -39,9 +43,12 @@
       if (resp.ok) {
         if (successHandler) successHandler(data);
       } else {
-        if (failureHandler) failureHandler(new Error(data?.error || `HTTP ${resp.status}`));
+        const err = new Error(data?.error || `HTTP ${resp.status}`);
+        console.error('[gscript-shim] RPC response error', fn, err, data);
+        if (failureHandler) failureHandler(err);
       }
     } catch (err) {
+      console.error('[gscript-shim] RPC network/error', fn, err);
       if (failureHandler) failureHandler(err);
     }
   }
