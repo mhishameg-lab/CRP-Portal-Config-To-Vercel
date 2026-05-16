@@ -1030,3 +1030,65 @@ export async function getAppConfig(token) {
     return { success: true, webformUrl: CONFIG.WEBFORM_URL };
   } catch (e) { return { success: false, error: e.message }; }
 }
+
+// ─── Criteria List ────────────────────────────────────────────────────────────
+// Reads the "Criteria List" sheet from the source spreadsheet.
+// Columns (0-based, A=0):
+//  A(0)  Active checkbox (TRUE/FALSE)
+//  B(1)  Supplier Nick Name
+//  C(2)  Campaign Type  (LG / PCP / Both)
+//  D(3)  Accepted Plans (Med B / PPO / Both)
+//  E(4)  Plans Available (comma-sep names)
+//  F(5)  Good States     (comma-sep 2-letter abbr)
+//  G(6)  Age Limit       (e.g. "1939 +")
+//  H(7)  Sending Type    (Posting / Live Transfer)
+//  I(8)  HCPCS Codes     (comma-sep pairs like "BB - L0456, KB - L1833")
+//  J(9)  Combos Accepted (comma-sep combos)
+//  K(10) Supplier Note   (long text)
+//  L(11) Transfer Number (shown only for Live Transfer)
+
+const CRITERIA_SHEET_NAME = 'Criteria List';
+
+export async function getCriteriaList(token) {
+  try {
+    await _reqAuth(token);
+
+    const KEY = 'criteria_list_v1';
+    const hit = await cache.get(KEY);
+    if (hit) return { success: true, data: hit };
+
+    const ss   = getSourceSpreadsheet();
+    const rows = await ss.getValues(CRITERIA_SHEET_NAME);
+
+    if (!rows || rows.length <= 1) {
+      return { success: true, data: [] };
+    }
+
+    const data = rows.slice(1)
+      .filter(r => r.some(c => c !== '' && c !== null && c !== undefined))
+      .map(r => {
+        const active       = String(r[0] || '').trim().toUpperCase() === 'TRUE';
+        const supplierName = String(r[1] || '').trim();
+        const campaignType = String(r[2] || '').trim();
+        const acceptedPlans= String(r[3] || '').trim();
+        const plansAvailable=String(r[4] || '').trim();
+        const goodStates   = String(r[5] || '').trim();
+        const ageLimit     = String(r[6] || '').trim();
+        const sendingType  = String(r[7] || '').trim();
+        const hcpcsCodes   = String(r[8] || '').trim();
+        const combosAccepted=String(r[9] || '').trim();
+        const supplierNote = String(r[10]|| '').trim();
+        const transferNumber=String(r[11]|| '').trim();
+        return {
+          active, supplierName, campaignType, acceptedPlans,
+          plansAvailable, goodStates, ageLimit, sendingType,
+          hcpcsCodes, combosAccepted, supplierNote, transferNumber,
+        };
+      });
+
+    await cache.set(KEY, data, CONFIG.CACHE_TTL_SEC);
+    return { success: true, data };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
