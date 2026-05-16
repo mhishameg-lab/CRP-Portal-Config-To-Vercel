@@ -120,6 +120,33 @@ async function _ensureLeadId(sourceRow, rowData, idMap) {
   return leadId;
 }
 
+async function _ensureLeadIds(entries, idMap) {
+  const missing = [];
+  const seen = new Set();
+
+  entries.forEach(({ sourceRow, rowData }) => {
+    const key = String(sourceRow);
+    if (idMap[key] || seen.has(key)) return;
+    seen.add(key);
+
+    const leadId     = generateLeadId(rowData[COL.DATE]);
+    const centerCode = String(rowData[COL.CENTER_CODE] || '');
+    const watchHash  = _watchHash(rowData);
+    const watchVals  = JSON.stringify(_watchValues(rowData));
+
+    idMap[key] = { leadId, centerCode, watchHash, watchValuesJson: watchVals, mapRow: null };
+    missing.push([sourceRow, leadId, centerCode, watchHash, watchVals, now()]);
+  });
+
+  if (missing.length) {
+    const sheet = await getCrmSheet(SHEETS.LEAD_ID_MAP);
+    if (typeof sheet.appendRows === 'function') await sheet.appendRows(missing);
+    else {
+      for (const row of missing) await sheet.appendRow(row);
+    }
+  }
+}
+
 function _watchHash(rowData) {
   return md5(WATCHED_FIELDS.map(f => String(rowData[f.col] || '')).join('|'));
 }
@@ -255,8 +282,10 @@ export async function getLeads(token, options) {
     const start      = (page - 1) * CONFIG.PAGE_SIZE;
     const slice      = matched.slice(start, start + CONFIG.PAGE_SIZE);
 
-    const leads = await Promise.all(slice.map(async ({ row, sRow }) => {
-      const leadId = await _ensureLeadId(sRow, row, idMap);
+    await _ensureLeadIds(slice.map(({ row, sRow }) => ({ sourceRow: sRow, rowData: row })), idMap);
+
+    const leads = slice.map(({ row, sRow }) => {
+      const leadId = idMap[String(sRow)].leadId;
       return {
         leadId,
         date                    : fmtDate(row[COL.DATE]),
@@ -272,7 +301,7 @@ export async function getLeads(token, options) {
         requestedProducts       : String(row[COL.REQUESTED_PRODUCTS]        || ''),
         paymentStatus           : _paymentStatusFor(paymentMap, leadId),
       };
-    }));
+    });
 
     await logActivity(sess.username, 'VIEW_LEADS', `Page ${page} | search="${search}"`);
     return { success: true, leads, total, page, totalPages, pageSize: CONFIG.PAGE_SIZE };
