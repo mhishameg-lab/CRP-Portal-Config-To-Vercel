@@ -1966,10 +1966,7 @@ body {
         <span class="nav-label">Criteria List</span>
       </div>
 
-      <div class="nav-item center-nav hidden" data-view="centers" onclick="showView('centers')">
-        <i class="fa-solid fa-id-card-alt nav-icon"></i>
-        <span class="nav-label">Center ID Card</span>
-      </div>
+      
 
       <div class="nav-item" data-view="about" onclick="showView('about')">
         <i class="fa-solid fa-circle-info nav-icon"></i>
@@ -2384,167 +2381,7 @@ body {
             <!-- ── Row 1: Hero stats ────────────────────────── -->
             <div id="ins-hero-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;"></div>
 
-            <!-- ── Verified Breakdown ──────────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-circle-check"></i>Verified Leads Breakdown</div>
-              <div class="section-subtitle">Med B vs PPO — production split</div>
-            </div>
-            <div id="ins-verified-card" style="margin-bottom:20px;"></div>
-
-            <!-- ── Dropped Leads by Disposition ───────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-layer-group"></i>Dropped Leads — Disposition Breakdown</div>
-              <div class="section-subtitle">
-                Distinct premium blue tones make each disposition easy to separate at a glance.
-              </div>
-            </div>
-            <div id="ins-dropped-card" style="margin-bottom:20px;"></div>
-
-            <!-- ── Weekly Production ───────────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-calendar-week"></i>Weekly Production</div>
-              <div class="section-subtitle">Last 7 weeks · Minimum target: 10 leads/week</div>
-            </div>
-            <div class="card" style="margin-bottom:20px;">
-              <div class="card-body"><div id="weekly-lg-container"></div></div>
-            </div>
-
-            <!-- ── Documentation Pipeline ─────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-diagram-project"></i>Documentation Pipeline</div>
-              <div class="section-subtitle">From verified lead → signed order → financial outcome</div>
-            </div>
-            <div id="ins-pipeline-card" style="margin-bottom:20px;"></div>
-
-            <!-- ── 45-Day Promise Tracker ──────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-stopwatch"></i>45-Day Conversion Promise</div>
-              <div class="section-subtitle">We guarantee 20–25% of verified leads convert to signed orders within 45 days</div>
-            </div>
-            <div id="ins-promise-card" style="margin-bottom:20px;"></div>
-
-            <!-- ── Financial Results ───────────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-coins"></i>Financial Results</div>
-              <div class="section-subtitle">From signed orders → Approved (real revenue) and RTS (returned product)</div>
-            </div>
-            <div id="ins-financial-card" style="margin-bottom:20px;"></div>
-
-            <!-- ── Charts (existing) ───────────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-chart-line"></i>Detailed Charts</div>
-            </div>
-            <div class="charts-grid">
-              <div class="chart-card">
-                <div class="chart-title">Lead Status Distribution</div>
-                <div class="chart-subtitle">Production vs. Trash</div>
-                <div class="chart-wrap"><canvas id="chart-lead-status"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Documentation Pipeline</div>
-                <div class="chart-subtitle">Signed orders & high-potential in our hands</div>
-                <div class="chart-wrap"><canvas id="chart-chaser-status"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Processing Status</div>
-                <div class="chart-subtitle">Approved → revenue · RTS → red flag</div>
-                <div class="chart-wrap"><canvas id="chart-processing"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">RTS Rate Monitor</div>
-                <div class="chart-subtitle">Target: below 10%</div>
-                <div class="rts-gauge-wrap" id="rts-gauge-wrap">
-                  <canvas id="chart-rts-gauge" width="200" height="120"></canvas>
-                  <div class="rts-gauge-label" id="rts-gauge-label"></div>
-                  <div class="rts-gauge-zone">
-                    <span class="zone-item"><span class="zone-dot" style="background:var(--success);"></span>0–7% Safe</span>
-                    <span class="zone-item"><span class="zone-dot" style="background:var(--warning);"></span>7–15% Watch</span>
-                    <span class="zone-item"><span class="zone-dot" style="background:var(--danger);"></span>15%+ Critical</span>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-card admin-only hidden">
-                <div class="chart-title">Leads by Center</div>
-                <div class="chart-subtitle">Volume comparison across all centers</div>
-                <div class="chart-wrap"><canvas id="chart-centers"></canvas></div>
-              </div>
-              <div class="chart-card wide">
-                <div class="chart-title">Leads Over Time</div>
-                <div class="chart-subtitle">Submission volume trend</div>
-                <div class="chart-wrap tall"><canvas id="chart-time"></canvas></div>
-              </div>
-            </div>
-
-          </div><!-- /ins-panel-lg -->
-
-          <!-- ═══════════════════════════════════════════════════
-               PCP LEADS PANEL
-          ════════════════════════════════════════════════════ -->
-          <div id="ins-panel-pcp" style="display:none;">
-
-            <!-- ── Alert zone ──────────────────────────────── -->
-            <div id="ins-pcp-alerts"></div>
-
-            <!-- ── PCP Hero stats ──────────────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-briefcase-medical"></i>PCP Leads — Performance Overview</div>
-              <div class="section-subtitle">You provide the documentation — we process and track every order</div>
-            </div>
-            <div id="ins-pcp-analysis"></div>
-            <div id="ins-pcp-hero" style="margin-bottom:20px;"></div>
-
-            <!-- ── PCP Weekly ──────────────────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-calendar-week"></i>Weekly Submissions</div>
-              <div class="section-subtitle">Last 7 weeks · Minimum target: 10 leads/week</div>
-            </div>
-            <div class="card" style="margin-bottom:20px;">
-              <div class="card-body"><div id="weekly-pcp-container"></div></div>
-            </div>
-
-            <!-- ── PCP Financial Results ───────────────────── -->
-            <div class="section-header">
-              <div class="section-title"><i class="fa-solid fa-chart-column"></i>Processing Outcomes</div>
-              <div class="section-subtitle">Approval rate and RTS rate across all your PCP submissions</div>
-            </div>
-            <div id="ins-pcp-outcomes" style="margin-bottom:20px;"></div>
-
-          </div><!-- /ins-panel-pcp -->
-
-        </div><!-- /charts-container -->
-      </div><!-- /view-insights -->
- 
-
-      <!-- ════════════════════════════════════════════════
-           VIEW: INCENTIVES (admin)
-      ═════════════════════════════════════════════════ -->
-      <div id="view-incentives" class="view">
-        <div class="page-header">
-          <div class="page-title">Incentives <span>& Motivation</span></div>
-        </div>
-
-        <!-- Create Form -->
-        <div class="card" style="margin-bottom:20px;">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-plus" style="margin-right:6px;color:var(--accent-primary);"></i>Create New Incentive</span>
-          </div>
-          <div class="card-body">
-            <div class="form-row" style="margin-bottom:14px;">
-              <div>
-                <label class="form-label">🏆 Prize / Reward</label>
-                <input class="form-input" id="inc-prize" type="text" placeholder="e.g. $500 Bonus, Amazon Gift Card">
-              </div>
-              <div>
-                <label class="form-label">🎯 Weekly Target</label>
-                <input class="form-input" id="inc-target" type="text" placeholder="e.g. 50 Verified Leads">
-              </div>
-            </div>
-            <div class="form-row" style="margin-bottom:14px;">
-              <div>
-                <label class="form-label">📋 Rules</label>
-                <textarea class="form-textarea" id="inc-rules" placeholder="Describe the rules and conditions…"></textarea>
-              </div>
-              <div>
+            // Centers functionality removed
                 <label class="form-label">👥 Who Is Included</label>
                 <input class="form-input" id="inc-who" type="text" placeholder="e.g. All Centers, Top 5 Centers">
               </div>
@@ -2652,99 +2489,7 @@ body {
       </div><!-- /view-users -->
 
 
-      <!-- ════════════════════════════════════════════════
-           VIEW: CENTERS DIRECTORY (admin)
-      ═════════════════════════════════════════════════ -->
-      <div id="view-centers" class="view">
-        <div class="page-header">
-          <div class="page-title" id="center-page-title">Center ID Card</div>
-          <button class="btn btn-ghost btn-sm" onclick="loadCenters()">
-            <i class="fa-solid fa-rotate-right"></i> Refresh
-          </button>
-        </div>
-
-        <!-- CRM Intro Video Banner -->
-        <div class="centers-video-banner" id="centers-video-banner">
-          <div class="cvb-content">
-            <div class="cvb-icon">
-              <i class="fa-brands fa-youtube"></i>
-            </div>
-            <div class="cvb-text">
-              <div class="cvb-title">CRM Walkthrough Video</div>
-              <div class="cvb-sub">A complete guide to using the ICO Center Portal — share with your centers to get them onboarded fast.</div>
-            </div>
-            <a href="#" id="cvb-link" target="_blank" rel="noopener" class="btn btn-primary cvb-btn" onclick="openCrmVideo(event)">
-              <i class="fa-solid fa-circle-play"></i> Watch Now
-            </a>
-            <button class="cvb-close" onclick="document.getElementById('centers-video-banner').style.display='none'" title="Dismiss">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="card admin-only hidden" id="crm-video-config-card" style="margin-bottom:20px;">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-link" style="margin-right:6px;color:var(--accent-primary);"></i>CRM Video Link</span>
-          </div>
-          <div class="card-body">
-            <div class="form-row" style="gap:10px;flex-wrap:wrap;">
-              <div style="flex:1;min-width:220px;">
-                <label class="form-label">Video URL</label>
-                <input class="form-input" id="crm-video-input" type="text" placeholder="Paste the CRM introduction video URL" />
-              </div>
-              <div style="display:flex;align-items:flex-end;">
-                <button class="btn btn-primary" onclick="saveCrmVideoLink()">
-                  <i class="fa-solid fa-save"></i> Save Link
-                </button>
-              </div>
-            </div>
-            <div style="margin-top:10px;font-size:12px;color:var(--text-muted);">This link appears on the center identity card page for all centers.</div>
-          </div>
-        </div>
-
-        <!-- Stats row -->
-        <div class="centers-stats-row" id="centers-stats-row">
-          <div class="cstat-card">
-            <div class="cstat-icon" style="background:var(--accent-lighter);color:var(--accent-primary);"><i class="fa-solid fa-building"></i></div>
-            <div><div class="cstat-val" id="cstat-total">—</div><div class="cstat-label">Total Centers</div></div>
-          </div>
-          <div class="cstat-card">
-            <div class="cstat-icon" style="background:var(--success-bg);color:var(--success);"><i class="fa-solid fa-file-signature"></i></div>
-            <div><div class="cstat-val" id="cstat-signed">—</div><div class="cstat-label">Agreement Signed</div></div>
-          </div>
-          <div class="cstat-card">
-            <div class="cstat-icon" style="background:var(--warning-bg);color:var(--warning);"><i class="fa-solid fa-globe"></i></div>
-            <div><div class="cstat-val" id="cstat-countries">—</div><div class="cstat-label">Countries</div></div>
-          </div>
-          <div class="cstat-card">
-            <div class="cstat-icon" style="background:var(--purple-bg);color:var(--purple);"><i class="fa-solid fa-credit-card"></i></div>
-            <div><div class="cstat-val" id="cstat-methods">—</div><div class="cstat-label">Payment Methods</div></div>
-          </div>
-        </div>
-
-        <!-- Search + Filter bar -->
-        <div class="centers-toolbar card" style="padding:14px 18px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <div style="position:relative;flex:1;min-width:200px;">
-            <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;"></i>
-            <input class="form-input" id="centers-search" type="text" placeholder="Search by code, name, country…" style="padding-left:32px;" oninput="filterCenters()">
-          </div>
-          <select class="form-select" id="centers-filter-signed" onchange="filterCenters()" style="width:160px;">
-            <option value="">All Agreements</option>
-            <option value="yes">Signed ✓</option>
-            <option value="no">Not Signed</option>
-          </select>
-          <select class="form-select" id="centers-filter-country" onchange="filterCenters()" style="width:150px;">
-            <option value="">All Countries</option>
-          </select>
-        </div>
-
-        <!-- Centers grid -->
-        <div id="centers-grid" class="centers-grid">
-          <div style="grid-column:1/-1;padding:40px;text-align:center;">
-            <div class="spinner" style="margin:0 auto;"></div>
-          </div>
-        </div>
-      </div><!-- /view-centers -->
+      
 
       <!-- ════════════════════════════════════════════════
            VIEW: ACTIVITY LOG (admin)
@@ -5669,18 +5414,7 @@ function loadCenters() {
       updateCenterStats(visibleCenters);
       if (APP.role === 'admin') populateCenterCountryFilter(APP_CENTERS);
     })
-    .withFailureHandler(function() { toast('Connection error.', 'error'); })
-    .getCenters(APP.token);
-}
-
-function setCenterViewMode(role) {
-  var stats = document.getElementById('centers-stats-row');
-  var toolbar = document.querySelector('.centers-toolbar');
-  var title = document.getElementById('center-page-title');
-  if (stats) stats.style.display = role === 'admin' ? 'grid' : 'none';
-  if (toolbar) toolbar.style.display = role === 'admin' ? 'flex' : 'none';
-  if (title) title.textContent = role === 'admin' ? 'Centers Directory' : 'Center ID Card';
-}
+    .withFailureHandler(function() { toast('Connection error.', 'error'); });
 
 function updateCenterStats(centers) {
   document.getElementById('cstat-total').textContent   = centers.length;

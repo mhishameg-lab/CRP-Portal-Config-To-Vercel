@@ -1093,44 +1093,4 @@ export async function getCriteriaList(token) {
   }
 }
 
-// ─── Centers / Center Card ───────────────────────────────────────────────────
-// Reads a sheet named 'Center Card' from the source spreadsheet.
-// Expected columns (0-based):
-// A(0) Center Code, B(1) Center Name, ... F(5) Signed Agreement, G(6) Phone, H(7) Email, I(8) Country, J(9) Payment Method
-export async function getCenters(token) {
-  try {
-    const sess = await _reqAuth(token);
-    const KEY = 'center_card_rows_v1';
-    const hit = await cache.get(KEY);
-    let rows;
-    if (hit) {
-      rows = hit;
-    } else {
-      const sheet = await getCrmSheet(SHEETS.CENTER_CARD);
-      const all = await sheet.getValues();
-      rows = (all && all.length > 1) ? all.slice(1).filter(r => r.some(c => c !== '' && c !== null && c !== undefined)) : [];
-      await cache.set(KEY, rows, CONFIG.CACHE_TTL_SEC);
-    }
-
-    const centers = rows.map(r => {
-      return {
-        centerCode      : String(r[0] || '').trim(),
-        centerName      : String(r[1] || '').trim(),
-        signedAgreement : String(r[5] || '').trim(),
-        phone           : String(r[6] || '').trim(),
-        email           : String(r[7] || '').trim(),
-        country         : String(r[8] || '').trim(),
-        paymentMethod   : String(r[9] || '').trim(),
-        rawRow          : r,
-      };
-    });
-
-    // If non-admin, restrict to the session centerCode
-    const visible = (['admin'].includes(sess.role)) ? centers : centers.filter(c => String(c.centerCode || '').trim().toLowerCase() === String(sess.centerCode || '').trim().toLowerCase());
-
-    await logActivity(sess.username, 'VIEW_CENTERS', `Retrieved ${visible.length} centers`);
-    return { success: true, centers: visible };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
+// Centers feature removed: getCenters() was deleted.

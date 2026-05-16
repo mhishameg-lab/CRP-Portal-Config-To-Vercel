@@ -18,7 +18,6 @@ import {
   addNote, setLeadPaymentStatus, getNotifications, markNotificationRead, markAllNotificationsRead,
   sendAdminNotification, getFilterOptions, getPcpStats, getPcpLeads, getPcpLeadDetails,
   getInsightsData, runChangeDetection, getAuditLog, getAppConfig, getCriteriaList,
-  getCenters,
 } from '../../services/data.js';
 
 // ─── Function registry ────────────────────────────────────────────────────────
@@ -56,7 +55,7 @@ const REGISTRY = {
   getAuditLog            : (args) => getAuditLog(...args),
   getAppConfig           : (args) => getAppConfig(...args),
   getCriteriaList        : (args) => getCriteriaList(...args),
-  getCenters             : (args) => getCenters(...args),
+  
 
   // Incentives (stubs — returns empty so app loads without crashing)
   getIncentives          : (args) => Promise.resolve({ success: true, data: [] }),
